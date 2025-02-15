@@ -2,13 +2,14 @@
 session_start();
 
 require_once __DIR__ . '/../config/db_connection.php';
+require_once __DIR__ . '/../helper/helper.php';
 
 header('Content-Type: application/json');
 
-// Check if email and password are provided via POST request
-if (isset($_POST['email']) && isset($_POST['password'])) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+// Checks if the request method is POST to ensure the form was submitted.
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = sanitizeData($_POST['email']);
+    $password = sanitizeData($_POST['password']);
 
     // Prepare the query to fetch user data based on the provided email
     $sql = "SELECT id, firstname, lastname, email, password FROM users WHERE email = ? AND user_type = 'admin' LIMIT 1";

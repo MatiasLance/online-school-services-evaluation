@@ -8,3 +8,15 @@
     padding-top: 100px;
     padding-bottom: 100px;
 }
+
+.btn-custom-color {
+    background-color: var(--primary-color);
+    color: var(--font-color-white);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-custom-color:hover {
+    background-color: none;
+    border: 1px solid var(--primary-color);
+    color: var(--font-color-black);
+}

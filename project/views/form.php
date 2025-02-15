@@ -15,20 +15,21 @@
             <!-- Question Tab -->
             <div class="tab-pane fade show active" id="question" role="tabpanel">
                 <h5>Submit Your Evaluation</h5>
-                <form>
+                <form id="evaluationForm">
                     <div class="mb-3">
                         <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" placeholder="Enter your full name" required>
+                        <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" placeholder="Enter your email" required>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                        <span id="errorMessage"></span>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">How would you rate the service? <span class="text-danger">*</span></label>
-                        <select class="form-select" required>
+                        <select class="form-select" id="serviceRate" required>
                             <option value="" disabled selected>Select an option</option>
                             <option value="excellent">Excellent</option>
                             <option value="good">Good</option>
@@ -51,8 +52,9 @@
 
                     <div class="mb-3">
                         <label class="form-label">Additional Comments</label>
-                        <textarea class="form-control" rows="4" placeholder="Write your feedback here..."></textarea>
+                        <textarea class="form-control" id="additionalComments" rows="4" placeholder="Write your feedback here..."></textarea>
                     </div>
+                    <button type="submit" class="btn btn-sm btn-custom-color text-capitalize">save</button>
                 </form>
             </div>
 
