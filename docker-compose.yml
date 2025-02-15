@@ -1,0 +1,59 @@
+services:
+    app:
+      container_name: project
+      build:
+        context: ./project
+        dockerfile: Dockerfile
+        args:
+          USER_ID: ${USER_ID}
+          GROUP_ID: ${GROUP_ID}
+      restart: unless-stopped
+      volumes:
+        - ./project:/var/www/html
+      networks:
+        - osse-network
+
+    nginx:
+      image: nginx:alpine
+      container_name: nginx
+      restart: unless-stopped
+      volumes:
+        - ./project:/var/www/html
+        - ./default.conf:/etc/nginx/conf.d/default.conf
+      ports:
+        - "8000:80"
+      networks:
+        - osse-network
+
+    db:
+      image: mysql:8.0
+      container_name: mysql
+      restart: unless-stopped
+      environment:
+        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${DB_DATABASE}
+        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+      volumes:
+        - ./storage/db-data:/var/lib/mysql
+      networks:
+        - osse-network
+
+    phpmyadmin:
+        platform: linux/amd64
+        image: phpmyadmin:5
+        container_name: pma
+        depends_on:
+            - db
+        restart: unless-stopped
+        environment:
+            PMA_HOST: db
+            PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+        ports:
+            - 8001:80
+        networks:
+            - osse-network
+
+networks:
+  osse-network:
+    driver: bridge

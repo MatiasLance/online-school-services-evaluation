@@ -1,0 +1,37 @@
+#loginForm {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-family);
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+
+  .bg-custom-white {
+    background-color: var(--secondary-color);
+    color: var(--font-color-black);
+  }
+    
+  .btn-custom-primary {
+    background-color: var(--primary-color);
+    color: var(--font-color-white);
+  }
+  
+  .btn-custom-primary:hover {
+    background-color: none;
+    border: 2px solid var(--primary-color);
+    color: var(--font-color-black);
+  }
+  
+  .fas.fa-arrow-right {
+    transform: translateY(2px);
+  }
+
+  .font-size-sm {
+    font-size: small;
+  }
+
+  .font-size-md {
+    font-size: medium;
+  }

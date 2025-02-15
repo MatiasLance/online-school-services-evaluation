@@ -1,0 +1,10 @@
+.form-container {
+    background-color: var(--primary-color);
+    height: calc    (100vh - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding-top: 100px;
+    padding-bottom: 100px;
+}

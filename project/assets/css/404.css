@@ -1,0 +1,11 @@
+.btn-custom-white {
+    background-color: var(--secondary-color);
+    color: var(--font-color-black);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-custom-white:hover {
+    background-color: none;
+    border: 1px solid var(--secondary-color);
+    color: var(--font-color-white);
+}
