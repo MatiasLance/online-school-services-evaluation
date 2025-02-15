@@ -11,6 +11,7 @@ $errors = [];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize Inputs
     $fullname = sanitizeData($_POST['fullname']);
+    $gender = sanitizeData($_POST['gender']);
     $email = sanitizeData($_POST['email']);
     $serviceRate = $_POST['serviceRate'];
     $isRecommended = $_POST['isRecommended'];
@@ -19,6 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate Full Name (required, at least 3 characters)
     if (empty($fullname) || strlen($fullname) < 3) {
         $errors[] = "Full name is required and must be at least 3 characters.";
+    }
+
+    // Validate Gender (allowed values only)
+    $allowedGender = ["male", "female", "other"];
+    if (!in_array($gender, $allowedGender)) {
+        $errors[] = "Invalid gender selected.";
     }
 
     // Validate Email Format (must be @smcbi.edu.ph)
@@ -49,11 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert data using Prepared Statement
-    $sql = "INSERT INTO evaluation_form (full_name, email, service_rate, recommend_service, comments) 
-            VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO evaluation_form (full_name, gender, email, service_rate, recommend_service, comments) 
+            VALUES (?, ?, ?, ?, ?, ?)";
     
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("sssss", $fullname, $email, $serviceRate, $isRecommended, $comments);
+        $stmt->bind_param("ssssss", $fullname, $gender, $email, $serviceRate, $isRecommended, $comments);
 
         if ($stmt->execute()) {
             echo json_encode(["status" => "success", "message" => "Evaluation form submitted successfully."]);

@@ -29,6 +29,8 @@ if(isset($pageCss) && is_array($pageCss)) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <?php
 if (isset($pageJS) && is_array($pageJS)) {
     foreach ($pageJS as $jsFile) {

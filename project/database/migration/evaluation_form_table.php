@@ -19,6 +19,7 @@ class DatabaseMigrator
         $sql = "CREATE TABLE IF NOT EXISTS evaluation_form (
             id INT AUTO_INCREMENT PRIMARY KEY,
             full_name VARCHAR(100) NOT NULL,
+            gender ENUM('Male', 'Female', 'Other') NOT NULL,
             email VARCHAR(100) UNIQUE NOT NULL,
             service_rate ENUM('Excellent', 'Good', 'Fair', 'Poor') NOT NULL,
             recommend_service ENUM('Yes', 'No') NOT NULL,

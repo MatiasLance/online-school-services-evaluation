@@ -22,6 +22,16 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label">Gender <span class="text-danger">*</span></label>
+                        <select class="form-select" id="gender" required>
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label">Email <span class="text-danger">*</span></label>
                         <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
                         <span id="errorMessage"></span>
@@ -61,11 +71,36 @@
             <!-- Response Tab -->
             <div class="tab-pane fade" id="response" role="tabpanel">
                 <h5>Responses</h5>
-                <ul class="list-group">
-                    <li class="list-group-item">Response 1: Thank you for your feedback!</li>
-                    <li class="list-group-item">Response 2: We appreciate your input.</li>
-                    <li class="list-group-item">Response 3: Your question has been noted.</li>
-                </ul>
+
+                <div class="container mt-4">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm p-3">
+                            <h5 class="text-center">Service Rate Distribution</h5>
+                            <canvas id="serviceRateChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm p-3">
+                            <h5 class="text-center">Recommendation Choices</h5>
+                            <canvas id="recommendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm p-3">
+                            <h5 class="text-center">Gender</h5>
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm p-3">
+                            <h5 class="text-center">Email Distribution</h5>
+                            <canvas id="emailChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div>
         </div>
     </div>
