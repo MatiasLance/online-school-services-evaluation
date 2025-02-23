@@ -23,8 +23,7 @@ jQuery(function($) {
             Swal.fire({
                 title: 'Warning',
                 text: 'Email is required.',
-                icon: 'warning',
-                showConfirmButton: false
+                icon: 'warning'
             });
 
             return false;
@@ -35,7 +34,6 @@ jQuery(function($) {
                 title: 'Warning',
                 text: 'Password is required.',
                 icon: 'warning',
-                showConfirmButton: false
             });
 
             return false
@@ -43,7 +41,7 @@ jQuery(function($) {
         
         // Send an AJAX POST request to the login PHP script
         $.ajax({
-            url: './controller/LoginController.php',
+            url: './controller/StudentLoginController.php',
             type: 'POST',
             dataType: 'json',
             data: payload,
@@ -55,8 +53,9 @@ jQuery(function($) {
                         icon: 'success',
                     }).then((result) => {
                         if(result.isConfirmed){
+                            $(emailField, passwordField).val('');
                             setTimeout(function(){
-                                window.location.href = '/dashboard';
+                                window.location.href = '/user-dashboard';
                             }, 500)
                         }
                     });

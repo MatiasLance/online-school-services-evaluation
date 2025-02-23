@@ -1,6 +1,8 @@
 # Use the official PHP-FPM image
 FROM php:8.2-fpm
 
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y \
     libpng-dev \

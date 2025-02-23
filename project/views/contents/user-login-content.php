@@ -41,9 +41,15 @@
 
               <!-- Login Button -->
               <div class="col-12">
+                <div class="d-flex flex-column align-items-center">
                   <button class="btn btn-custom-primary btn-sm montserrat-medium text-uppercase w-100" id="login" type="button">
                     Login <i class="fas fa-arrow-right"></i>
                   </button>
+                  <p class="mt-3 text-center">
+                    Don't have an account? 
+                    <a href="/register" class="montserrat-medium text-decoration-none">Register here</a>
+                  </p>
+                </div>
               </div>
 
             </div>

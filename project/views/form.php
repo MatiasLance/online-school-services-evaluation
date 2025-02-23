@@ -1,20 +1,41 @@
 <div class="form-container">
     <!-- Tabs -->
     <div class="container bg-body-tertiary p-5 rounded">
+     <?php if(isset($_SESSION['student_id'])){ ?>
         <ul class="nav nav-tabs justify-content-center" id="evaluationTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="question-tab" data-bs-toggle="tab" data-bs-target="#question" type="button" role="tab">Question</button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="response-tab" data-bs-toggle="tab" data-bs-target="#response" type="button" role="tab">Response</button>
-            </li>
         </ul>
+        <?php }else{ ?>
+            <ul class="nav nav-tabs justify-content-center" id="evaluationTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="question-tab" data-bs-toggle="tab" data-bs-target="#question" type="button" role="tab">Question</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="response-tab" data-bs-toggle="tab" data-bs-target="#response" type="button" role="tab">Response</button>
+                </li>
+            </ul>
+        <?php } ?>
 
         <!-- Tab Content -->
         <div class="tab-content mt-3">
             <!-- Question Tab -->
             <div class="tab-pane fade show active" id="question" role="tabpanel">
-                <h5>Submit Your Evaluation</h5>
+                <?php if(isset($_SESSION['student_id'])){ ?>
+                <div class="d-flex flex-row justify-content-between">
+                    <h5>Submit Your Evaluation</h5>
+                </div>
+                <?php }else{ ?>
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5>Submit Your Evaluation</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="publishFormSwitchCheckDefault">
+                            <label class="form-check-label" for="publishFormSwitchCheckDefault">Publish</label>
+                        </div>
+                    </div>
+                <?php } ?>
+                
                 <form id="evaluationForm">
                     <div class="mb-3">
                         <label class="form-label">Full Name <span class="text-danger">*</span></label>

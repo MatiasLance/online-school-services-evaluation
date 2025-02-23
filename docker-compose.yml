@@ -10,6 +10,7 @@ services:
       restart: unless-stopped
       volumes:
         - ./project:/var/www/html
+        - ./sessions:/var/lib/php/sessions
       networks:
         - osse-network
 

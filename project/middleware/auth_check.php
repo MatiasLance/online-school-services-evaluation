@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Check if the user is logged in
-if (!isset($_SESSION['id'])) {
-    header("Location: /");
+// Check if either admin or student is logged in
+if (!isset($_SESSION['id']) && !isset($_SESSION['student_id'])) {
+    header("Location: /login"); // Redirect to a common login page
     exit();
 }
