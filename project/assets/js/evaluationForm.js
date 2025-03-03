@@ -1,5 +1,5 @@
 jQuery(function($) {
-    $('#evaluationForm').on('submit', function(event) {
+    $('#userEvaluationForm').on('submit', function(event) {
         event.preventDefault();
 
         const payload = {
@@ -71,6 +71,54 @@ jQuery(function($) {
 
     })
 
+    $(document).on('change', '#publishFormSwitchCheckDefault', function(){
+        let isPublished = $(this).is(':checked') ? 1 : 0;
+        $.ajax({
+            type: 'POST',
+            url: './controller/PublishFormController.php',
+            data: { is_published: isPublished },
+            dataType: 'json',
+            success: function(response) {
+                Swal.fire({
+                    title: 'Success',
+                    text: response.message,
+                    icon: 'success'
+                }).then((result) => {
+                    if(result.isConfirmed){
+                        isPublished()
+                    }
+                });
+            },
+            error: function(){
+                Swal.fire({
+                    title: 'Warning',
+                    text: 'Something went wrong. Please try again.',
+                    icon: 'warning'
+                });
+            }
+        })
+
+    })
+
+    // Fetch current form status
+    function isPublished(){
+        $.ajax({
+            type: 'GET',
+            url: './controller/PublishFormController.php',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#publishFormSwitchCheckDefault').prop('checked', response.is_published === 1);
+                }
+
+                if(response.is_published === 0) {
+                    $('#user-form-title').removeClass('d-flex flex')
+                    $('#userEvaluationForm').hide()
+                    $('#user-question').html('<h1 class="text-center text-black">No form has been created yet.</h1>');
+                }
+            }
+        });
+    }
 
     let serviceChartInstance, recommendChartInstance, genderChartInstance, emailChartInstance;
 
@@ -227,4 +275,5 @@ jQuery(function($) {
     }
 
     loadTabulatedData();
+    isPublished();
 })
