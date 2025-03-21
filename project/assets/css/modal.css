@@ -1,27 +1,31 @@
-.modal-dialog {
-    background-color: #C1D8C8;
+.modal-primary-header {
+    background-color: var(--primary-color);
 }
-.modal-title {
-    color: #000;
-    transition: all 0.5s ease-in-out;
+
+.modal-primary-title {
+    color: var(--font-color-white);
 }
-.modal-title:hover {
-    color: #D9A76D;
+
+button[aria-label="Close"].modal-primary-button-close {
+    filter: invert(1); 
 }
-.btn-custom-success {
-    background-color: #92B5A0;
-    color: #F9F4EF;
-    transition: all 0.5s ease-in-out;
+
+.modal-warning-header {
+    background-color: var(--vibrant-golden-yellow);
 }
-.btn-custom-success:hover {
-    background-color: none;
-    border: 2px solid #92B5A0;
-    color: #000;
+
+button[aria-label="Close"].modal-warning-close-button {
+    filter: invert(0); 
 }
-.btn-close {
-    color: #92B5A0;
-    transition: all 0.5s ease-in-out;
+
+.modal-danger-header {
+    background-color: var(--blue-coral-red);
 }
-.modal-body {
-    background-color: #92B5A0;
+
+.modal-danger-title {
+    color: var(--font-color-white);
+}
+
+button[aria-label="Close"].modal-danger-close-button {
+    filter: invert(5); 
 }

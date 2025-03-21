@@ -18,6 +18,9 @@ switch($request) {
   case '/user-dashboard':
     require __DIR__ . $viewDir . 'user-dashboard.php';
     break;
+  case '/user-categories':
+    require __DIR__ . $viewDir . 'user-categories.php';
+    break;
   default:
     http_response_code(404);
     require __DIR__ . $viewDir . '404.php';

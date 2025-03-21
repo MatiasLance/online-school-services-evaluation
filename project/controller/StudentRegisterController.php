@@ -1,12 +1,8 @@
 <?php
-ob_start();
 session_start();
 
 require_once __DIR__ . '/../config/db_connection.php';
 require_once __DIR__ . '/../helper/helper.php';
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 header('Content-Type: application/json');
 
@@ -74,5 +70,4 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
-ob_end_flush();
 ?>

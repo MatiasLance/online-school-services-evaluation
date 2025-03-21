@@ -1,6 +1,11 @@
 :root {
     --primary-color: #0c0b55;
     --secondary-color: #feffff;
+    --vibrant-golden-yellow: #ffb703;
+    --darken-golden-shade: #e69c02;
+    --bright-teal-color: #4ecdc4;
+    --blue-coral-red: #e63946;
+    --muted-purple: #6a4c93;
     --font-color-black: #0c0c1f;
     --font-color-white: #feffff;
     --font-family: "Montserrat", sans-serif;

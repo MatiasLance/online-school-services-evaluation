@@ -6,7 +6,7 @@
           <div class="row">
             <div class="col-12">
               <div class="text-center mb-4">
-                <img src="https://i.imgur.com/5EhHhE6.png" alt="SMCBI Logo" width="175" height="157">
+                <img src="https://i.imgur.com/HLqsP73.png" alt="SMCBI Logo" width="175" height="157">
               </div>
             </div>
           </div>

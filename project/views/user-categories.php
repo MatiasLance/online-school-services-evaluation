@@ -1,7 +1,7 @@
 <?php
 require_once "./middleware/auth_check.php";
 
-$pageTitle = "Admin - Dashboard";
+$pageTitle = "Student - Dashboard";
 
 $pageCss = [
     "./assets/css/dashboard.css",
@@ -17,12 +17,9 @@ $pageJS = [
     "./assets/js/imageUpload.js",
     "./assets/js/evaluationForm.js",
     "./assets/js/categories.js",
-    "./assets/js/department.js",
-    "./assets/js/account.js",
-    "./assets/js/profile.js"
 ];
 
-$pageContent = __DIR__ . "/contents/dashboard-content.php";
+$pageContent = __DIR__ . "/contents/user-categories-content.php";
 
 include "./layout/layout.php";
 ?>

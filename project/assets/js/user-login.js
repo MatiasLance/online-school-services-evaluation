@@ -1,4 +1,4 @@
-$.noConflict();
+jQuery.noConflict();
 
 jQuery(function($) {
     const emailField = $('#email');

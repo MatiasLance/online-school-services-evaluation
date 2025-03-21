@@ -5,7 +5,7 @@
         <i class="fa-solid fa-gear gear-dropdown-menu-icon fs-4" id="userDropdown" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false"></i>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
             <li>
-                <a class="dropdown-item montserrat-medium text-capitalize" href="#">
+                <a class="dropdown-item montserrat-medium text-capitalize" data-bs-toggle="modal" data-bs-target="#adminProfileModal" href="#">
                     <i class="fa-solid fa-user"></i> profile
                 </a>
             </li>

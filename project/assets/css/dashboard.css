@@ -1,6 +1,5 @@
 .form-container {
     background-color: var(--primary-color);
-    height: calc    (100vh - 150px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,4 +18,39 @@
     background-color: none;
     border: 1px solid var(--primary-color);
     color: var(--font-color-black);
+}
+
+.btn-vibrant-golden-yellow {
+    background-color:  var(--vibrant-golden-yellow);
+    color: #0c0b55;
+    font-weight: 800;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-vibrant-golden-yellow:hover {
+    background-color:  var(--darken-golden-shade);
+    transform: scale(1.05); /* Subtle pop effect */
+}
+
+.dashboard-tabs-container {
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 100px;
+}
+
+.dashboard-nav-link {
+    color: var(--font-color-white);
+}
+
+.dashboard-nav-link:active {
+    color: var(--font-color-black);
+}
+
+.dashboard-nav-link:hover {
+    color: var(--font-color-white);
 }

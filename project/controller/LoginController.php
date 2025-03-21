@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = sanitizeData($_POST['password']);
 
     // Prepare the query to fetch user data based on the provided email
-    $sql = "SELECT id, firstname, lastname, email, password FROM users WHERE email = ? AND user_type = 'admin' LIMIT 1";
+    $sql = "SELECT id, firstname, lastname, email, password FROM users WHERE email = ? AND user_type = 'admin' OR user_type = 'user' LIMIT 1";
 
     // Prepare the statement
     if ($stmt = $conn->prepare($sql)) {

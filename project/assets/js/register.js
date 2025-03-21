@@ -48,7 +48,7 @@ jQuery(function($) {
         }
 
         $.ajax({
-            url: './controller/RegisterController.php',
+            url: './controller/StudentRegisterController.php',
             type: 'POST',
             data: payload,
             dataType: 'json',

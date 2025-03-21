@@ -160,34 +160,68 @@
                     <h5>Responses</h5>
 
                     <div class="container mt-4">
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm p-3">
-                                <h5 class="text-center">Service Rate Distribution</h5>
-                                <canvas id="serviceRateChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm p-3">
-                                <h5 class="text-center">Recommendation Choices</h5>
-                                <canvas id="recommendChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm p-3">
-                                <h5 class="text-center">Gender</h5>
-                                <canvas id="genderChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card shadow-sm p-3">
-                                <h5 class="text-center">Email Distribution</h5>
-                                <canvas id="emailChart"></canvas>
+                        <div class="row">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Questions</th>
+                                            <th scope="col">Year Level</th>
+                                            <th scope="col">Data Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>How would you rate the service?</td>
+                                            <td>
+                                                <p>Fourth Year</p>
+                                                <p>Third Year</p>
+                                                <p>Second Year</p>
+                                                <p>First Year</p>
+                                            </td>
+                                            <td>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Would you recommend our service?</td>
+                                            <td>
+                                                <p>Fourth Year</p>
+                                                <p>Third Year</p>
+                                                <p>Second Year</p>
+                                                <p>First Year</p>
+                                            </td>
+                                            <td>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                                <div class="progress mb-2" role="progressbar" aria-label="Example with label" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 30px">
+                                                    <div class="progress-bar" style="width: 50%">50%</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>
-
                 </div>
             </div>
         </div>

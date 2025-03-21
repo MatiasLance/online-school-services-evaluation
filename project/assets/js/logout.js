@@ -1,4 +1,6 @@
 
+jQuery.noConflict();
+
 jQuery(function($){
     $(document).on('click', '.logout', function() {
         $.ajax({
