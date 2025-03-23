@@ -284,7 +284,7 @@ function retrieveDepartment(departmentId){
             if(response.status === 'success'){
                 jQuery('#departmentId').val(response.data.id);
                 jQuery('#departmentIdToBeDeleted').val(response.data.id);
-                jQuery('#departmentToBeDeleted').val(response.data.department);
+                jQuery('#departmentToBeDeleted').text(response.data.department);
                 jQuery('#editedDepartmentFormControlInput1').val(response.data.department);
             }
             if(response.status === 'error'){

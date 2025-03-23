@@ -1,6 +1,5 @@
 <!-- Navbar -->
 <?php include __DIR__ . '/../navbar.php' ?>
-
 <div class="container dashboard-tabs-container">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -9,12 +8,15 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link dashboard-nav-link" id="department-tab" data-bs-toggle="tab" data-bs-target="#department-tab-pane" type="button" role="tab" aria-controls="department-tab-pane" aria-selected="false">Department</button>
         </li>
+        <?php if ($_SESSION['user_type'] === 'admin') { ?>
         <li class="nav-item" role="presentation">
             <button class="nav-link dashboard-nav-link" id="forms-tab" data-bs-toggle="tab" data-bs-target="#forms-tab-pane" type="button" role="tab" aria-controls="forms-tab-pane" aria-selected="false">Forms</button>
         </li>
-        <li class="nav-item" role="presentation">
+         <li class="nav-item" role="presentation">
             <button class="nav-link dashboard-nav-link" id="users-account-tab" data-bs-toggle="tab" data-bs-target="#users-account-tab-pane" type="button" role="tab" aria-controls="users-account-tab-pane" aria-selected="false">Users Account</button>
-        </li>
+         </li>
+        <?php } ?>
+
     </ul>
 
     <div class="tab-content mt-4" id="myTabContent">
@@ -25,7 +27,7 @@
             <?php include __DIR__  . '/department-content.php' ?>
         </div>
         <div class="tab-pane fade" id="forms-tab-pane" role="tabpanel" aria-labelledby="forms-tab" tabindex="0">
-
+            <?php include __DIR__  . '/form-content.php' ?>
         </div>
         <div class="tab-pane fade" id="users-account-tab-pane" role="tabpanel" aria-labelledby="users-tab" tabindex="0">
             <?php include __DIR__  . '/user-account-content.php' ?>

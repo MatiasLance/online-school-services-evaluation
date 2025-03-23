@@ -41,6 +41,7 @@
     flex-direction: column;
     justify-content: center;
     padding-top: 100px;
+    padding-bottom: 90px;
 }
 
 .dashboard-nav-link {

@@ -17,6 +17,7 @@ $pageJS = [
     "./assets/js/imageUpload.js",
     "./assets/js/evaluationForm.js",
     "./assets/js/categories.js",
+    "./assets/js/profile.js"
 ];
 
 $pageContent = __DIR__ . "/contents/user-categories-content.php";

@@ -19,7 +19,8 @@ $pageJS = [
     "./assets/js/categories.js",
     "./assets/js/department.js",
     "./assets/js/account.js",
-    "./assets/js/profile.js"
+    "./assets/js/profile.js",
+    "./assets/js/form.js"
 ];
 
 $pageContent = __DIR__ . "/contents/dashboard-content.php";

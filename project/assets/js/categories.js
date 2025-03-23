@@ -163,7 +163,7 @@ function retrieveCategory(categoryId){
             if(response.status === 'success'){
                 jQuery('#categoryId').val(response.data.id);
                 jQuery('#categoryIdToBeDeleted').val(response.data.id);
-                jQuery('#categoryNameToBeDeleted').val(response.data.name);
+                jQuery('#categoryNameToBeDeleted').text(response.data.name);
                 jQuery('#editedCategoryNameFormControlInput1').val(response.data.name);
             }
             if(response.status === 'error'){

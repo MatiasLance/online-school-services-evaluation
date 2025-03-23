@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = sanitizeData($_POST['password']);
 
     // Prepare the query to fetch user data based on the provided email
-    $sql = "SELECT id, firstname, lastname, email, password FROM users WHERE email = ? AND user_type = 'admin' OR user_type = 'user' LIMIT 1";
+    $sql = "SELECT id, firstname, lastname, email, password, user_type FROM users WHERE email = ? AND user_type = 'admin' OR user_type = 'user' LIMIT 1";
 
     // Prepare the statement
     if ($stmt = $conn->prepare($sql)) {
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if any user was found with the provided email
         if ($stmt->num_rows > 0) {
             // Bind the result to variables
-            $stmt->bind_result($id, $firstname, $lastname, $email_db, $password_db);
+            $stmt->bind_result($id, $firstname, $lastname, $email_db, $password_db, $user_type);
 
             // Fetch the result
             $stmt->fetch();
@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['id'] = $id;
                 $_SESSION['firstname'] = $firstname;
                 $_SESSION['lastname'] = $lastname;
+                $_SESSION['user_type'] = $user_type;
                 echo json_encode([
                     'success' => true,
                     'message' => 'Login successful!',
