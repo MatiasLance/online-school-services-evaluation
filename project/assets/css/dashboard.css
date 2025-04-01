@@ -35,7 +35,8 @@
     transform: scale(1.05); /* Subtle pop effect */
 }
 
-.dashboard-tabs-container {
+.dashboard-tabs-container,
+.form-tabs-container {
     background-color: var(--primary-color);
     display: flex;
     flex-direction: column;
@@ -44,14 +45,17 @@
     padding-bottom: 90px;
 }
 
-.dashboard-nav-link {
+.dashboard-nav-link,
+.form-nav-link {
     color: var(--font-color-white);
 }
 
-.dashboard-nav-link:active {
+.dashboard-nav-link:active,
+.form-nav-link:active {
     color: var(--font-color-black);
 }
 
-.dashboard-nav-link:hover {
+.dashboard-nav-link:hover,
+.form-nav-link:hover {
     color: var(--font-color-white);
 }

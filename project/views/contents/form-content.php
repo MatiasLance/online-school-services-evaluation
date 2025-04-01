@@ -3,7 +3,7 @@
     <span>Create Form</span>
 </button>
 
-<div class="row">
+<div class="row mb-3">
     <form id="saveGeneratedForm">
         <div class="col" id="displayFormTemplate"></div>
         <button type="submit" class="btn btn-vibrant-golden-yellow" id="saveFormButton">
@@ -11,3 +11,5 @@
         </button>
     </form>
 </div>
+
+<div class="row" id="displayFormTemplateCard"></div>

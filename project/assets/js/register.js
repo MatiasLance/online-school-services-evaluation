@@ -42,7 +42,8 @@ jQuery(function($) {
             email: $('#email').val(),
             gender: $('#inputGroupSelectGender').val(),
             year_level: $('#inputGroupYearLevel').val(),
-            course: $('#inputGroupCourse').val(),
+            department: $('#inputGroupDepartment').val(),
+            section: $('#inputGroupSection').val(),
             password: $('#password').val(),
             confirm_password: $('#confirmPassword').val()
         }
@@ -95,4 +96,40 @@ jQuery(function($) {
             }
         });
     });
+
+    // Object storing which elements to show for each year level
+    let visibilityMapForYearLevel = {
+        '1st Year': ['one', 'two', 'seven'],
+        '2nd Year': ['three', 'eight'],
+        '3rd Year': ['four', 'five', 'nine'],
+        '4th Year': ['six']
+    };
+
+    // Object storing which elements to show for each department
+    let visibilityMapForDepartment = {
+        'BSIT': ['one', 'two', 'three', 'four', 'five', 'six'],
+        'BSBA': ['seven', 'eight', 'nine']
+    };
+
+    // Function to update visibility based on selected year level & department
+    function updateVisibility() {
+        let selectedYear = $('#inputGroupYearLevel').val(); // Get selected year level
+        let selectedDepartment = $('#inputGroupDepartment').val(); // Get selected department
+        
+        // Get the corresponding classes from the lookup objects, or set empty arrays if nothing is selected
+        let yearClasses = visibilityMapForYearLevel[selectedYear] || [];
+        let departmentClasses = visibilityMapForDepartment[selectedDepartment] || [];
+
+        // Compute the intersection (elements that exist in both arrays)
+        let toShow = yearClasses.filter(className => departmentClasses.includes(className));
+
+        // Hide all elements first
+        $('.one, .two, .three, .four, .five, .six, .seven, .eight, .nine').hide();
+
+        // Show only the elements that match both filters
+        toShow.forEach(className => $('.' + className).show());
+    }
+
+    // Attach the updateVisibility function to both dropdown change events
+    $('#inputGroupYearLevel, #inputGroupDepartment').on('change', updateVisibility);
 });

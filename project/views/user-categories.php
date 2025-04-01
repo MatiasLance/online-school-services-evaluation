@@ -1,5 +1,5 @@
 <?php
-require_once "./middleware/auth_check.php";
+require_once  __DIR__ .  "/../middleware/auth_check.php";
 
 $pageTitle = "Student - Dashboard";
 
@@ -15,12 +15,10 @@ $pageJS = [
     "./assets/js/toggleSideBar.js",
     "./assets/js/logout.js",
     "./assets/js/imageUpload.js",
-    "./assets/js/evaluationForm.js",
     "./assets/js/categories.js",
     "./assets/js/profile.js"
 ];
 
 $pageContent = __DIR__ . "/contents/user-categories-content.php";
 
-include "./layout/layout.php";
-?>
+include __DIR__ . "/../layout/layout.php";

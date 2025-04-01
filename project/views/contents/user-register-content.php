@@ -81,20 +81,42 @@
                 </div>
               </div>
 
-              <!-- Course Selection -->
+              <!-- Department Selection -->
               <div class="col-12">
-                <label for="course" class="form-label montserrat-medium">Course<span class="text-danger">*</span></label>
+                <label for="department" class="form-label montserrat-medium">Department<span class="text-danger">*</span></label>
                 <div class="input-group">
-                    <label class="input-group-text" for="inputGroupCourse">
+                    <label class="input-group-text" for="inputGroupDepartment">
                         <i class="bi bi-mortarboard"></i>
                     </label>
-                    <select class="form-select" id="inputGroupCourse" name="course" required>
-                        <option value="" disabled selected>Select Course</option>
+                    <select class="form-select" id="inputGroupDepartment" name="department" required>
+                        <option value="" disabled selected>Select Department</option>
                         <option value="BSIT">BS Information Technology</option>
                         <option value="BSBA">BS Business Administration</option>
                         <option value="BSHM">BS Hospitality Management</option>
                         <option value="BSED">BS Education</option>
                         <option value="BEED">BS Elementary Education</option>
+                    </select>
+                </div>
+              </div>
+
+              <!-- Section Selection -->
+              <div class="col-12">
+                <label for="section" class="form-label montserrat-medium">Section<span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <label class="input-group-text" for="inputGroupSection">
+                        <i class="bi bi-mortarboard"></i>
+                    </label>
+                    <select class="form-select" id="inputGroupSection" name="section" required>
+                        <option value="" disabled selected>Select Section</option>
+                        <option class="one" value="1A">1A</option>
+                        <option class="two" value="1B">1B</option>
+                        <option class="three" value="2A">2A</option>
+                        <option class="four" value="3A">3A</option>
+                        <option class="five" value="3B">3B</option>
+                        <option class="six" value="4A">4A</option>
+                        <option class="seven" value="A">A</option>
+                        <option class="eight" value="B">B</option>
+                        <option class="nine" value="C">C</option>
                     </select>
                 </div>
               </div>

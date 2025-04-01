@@ -11,13 +11,14 @@ $firstname = sanitizeData($_POST['first_name'] ?? '');
 $lastname = sanitizeData($_POST['last_name'] ?? '');
 $email = sanitizeData($_POST['email'] ?? '');
 $gender = sanitizeData($_POST['gender'] ?? '');
-$course = sanitizeData($_POST['course'] ?? '');
+$department = sanitizeData($_POST['department'] ?? '');
 $year_level = sanitizeData($_POST['year_level'] ?? '');
+$section = sanitizeData($_POST['section'] ?? '');
 $password = sanitizeData($_POST['password'] ?? '');
 $confirm_password = sanitizeData($_POST['confirm_password'] ?? '');
 
 // Validate Required Fields
-if (empty($firstname) || empty($lastname) || empty($email) || empty($gender) || empty($course) || empty($year_level) || empty($password) || empty($confirm_password)) {
+if (empty($firstname) || empty($lastname) || empty($email) || empty($gender) || empty($department) || empty($year_level) || empty($section) || empty($password) || empty($confirm_password)) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }
@@ -54,13 +55,13 @@ if ($stmt->num_rows > 0) {
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 // Insert Data
-$stmt = $conn->prepare("INSERT INTO students (first_name, last_name, email, gender, course, year_level, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO students (first_name, last_name, email, gender, department, year_level, section, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 if (!$stmt) {
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
     exit;
 }
 
-$stmt->bind_param("sssssss", $firstname, $lastname, $email, $gender, $course, $year_level, $hashed_password);
+$stmt->bind_param("ssssssss", $firstname, $lastname, $email, $gender, $department, $year_level, $section, $hashed_password);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Registration successful!']);

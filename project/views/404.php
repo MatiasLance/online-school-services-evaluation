@@ -8,4 +8,3 @@ $pageJS = [""];
 $pageContent = __DIR__ . "/contents/404-content.php";
 
 include __DIR__ . "/../layout/layout.php";
-?>

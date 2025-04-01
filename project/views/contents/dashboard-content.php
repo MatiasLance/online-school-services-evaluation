@@ -15,6 +15,9 @@
          <li class="nav-item" role="presentation">
             <button class="nav-link dashboard-nav-link" id="users-account-tab" data-bs-toggle="tab" data-bs-target="#users-account-tab-pane" type="button" role="tab" aria-controls="users-account-tab-pane" aria-selected="false">Users Account</button>
          </li>
+         <li class="nav-item" role="presentation">
+            <button class="nav-link dashboard-nav-link" id="registered-students-tab" data-bs-toggle="tab" data-bs-target="#registered-students-tab-pane" type="button" role="tab" aria-controls="registered-students-tab-pane" aria-selected="false">Registered Student</button>
+         </li>
         <?php } ?>
 
     </ul>
@@ -31,6 +34,9 @@
         </div>
         <div class="tab-pane fade" id="users-account-tab-pane" role="tabpanel" aria-labelledby="users-tab" tabindex="0">
             <?php include __DIR__  . '/user-account-content.php' ?>
+        </div>
+        <div class="tab-pane fade" id="registered-students-tab-pane" role="tabpanel" aria-labelledby="registered-students-tab" tabindex="0">
+            <?php include __DIR__  . '/registered-students-content.php' ?>
         </div>
     </div>
 </div>

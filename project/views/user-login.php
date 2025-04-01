@@ -10,4 +10,3 @@ $pageJS = ["./assets/js/user-login.js"];
 $pageContent = __DIR__ . "/contents/user-login-content.php";
 
 include __DIR__ . "/../layout/layout.php";
-?>

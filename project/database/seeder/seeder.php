@@ -28,16 +28,6 @@ class DatabaseSeeder
         } else {
             echo "Error seeding users: " . $this->conn->error . "\n";
         }
-
-        // Seed form visibility
-        $formSql = "INSERT INTO form_settings (id, is_published) VALUES (1, 0)
-                    ON DUPLICATE KEY UPDATE is_published = is_published";
-
-        if ($this->conn->query($formSql) === TRUE) {
-            echo "Form settings seeded successfully.\n";
-        } else {
-            echo "Error seeding form settings: " . $this->conn->error . "\n";
-        }
     }
 }
 

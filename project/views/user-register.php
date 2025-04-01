@@ -10,4 +10,3 @@ $pageJS = ["./assets/js/register.js"];
 $pageContent = __DIR__ . "/contents/user-register-content.php";
 
 include __DIR__ . "/../layout/layout.php";
-?>
