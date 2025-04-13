@@ -1,11 +1,7 @@
 jQuery(function($){
-    let checkboxCount = 0; // To ensure unique IDs
-    let checkboxOptionCount = 0;
+    let checkboxCount = 0;
     let dropdownCount = 0;
-    let dropdownOptionCount = 0;
-    let radioGroupCount = 0;
-    let radioGroupOptionCount = 0;
-    let radioGroupLabelCount = 0;
+    let radioGroupCount = 0;;
     let paragraphCount = 0;
     let dateCount = 0;
     let timeCount = 0;
@@ -51,8 +47,7 @@ jQuery(function($){
     /**************************************************Checkbox Template************************************************/
     // Add Checkbox Template
     $(document).on('click', '#addCheckbox', function(){
-        checkboxCount++; // Increment for uniqueness
-        checkboxOptionCount++
+        checkboxCount++;
 
         let formCheckboxes = `
         <div class="card mb-3 form-checkbox" id="checkboxWrapper-${checkboxCount}">
@@ -63,11 +58,11 @@ jQuery(function($){
                 <div class="mb-3 checkbox-options">
                     <div class="form-check d-flex align-items-center">
                         <input class="form-check-input" type="checkbox" id="checkbox-${checkboxCount}" name="form_checkbox_option[${checkboxCount}]">
-                        <input type="text" class="form-control ms-2 checkbox-label" name="form_checkbox_option_label[${checkboxOptionCount}]" placeholder="Option Label" required>
+                        <input type="text" class="form-control ms-2 checkbox-label" name="form_checkbox_option_label[${checkboxCount}]" placeholder="Option Label" required>
                         <button type="button" class="btn btn-sm btn-danger ms-2 removeCheckboxOption">X</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-success addCheckboxOption">+ Add Option</button>
+                <button type="button" class="btn btn-sm btn-success addCheckboxOption" data-index="${checkboxCount}">+ Add Option</button>
                 <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger removeFormCheckbox" 
                 style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
             </div>
@@ -78,13 +73,12 @@ jQuery(function($){
 
     // Add Additional Checkbox Option to a Specific Template
     $(document).on('click', '.addCheckboxOption', function(){
-        checkboxCount++; // Increment for uniqueness
-        checkboxOptionCount++;
+        const index = $(this).data('index');
 
         let newOption = `
         <div class="form-check d-flex align-items-center">
-            <input class="form-check-input" type="checkbox" id="checkbox-${checkboxCount}" name="form_checkbox_option[${checkboxCount}]">
-            <input type="text" class="form-control ms-2 checkbox-label" name="form_checkbox_option_label[${checkboxOptionCount}]" placeholder="Option Label" required>
+            <input class="form-check-input" type="checkbox" id="checkbox-${index}" name="form_checkbox_option[${index}]">
+            <input type="text" class="form-control ms-2 checkbox-label" name="form_checkbox_option_label[${index}]" placeholder="Option Label" required>
             <button type="button" class="btn btn-sm btn-danger ms-2 removeCheckboxOption">X</button>
         </div>`;
 
@@ -100,7 +94,6 @@ jQuery(function($){
     // Add Dropdown Template
     $(document).on('click', '#addDropdown', function(){
         dropdownCount++; // Increment for uniqueness
-        dropdownOptionCount++
 
         let dropdownTemplate = `
         <div class="card mb-3 form-dropdown" id="dropdownWrapper-${dropdownCount}">
@@ -110,11 +103,11 @@ jQuery(function($){
                 </div>
                 <div class="mb-3 dropdown-options">
                     <div class="input-group mb-2">
-                        <input type="text" class="form-control dropdown-label" name="form_dropdown_option[${dropdownOptionCount}]" placeholder="Option Label" required>
+                        <input type="text" class="form-control dropdown-label" name="form_dropdown_option[${dropdownCount}]" placeholder="Option Label" required>
                         <button type="button" class="btn btn-sm btn-danger removeDropdownOption">X</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-success addDropdownOption">+ Add Option</button>
+                <button type="button" class="btn btn-sm btn-success addDropdownOption" data-index="${dropdownCount}">+ Add Option</button>
                 <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger removeDropdown" 
                 style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
             </div>
@@ -125,13 +118,12 @@ jQuery(function($){
 
     // Add Additional Dropdown Option
     $(document).on('click', '.addDropdownOption', function(event){
-        event.preventDefault(); // Prevent unintended form submission
-
-        dropdownOptionCount++;
+        event.preventDefault();
+        const index = $(this).data('index');
 
         let newOption = `
         <div class="input-group mb-2">
-            <input type="text" class="form-control dropdown-label" name="form_dropdown_option[${dropdownOptionCount}]" placeholder="Option Label" required>
+            <input type="text" class="form-control dropdown-label" name="form_dropdown_option[${index}]" placeholder="Option Label" required>
             <button type="button" class="btn btn-sm btn-danger removeDropdownOption">X</button>
         </div>`;
 
@@ -175,9 +167,7 @@ jQuery(function($){
     /******************************************Multiple Choice Template***************************************************/
     // Add Multiple Choice Template
     $(document).on('click', '#addMultipleChoice', function(){
-        radioGroupCount++; // Increment for uniqueness
-        radioGroupOptionCount++;
-        radioGroupLabelCount++;
+        radioGroupCount++;
 
         let radioTemplate = `
         <div class="card mb-3 form-multiple-choice" id="radioWrapper-${radioGroupCount}">
@@ -188,13 +178,13 @@ jQuery(function($){
                 <div class="mb-3 radio-options">
                     <div class="input-group mb-2">
                         <div class="input-group-text">
-                            <input type="radio" name="form_radio_option[${radioGroupOptionCount}]" disabled>
+                            <input type="radio" name="form_radio_option[${radioGroupCount}]" disabled>
                         </div>
-                        <input type="text" class="form-control radio-label" name="form_radio_label[${radioGroupLabelCount}]" placeholder="Option Label" required>
+                        <input type="text" class="form-control radio-label" name="form_radio_label[${radioGroupCount}]" placeholder="Option Label" required>
                         <button type="button" class="btn btn-sm btn-danger removeRadioOption">X</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-success addRadioOption">+ Add Option</button>
+                <button type="button" class="btn btn-sm btn-success addRadioOption" data-index="${radioGroupCount}">+ Add Option</button>
                 <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger removeRadio" 
                 style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
             </div>
@@ -205,16 +195,15 @@ jQuery(function($){
 
     // Add Additional Radio Option
     $(document).on('click', '.addRadioOption', function(event){
-        event.preventDefault(); // Prevent unintended form submission
-        radioGroupOptionCount++;
-        radioGroupLabelCount++;
+        event.preventDefault();
+        const index = $(this).data('index');
 
         let newOption = `
         <div class="input-group mb-2">
             <div class="input-group-text">
-                <input type="radio" name="form_radio_option[${radioGroupOptionCount}]" disabled>
+                <input type="radio" name="form_radio_option[${index}]" disabled>
             </div>
-            <input type="text" class="form-control radio-label" name="form_radio_label[${radioGroupLabelCount}]" placeholder="Option Label" required>
+            <input type="text" class="form-control radio-label" name="form_radio_label[${index}]" placeholder="Option Label" required>
             <button type="button" class="btn btn-sm btn-danger removeRadioOption">X</button>
         </div>`;
 
@@ -229,7 +218,7 @@ jQuery(function($){
     /******************************************Paragraph Template***************************************************/
      // Add Paragraph Template
      $(document).on('click', '#addParagraph', function(){
-        paragraphCount++; // Increment for uniqueness
+        paragraphCount++;
 
         let paragraphTemplate = `
         <div class="card mb-3 form-paragraph" id="paragraphWrapper-${paragraphCount}">
@@ -287,15 +276,15 @@ jQuery(function($){
         let starValue = $(this).data('value');
         let ratingContainer = $(this).closest('.rating-stars');
 
-        ratingContainer.find('.star').removeClass('fa-solid text-warning').addClass('fa-regular'); // Reset stars
+        ratingContainer.find('.star').removeClass('fa-solid text-warning').addClass('fa-regular');
         ratingContainer.find('.star').each(function(){
             if($(this).data('value') <= starValue){
-                $(this).removeClass('fa-regular').addClass('fa-solid text-warning'); // Highlight selected stars
+                $(this).removeClass('fa-regular').addClass('fa-solid text-warning');
             }
         });
 
         ratingContainer.data('rating', starValue);
-        ratingContainer.find('.rating-value').val(starValue); // Store value in hidden input
+        ratingContainer.find('.rating-value').val(starValue);
     });
 
     /******************************************Date Template***************************************************/
@@ -340,6 +329,23 @@ jQuery(function($){
 
         $('#displayFormTemplate').append(timeTemplate);
     });
+    /******************************************Delete Form Template***************************************************/
+    $(document).on('click', '#deleteConfirmationForformTemplate', function(){
+        const id = $(this).data('form')
+        $('#formIdToBeDeleted').val(id)
+        retrieveFormTemplate(id, 1)
+    });
+
+    $('#deleteForm').on('click', function(){
+        const payload = {
+            id: $('#formIdToBeDeleted').val(),
+            password: $('#passwordFormControlInput1').val()
+        }
+        console.log(payload)
+
+        deleteFormTemplate(payload);
+    })
+
     /****************************************************************************************************************/
      // Remove Time Template
      $(document).on('click', '.removeTime', function(){
@@ -404,12 +410,9 @@ jQuery(function($){
     });
 
     /****************************************Retrieve Form***********************************************/
-    // Check if the current URL contains "/view-form" and has a query parameter "form_id"
     if (window.location.pathname === '/view-form' && window.location.search.includes('form_id=')) {
-        // Get the URL's query string
         const urlParams = new URLSearchParams(window.location.search);
 
-        // Get the value of "form_id" from the query string
         const formId = urlParams.get('form_id');
         const version = urlParams.get('form_version');
         
@@ -422,15 +425,14 @@ jQuery(function($){
 
         const data = $(this).serializeArray()
         .filter(item => {
-            // Customize what you consider "empty"
-            const emptyValues = ['', 'null', 'undefined', '0']; // Add more if needed
+            const emptyValues = ['', 'null', 'undefined', '0'];
             
             return (
-                item.name &&                            // Name exists
-                item.name.trim() !== '' &&               // Name not empty
-                item.value !== undefined &&              // Value exists
-                item.value !== null &&                  // Value not null
-                !emptyValues.includes(item.value.trim()) // Value not in empty list
+                item.name &&
+                item.name.trim() !== '' && 
+                item.value !== undefined &&
+                item.value !== null &&
+                !emptyValues.includes(item.value.trim())
             );
         });
         console.log(data);
@@ -444,10 +446,10 @@ function saveFormTemplate(payload) {
     jQuery.ajax({
         url: './controller/AddFormTemplateController.php',
         type: 'POST',
-        data: JSON.stringify(payload), // Send as JSON string
-        contentType: 'application/json', // Indicate JSON data
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
         dataType: 'json',
-        processData: false, // Prevent jQuery from processing data
+        processData: false,
         success: function (response) {
             if (response.status === 'success') {
                 Swal.fire({
@@ -489,66 +491,318 @@ function retrieveFormTemplate(formId, version = null) {
             if (response.status === 'success') {
                 const form = response.data;
 
-                // Ensure form_fields is properly parsed
                 const formFields = typeof form.form_fields === 'string' 
                     ? JSON.parse(form.form_fields) 
                     : form.form_fields || [];
+                
+                const parentContainer = jQuery('#formTemplatesContainer');
 
-                console.log(formFields);
+                parentContainer.empty();
 
-                // Ensure the target container exists before updating
-                if (jQuery('.form-header-container').length > 0) {
-                    jQuery('.form-header-container').empty();
+                jQuery('#formNameToBeDeleted').text(formFields.find(f => f.name === 'form_title')?.value)
 
+                if (parentContainer.length > 0) {
+
+                    // Form Title and Description
                     let formHeader = `
-                        <div class="mb-3">
-                            <input type="text" class="form-control" id="formTitle" name="form_title" value="${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="formTitle" class="form-label fw-bold">Title</label>
+                                <input type="text" class="form-control" id="formTitle" name="form_title" value="${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}">
+                            </div>
+                            <div class="mb-3">
+                                    <label for="formDescription" class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" id="formDescription" name="form_description" rows="3">${formFields.find(f => f.name === 'form_description')?.value || 'No description'}</textarea>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" id="formDescription" name="form_description" rows="3">${formFields.find(f => f.name === 'form_description')?.value || 'No description'}</textarea>
-                        </div>`;
+                    </div>`;
 
-                    jQuery('.form-header-container').append(formHeader);
-                } else {
-                    console.error('Error: .form-header-container not found in the DOM.');
+                    parentContainer.append(formHeader);
+
+                    // Form Radio
+                    const radioQuestions = formFields.filter(f => f.name.startsWith('form_radio_question'));
+
+                    if(radioQuestions.length > 0) {
+
+                        radioQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const radioOptions = formFields
+                                .filter(f => f.name.startsWith(`form_radio_label[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <div class="form-check mb-3">
+                                        <label for="formRadioLabel[${questionIndex}]" class="form-label fw-bold">Option ${index + 1}</label>
+                                        <input class="form-check-input" type="radio" name="form_radio_label[${questionIndex}]" id="formRadioLabel[${questionIndex}]" value="${option.value}">
+                                        <input type="text" class="form-control radio-label" name="form_radio_label[${questionIndex}]" value="${option.value}">
+                                    </div>
+                                `)
+                                .join('');
+                    
+                            const formRadioHTML = `
+                                <div class="mb-3">
+                                    <label for="formRadioQuestion[${questionIndex}]" class="form-label fw-bold">Question ${questionIndex}</label>
+                                    <input type="text" class="form-control" id="formRadioQuestion[${questionIndex}]" name="form_radio_question[${questionIndex}]" value="${question.value}">
+                                </div>
+                                ${radioOptions}`;
+
+
+                            const formRadioTemplate = `
+                            <div class="card mb-3 form-radio-container">
+                                <div class="card-body">
+                                    ${formRadioHTML}
+                                </div>
+                            </div>`;
+                            
+                            parentContainer.append(formRadioTemplate)
+                        });
+                    }
+
+                    // Form Dropdown
+                    const dropDownQuestions = formFields.filter(f => f.name.startsWith('form_dropdown_question'));
+
+                    if(dropDownQuestions.length > 0){
+                
+                        dropDownQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            if (!questionIndex) {
+                                console.error(`Error: Unable to extract index from question name: ${question.name}`);
+                                return;
+                            }
+                    
+                            const dropdownOptions = formFields
+                                .filter(f => f.name.startsWith(`form_dropdown_option[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <div class="mb-3">
+                                        <label for="formDropDownOption[${questionIndex}]" class="form-label fw-bold">Option ${index + 1}</label>
+                                        <input type="text" class="form-control" name="form_dropdown_option[${questionIndex}]" value="${option.value}">
+                                    </div>
+                                `)
+                                .join('');
+                    
+                            const dropdownHTML = `
+                                <div class="mb-3">
+                                    <label for="formDropDownQuestion[${questionIndex}]" class="form-label fw-bold">Question ${questionIndex}</label>
+                                    <input type="text" class="form-control" name="form_dropdown_question[${questionIndex}]" value="${question.value}">
+                                </div>
+                                ${dropdownOptions}
+                            `;
+
+                            const formDropDownTemplate = `
+                            <div class="card mb-3 form-dropdown-container">
+                                <div class="card-body">
+                                    ${dropdownHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formDropDownTemplate)
+                        });
+                    }
+
+                    // Form checkbox
+                    const checkboxQuestions = formFields.filter(f => f.name.startsWith('form_checkbox_question'));
+
+                    if(checkboxQuestions.length > 0){
+                
+                        checkboxQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            if (!questionIndex) {
+                                console.error(`Error: Unable to extract index from question name: ${question.name}`);
+                                return;
+                            }
+                    
+                            const checkboxOptions = formFields
+                                .filter(f => f.name.startsWith(`form_checkbox_option_label[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" name="form_checkbox_option_label[${index + 1}]" value="${option.value}" id="formCheckBoxOptionLabel[${index + 1}]">
+                                        <input type="text" class="form-control" name="form_checkbox_option_label[${index + 1}]" value="${option.value}" id="formCheckBoxQuestion[${index + 1}]">
+                                    </div>
+                                `)
+                                .join('');
+                    
+                            const checkboxHTML = `
+                                <div class="mb-3">
+                                    <label for="formCheckBoxQuestion[${questionIndex}]" class="form-label fw-bold">Question ${questionIndex}</label>
+                                    <input type="text" class="form-control" name="form_checkbox_question[${questionIndex}]" value="${question.value}" id="formCheckBoxQuestion[${questionIndex}]">
+                                </div>
+                                ${checkboxOptions}
+                            `;
+
+                            const formCheckBoxTemplate = `
+                            <div class="card mb-3 form-checkbox-container">
+                                <div class="card-body">
+                                    ${checkboxHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formCheckBoxTemplate)
+                        });
+                    }
+
+                    // Form Upload
+                    const fileUploadQuestions = formFields.filter(f => f.name.startsWith('form_file_upload_question'));
+
+                    if(fileUploadQuestions.length > 0){
+                
+                        fileUploadQuestions.forEach(question => {
+                    
+                            const fileUploadHTML = `
+                                <div class="mb-3">
+                                    <label for="formFileUploadQuestion" class="form-label fw-bold">Label</label>
+                                    <input type="text" class="form-control" name="form_file_upload_question" value="${question.value}" id="formFileUploadQuestion">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" name="form_file_upload_input">
+                                </div>
+                            `;
+
+                            const formFileUploadTemplate = `
+                            <div class="card mb-3 form-file-upload-container">
+                                <div class="card-body">
+                                    ${fileUploadHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formFileUploadTemplate)
+                        });
+                    }
+
+                    // Form Paragraph
+                    const fileParagraphQuestions = formFields.filter(f => f.name.startsWith('form_paragraph_question'));
+
+                    if(fileParagraphQuestions.length > 0){
+                
+                        fileParagraphQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const fileParagraphHTML = `
+                                <div class="mb-3">
+                                    <label for="formParagraphQuestion[${questionIndex}]" class="form-label fw-bold">Question ${questionIndex}</label>
+                                    <input type="text" class="form-control" name="form_paragraph_question[${questionIndex}]" value="${question.value}" id="formParagraphQuestion[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="formParagraphText[${questionIndex}]" class="form-label fw-bold">Answer ${questionIndex}</label>
+                                    <textarea class="form-control" id="formParagraphText[${questionIndex}]" rows="3"></textarea>
+                                </div>
+                            `;
+
+                            const formParagraphTemplate = `
+                            <div class="card mb-3 form-paragraph-container">
+                                <div class="card-body">
+                                    ${fileParagraphHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formParagraphTemplate)
+                        });
+                    }
+
+                    // Form Rating
+                    const formRatingQuestions = formFields.filter(f => f.name.startsWith('form_rating_question'));
+
+                    if(formRatingQuestions.length > 0){
+                
+                        formRatingQuestions.forEach(question => {
+                    
+                            const formRatingHTML = `
+                                <div class="mb-3">
+                                    <label for="formRatingQuestion" class="form-label fw-bold">Question</label>
+                                    <input type="text" class="form-control" name="form_rating_question" value="${question.value}" id="formRatingQuestion">
+                                </div>
+                                <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
+                                    <i class="fa-regular fa-star star fs-3" data-value="1"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="2"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="3"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="4"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="5"></i>
+                                    <input type="hidden" name="form_rating_value" class="rating-value">
+                                </div>
+                            `;
+
+                            const formFileUploadTemplate = `
+                            <div class="card mb-3 form-checkbox-container">
+                                <div class="card-body">
+                                    ${formRatingHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formFileUploadTemplate)
+                        });
+                    }
+
+                    // Form Date
+                    const formDateLabel = formFields.filter(f => f.name.startsWith('form_date_label'));
+
+                    if(formDateLabel.length > 0){
+                
+                        formDateLabel.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const formDateHTML = `
+                                <div class="mb-3">
+                                    <label for="formDateLabel[${questionIndex}]" class="form-label fw-bold">Label</label>
+                                    <input type="text" class="form-control" name="form_date_label[${questionIndex}]" value="${question.value}" id="formDateLabel[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="date" class="form-control" name="form_date_value[${questionIndex}]">
+                                </div>
+                            `;
+
+                            const formDateTemplate = `
+                            <div class="card mb-3 form-checkbox-container">
+                                <div class="card-body">
+                                    ${formDateHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formDateTemplate)
+                        });
+                    }
+
+                    // Form Label
+                    const formTimeLabel = formFields.filter(f => f.name.startsWith('form_time_label'));
+
+                    if(formTimeLabel.length > 0){
+                
+                        formTimeLabel.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const formTimeHTML = `
+                                <div class="mb-3">
+                                    <label for="formTimeLabel[${questionIndex}]" class="form-label fw-bold">Label</label>
+                                    <input type="text" class="form-control" name="form_time_label[${questionIndex}]" value="${question.value}" id="formTimeLabel[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="time" class="form-control" name="form_time_value[${questionIndex}]">
+                                </div>
+                            `;
+
+                            const formTimeTemplate = `
+                            <div class="card mb-3 form-checkbox-container">
+                                <div class="card-body">
+                                    ${formTimeHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formTimeTemplate)
+                        });
+                    }
                 }
 
-                if (jQuery('.form-radio-container').length > 0) {
-                    jQuery('.form-radio-container').empty();
+                const formRadioContainers = parentContainer.find('.form-radio-container')
+                formRadioContainers.each(function () {
+                    const $container = jQuery(this);
+                    const hasChildren = $container.children().length > 0;
                 
-                    // Extract all radio questions dynamically
-                    const radioQuestions = formFields.filter(f => f.name.startsWith('form_radio_question'));
-                
-                    let formRadioHTML = '';
-                
-                    // Loop through each radio question
-                    radioQuestions.forEach(question => {
-                        const questionIndex = question.name.match(/\[(\d+)\]/)?.[1]; // Extract index from [X]
-                
-                        // Extract ALL radio options (since no grouping, just find all form_radio_label)
-                        const radioOptions = formFields
-                            .filter(f => f.name.startsWith('form_radio_label')) // No need to match index
-                            .map((option, index) => `
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="radio" name="form_radio_label[${index + 1}]" id="radioOption${questionIndex}_${index + 1}" value="${option.value}" disabled>
-                                    <input type="text" class="form-control radio-label" name="form_radio_label[${index + 1}]" value="${option.value}">
-                                </div>
-                            `)
-                            .join('');
-                
-                        // Append question and its options
-                        formRadioHTML += `
-                            <div class="mb-3">
-                                <input type="text" class="form-control radio-question" name="form_radio_question[${questionIndex}]" value="${question.value}">
-                            </div>
-                            ${radioOptions}`;
-                    });
-                
-                    // Append all generated form sections to the container
-                    jQuery('.form-radio-container').append(formRadioHTML);
-                } else {
-                    console.error('Error: .form-radio-container not found in the DOM.');
-                }                
+                    if (!hasChildren) {
+                        $container.hide();
+                    } else {
+                        $container.show();
+                    }
+                });
 
             } else {
                 jQuery('#formTemplatesContainer').html('<p class="text-danger">Form not found or error retrieving form fields.</p>');
@@ -595,9 +849,11 @@ function listFormTemplate() {
                                         </a>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-transparent">
+                                <div class="card-footer bg-transparent d-flex justify-content-between">
                                     <small class="text-muted">Created at: ${new Date(form.created_at).toLocaleDateString()}</small>
+                                    <i class="fa-regular fa-trash-can" data-form="${form.id}" id="deleteConfirmationForformTemplate" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#deleteFormModal"></i>
                                 </div>
+
                             </div>
                         </div>`;
                     formCardDisplayContainer.append(formCardDisplay);
@@ -608,6 +864,48 @@ function listFormTemplate() {
         },
         error: function () {
             formCardDisplayContainer.html('<p class="text-danger">Error fetching forms. Please try again.</p>');
+        }
+    });
+}
+
+function deleteFormTemplate(payload){
+    jQuery.ajax({
+        url: './controller/DeleteFormTemplateController.php',
+        type: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        listFormTemplate();
+                        jQuery('#passwordFormControlInput1').val('');
+                    }
+                });
+            } else {
+                for(let i = 0; i < response.messages.length; i++)
+                Swal.fire({
+                    title: 'Error!',
+                    text: response.messages[i],
+                    icon: 'error'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        listFormTemplate();
+                        jQuery('#passwordFormControlInput1').val('');
+                    }
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
         }
     });
 }

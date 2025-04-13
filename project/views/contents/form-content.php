@@ -13,3 +13,8 @@
 </div>
 
 <div class="row" id="displayFormTemplateCard"></div>
+
+<?php
+include __DIR__ . '/../modal/form/delete-form-modal.php';
+include __DIR__ . '/../modal/form/ask-password-modal.php';
+?>
