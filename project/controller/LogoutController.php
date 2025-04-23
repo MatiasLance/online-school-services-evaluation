@@ -14,6 +14,6 @@ if(isset($_SESSION['id'])){
     echo json_encode([
         'success' => true,
         'message' => 'Logout successfully!',
-        'redirect' => '/user'
+        'redirect' => '/'
     ]);
 }

@@ -47,7 +47,7 @@
                   </button>
                   <p class="mt-3 text-center">
                     Don't have an account? 
-                    <a href="/register" class="montserrat-medium text-decoration-none">Register here</a>
+                    <a href="/student-register" class="montserrat-medium text-decoration-none">Register here</a>
                   </p>
                 </div>
               </div>

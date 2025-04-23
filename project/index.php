@@ -6,22 +6,22 @@ $viewDir = '/views/';
 
 switch($path) {
   case '/':
-    require  __DIR__ . $viewDir . '/user-login.php';
+    require  __DIR__ . $viewDir . '/student-login.php';
     break;
-  case '/register':
-    require  __DIR__ . $viewDir . 'user-register.php';
+  case '/student-register':
+    require  __DIR__ . $viewDir . 'student-register.php';
+    break;
+  case '/student-dashboard':
+    require  __DIR__ . $viewDir . 'student-dashboard.php';
+    break;
+  case '/student-categories':
+    require  __DIR__ . $viewDir . 'student-categories.php';
     break;
   case '/admin':
     require  __DIR__ . $viewDir . 'login.php';
     break;
   case '/dashboard':
     require  __DIR__ . $viewDir . 'dashboard.php';
-    break;
-  case '/user-dashboard':
-    require  __DIR__ . $viewDir . 'user-dashboard.php';
-    break;
-  case '/user-categories':
-    require  __DIR__ . $viewDir . 'user-categories.php';
     break;
   case '/view-form':
     // Access query parameters if needed

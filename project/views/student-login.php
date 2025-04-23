@@ -5,8 +5,8 @@ $pageTitle = "Student - Login";
 
 $pageCss = ["./assets/css/login.css"];
 
-$pageJS = ["./assets/js/user-login.js"];
+$pageJS = ["./assets/js/student-login.js"];
 
-$pageContent = __DIR__ . "/contents/user-login-content.php";
+$pageContent = __DIR__ . "/contents/student-login-content.php";
 
 include __DIR__ . "/../layout/layout.php";

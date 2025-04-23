@@ -5,14 +5,12 @@ jQuery(function($) {
     const passwordField = $('#password');
     const icon = $('#togglePassword i');
     
-    // Hide and Show password
     $(document).on('click', '#togglePassword', function() {
         const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
         passwordField.attr('type', type);
         icon.toggleClass('fa-eye fa-eye-slash');
     })
 
-    // Login
     $(document).on('click', '#login', function() {
         const payload = {
             email: emailField.val(),
@@ -39,7 +37,6 @@ jQuery(function($) {
             return false
         }
         
-        // Send an AJAX POST request to the login PHP script
         $.ajax({
             url: './controller/StudentLoginController.php',
             type: 'POST',
@@ -55,7 +52,7 @@ jQuery(function($) {
                         if(result.isConfirmed){
                             $(emailField, passwordField).val('');
                             setTimeout(function(){
-                                window.location.href = '/user-dashboard';
+                                window.location.href = '/student-dashboard';
                             }, 500)
                         }
                     });

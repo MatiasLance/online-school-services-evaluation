@@ -1,6 +1,6 @@
 <button type="button" class="btn btn-vibrant-golden-yellow d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addStudentAccountModal">
     <i class="fa-regular fa-square-plus" style="font-size: 25px;"></i>
-    <span>Add Student</span>
+    <span>Add Student Account</span>
 </button>
 
 <div class="d-flex flex-column flex-md-row justify-content-between mt-5">

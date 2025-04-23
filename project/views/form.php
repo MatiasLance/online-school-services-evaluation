@@ -12,9 +12,9 @@ $pageCss = [
 ];
 
 $pageJS = [
-    "./assets/js/toggleSideBar.js",
+    "./assets/js/toggle-side-bar.js",
     "./assets/js/logout.js",
-    "./assets/js/imageUpload.js",
+    "./assets/js/image-upload.js",
     "./assets/js/categories.js",
     "./assets/js/department.js",
     "./assets/js/account.js",

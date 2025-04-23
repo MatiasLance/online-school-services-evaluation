@@ -74,10 +74,10 @@ jQuery(function($){
 
     // Search functionality
     $('#filterByDepartmentNameFormControlInput1').on('keyup', function () {
-        clearTimeout(departmentDebounceTimer); // Clear the previous timer
+        clearTimeout(departmentDebounceTimer);
         departmentDebounceTimer = setTimeout(function () {
             loadDepartments(1, $('#filterByDepartmentNameFormControlInput1').val());
-        }, 500); // Delay of 500ms for debounce effect
+        }, 500);
     });
 
     // Open Department Modal and Display a value of the selected department

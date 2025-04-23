@@ -7,27 +7,27 @@ require_once __DIR__ . '/../helper/helper.php';
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $userId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $sudentID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    if ($userId <= 0) {
-        echo json_encode(["status" => "error", "message" => "Invalid user ID."]);
+    if ($sudentID <= 0) {
+        echo json_encode(["status" => "error", "message" => "Invalid student ID."]);
         exit();
     }
 
-    $sql = "SELECT id, firstname, lastname, email, password
-            FROM users 
+    $sql = "SELECT id, first_name as firstname, last_name as lastname, email, gender, department, section, year_level
+            FROM students
             WHERE id = ?";
 
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("i", $userId);
+        $stmt->bind_param("i", $sudentID);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            echo json_encode(["status" => "success", "data" => $user]);
+            $student = $result->fetch_assoc();
+            echo json_encode(["status" => "success", "data" => $student]);
         } else {
-            echo json_encode(["status" => "error", "message" => "User account not found."]);
+            echo json_encode(["status" => "error", "message" => "Student account not found."]);
         }
 
         $stmt->close();

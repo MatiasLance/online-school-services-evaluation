@@ -56,10 +56,10 @@ jQuery(function($){
 
     // Search functionality
     $('#filterByCategorynameFormControlInput1').on('keyup', function () {
-        clearTimeout(debounceTimer); // Clear the previous timer
+        clearTimeout(debounceTimer);
         debounceTimer = setTimeout(function () {
             loadCategories(1, $('#filterByCategorynameFormControlInput1').val());
-        }, 500); // Delay of 500ms for debounce effect
+        }, 500);
     });
 
     // Retrieve Category
@@ -88,8 +88,6 @@ jQuery(function($){
         deleteCategory(id, password);
     })
 
-
-    // Initial load
     loadCategories();
 });
 

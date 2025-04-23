@@ -4,21 +4,18 @@ jQuery(function($) {
     const passwordIcon = $('#togglePassword i');
     const confirmPasswordIcon = $('#toggleConfirmPassword i');
 
-    // Hide and Show password
     $(document).on('click', '#togglePassword', function() {
         const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
         passwordField.attr('type', type);
         passwordIcon.toggleClass('bi-eye bi-eye-slash');
     })
 
-    // Hide and Show confirm password
     $(document).on('click', '#toggleConfirmPassword', function() {
         const type = confirmPasswordField.attr('type') === 'password' ? 'text' : 'password';
         confirmPasswordField.attr('type', type);
         confirmPasswordIcon.toggleClass('bi-eye bi-eye-slash');
     })
 
-    // Validate the email to ensure that only allowed emails are accepted.
     $('#email').on('input', function() {
         const email = $(this).val();
         const emailPattern = /^[a-zA-Z0-9._%+-]+@smcbi\.edu\.ph$/;
@@ -72,7 +69,7 @@ jQuery(function($) {
                         },
                         willClose: () => {
                             clearInterval(timerInterval);
-                            $('#registerStudentForm')[0].reset(); // Clear form
+                            $('#registerStudentForm')[0].reset();     
                             setTimeout(function(){
                                 window.location.href = '/';
                             }, 500)
@@ -97,7 +94,6 @@ jQuery(function($) {
         });
     });
 
-    // Object storing which elements to show for each year level
     let visibilityMapForYearLevel = {
         '1st Year': ['one', 'two', 'seven'],
         '2nd Year': ['three', 'eight'],
@@ -105,31 +101,24 @@ jQuery(function($) {
         '4th Year': ['six']
     };
 
-    // Object storing which elements to show for each department
     let visibilityMapForDepartment = {
         'BSIT': ['one', 'two', 'three', 'four', 'five', 'six'],
         'BSBA': ['seven', 'eight', 'nine']
     };
 
-    // Function to update visibility based on selected year level & department
     function updateVisibility() {
-        let selectedYear = $('#inputGroupYearLevel').val(); // Get selected year level
-        let selectedDepartment = $('#inputGroupDepartment').val(); // Get selected department
+        let selectedYear = $('#inputGroupYearLevel').val();
+        let selectedDepartment = $('#inputGroupDepartment').val();
         
-        // Get the corresponding classes from the lookup objects, or set empty arrays if nothing is selected
         let yearClasses = visibilityMapForYearLevel[selectedYear] || [];
         let departmentClasses = visibilityMapForDepartment[selectedDepartment] || [];
 
-        // Compute the intersection (elements that exist in both arrays)
         let toShow = yearClasses.filter(className => departmentClasses.includes(className));
 
-        // Hide all elements first
         $('.one, .two, .three, .four, .five, .six, .seven, .eight, .nine').hide();
 
-        // Show only the elements that match both filters
         toShow.forEach(className => $('.' + className).show());
     }
 
-    // Attach the updateVisibility function to both dropdown change events
     $('#inputGroupYearLevel, #inputGroupDepartment').on('change', updateVisibility);
 });

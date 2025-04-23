@@ -23,6 +23,7 @@
             <?php include __DIR__  . '/form-question-content.php' ?>
         </div>
         <div class="tab-pane fade" id="responses-tab-pane" role="tabpanel" aria-labelledby="responses-tab" tabindex="0">
+            <?php include __DIR__  . '/form-response-content.php' ?>
         </div>
         <div class="tab-pane fade" id="settings-tab-pane" role="tabpanel" aria-labelledby="settings-tab" tabindex="0">
         </div>
