@@ -4,16 +4,15 @@ session_start();
 require_once __DIR__ . '/../config/db_connection.php';
 require_once __DIR__ . '/../helper/helper.php';
 
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
 $errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize Inputs
+
     $categoryId = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $categoryName = sanitizeData($_POST['category_name']);
 
-    // Validation
     if ($categoryId <= 0) {
         $errors[] = "Invalid category ID.";
     }
@@ -22,13 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Category name is required and must be at least 3 characters.";
     }
 
-    // If validation fails, return errors as JSON
     if (!empty($errors)) {
         echo json_encode(["error" => true, "messages" => $errors]);
         exit();
     }
 
-    // Update query using Prepared Statement
     $sql = "UPDATE categories SET name = ? WHERE id = ?";
 
     if ($stmt = $conn->prepare($sql)) {
@@ -49,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode(["status" => "error", "message" => "Database error. Please contact support."]);
     }
 
-    // Close connection
     $conn->close();
 }
 ?>

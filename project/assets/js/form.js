@@ -7,11 +7,13 @@ jQuery(function($){
     let timeCount = 0;
 
     // Initially hide these button
-    $('#saveFormButton, #submitFeedBack').hide();
+    $('#saveFormButton, #submitFeedBack, #saveEvaluationFormChanges').hide();
 
     // Generate form header
     $('#createForm').on('click', function(){
-        $('#displayFormTemplate').empty(); // Clear previous content
+
+        $('#displayFormTemplate').empty();
+
         if($('#displayFormTemplate .form-header').length === 0){
             let formHeader = `
             <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row gap-3 mb-3 buttons-selector">
@@ -68,7 +70,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(formCheckboxes);
+        $('#displayFormTemplate, #formTemplatesContainer').append(formCheckboxes);
     });
 
     // Add Additional Checkbox Option to a Specific Template
@@ -341,7 +343,6 @@ jQuery(function($){
             id: $('#formIdToBeDeleted').val(),
             password: $('#passwordFormControlInput1').val()
         }
-        console.log(payload)
 
         deleteFormTemplate(payload);
     })
@@ -398,12 +399,12 @@ jQuery(function($){
         e.preventDefault();
     
         const payload = {
-            title: $('#formTitle').val().trim(), // Get the form title
-            description: $('#formDescription').val().trim(), // Get the description
-            student_id: $('#student_id').val() || null, // Get student ID or null
-            category_id: $('#category_id').val() || null, // Get category ID or null
-            form_fields: JSON.stringify($(this).serializeArray()), // Serialize form data
-            status: $('#status').val() || 'draft' // Default to 'draft' if empty
+            title: $('#formTitle').val().trim(),
+            description: $('#formDescription').val().trim(),
+            student_id: $('#student_id').val() || null,
+            category_id: $('#category_id').val() || null, //
+            form_fields: JSON.stringify($(this).serializeArray()),
+            status: $('#status').val() || 'draft'
         };
     
         saveFormTemplate(payload);
@@ -418,6 +419,18 @@ jQuery(function($){
         
         retrieveFormTemplate(formId, version);
     }
+
+    /****************************************Update Evaluation Form****************************************/
+    $('#formTemplateUpdate').on('submit', function(e){
+        e.preventDefault();
+
+        const payload = {
+            form_id: $('#formTemplateId').val(),
+            form_fields: JSON.stringify($(this).serializeArray())
+        }
+
+        updateFormTemplate(payload);
+    });
 
     /****************************************Form Submission***********************************************/
     $('#formSubmission').on('submit', function(e){
@@ -437,6 +450,7 @@ jQuery(function($){
         });
         console.log(data);
     });
+    
 
     listFormTemplate();
 });
@@ -480,6 +494,47 @@ function saveFormTemplate(payload) {
     });
 }
 
+function updateFormTemplate(payload) {
+    jQuery.ajax({
+        url: './controller/EditFormTemplateController.php',
+        type: 'POST',
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
+        dataType: 'json',
+        processData: false,
+        success: function (response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        listFormTemplate();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Warning!',
+                    text: response.message,
+                    icon: 'warning'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        listFormTemplate();
+                    }
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
 function retrieveFormTemplate(formId, version = null) {
     jQuery.ajax({
         url: './controller/RetrieveFormTemplateController.php',
@@ -490,6 +545,8 @@ function retrieveFormTemplate(formId, version = null) {
 
             if (response.status === 'success') {
                 const form = response.data;
+
+                jQuery('#formTemplateId').val(form.form_id);
 
                 const formFields = typeof form.form_fields === 'string' 
                     ? JSON.parse(form.form_fields) 
@@ -503,10 +560,26 @@ function retrieveFormTemplate(formId, version = null) {
 
                 if (parentContainer.length > 0) {
 
+                    parentContainer.append(`
+                        <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row flex-xxl-row gap-3 mb-3 buttons-selector">
+                            <button type="button" class="btn btn-primary" id="addCheckbox">Checkboxes</button>
+                            <button type="button" class="btn btn-primary" id="addDropdown">Dropdown</button>
+                            <button type="button" class="btn btn-primary" id="addFileUpload">File Upload</button>
+                            <button type="button" class="btn btn-primary" id="addParagraph">Paragraph</button>
+                            <button type="button" class="btn btn-primary" id="addMultipleChoice">Multiple Choice</button>
+                            <button type="button" class="btn btn-primary" id="addRating">Rating</button>
+                            <button type="button" class="btn btn-primary" id="addDate">Date</button>
+                            <button type="button" class="btn btn-primary" id="addTime">Time</button>
+                        </div>
+                        `);
+
+                    jQuery('#saveEvaluationFormChanges').show();
+
                     // Form Title and Description
+                    const formTitleAndDescriptionIndex = formFields.findIndex(f => f.name === 'form_title');
                     let formHeader = `
-                    <div class="card mb-3">
-                        <div class="card-body">
+                    <div class="card mb-3" data-index="${formTitleAndDescriptionIndex}">
+                        <div class="card-body position-relative">
                             <div class="mb-3">
                                 <label for="formTitle" class="form-label fw-bold">Title</label>
                                 <input type="text" class="form-control" id="formTitle" name="form_title" value="${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}">
@@ -515,6 +588,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <label for="formDescription" class="form-label fw-bold">Description</label>
                                 <textarea class="form-control" id="formDescription" name="form_description" rows="3">${formFields.find(f => f.name === 'form_description')?.value || 'No description'}</textarea>
                             </div>
+                            <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${formTitleAndDescriptionIndex}" id="removeFormHeaderIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                         </div>
                     </div>`;
 
@@ -524,6 +598,7 @@ function retrieveFormTemplate(formId, version = null) {
                     const radioQuestions = formFields.filter(f => f.name.startsWith('form_radio_question'));
 
                     if(radioQuestions.length > 0) {
+                        const radioQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_radio_question'));
 
                         radioQuestions.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -548,9 +623,10 @@ function retrieveFormTemplate(formId, version = null) {
 
 
                             const formRadioTemplate = `
-                            <div class="card mb-3 form-radio-container">
+                            <div class="card mb-3 form-radio-container position-relative" data-index="${radioQuestionsIndex}">
                                 <div class="card-body">
                                     ${formRadioHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${radioQuestionsIndex}" id="removeFormRadioIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
                             
@@ -562,6 +638,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const dropDownQuestions = formFields.filter(f => f.name.startsWith('form_dropdown_question'));
 
                     if(dropDownQuestions.length > 0){
+
+                        const dropDownQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_dropdown_question'));
                 
                         dropDownQuestions.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -590,9 +668,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formDropDownTemplate = `
-                            <div class="card mb-3 form-dropdown-container">
+                            <div class="card mb-3 form-dropdown-container position-relative" data-index="${dropDownQuestionsIndex}">
                                 <div class="card-body">
                                     ${dropdownHTML}
+                                     <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${dropDownQuestionsIndex}" id="removeformDropDownIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -604,6 +683,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const checkboxQuestions = formFields.filter(f => f.name.startsWith('form_checkbox_question'));
 
                     if(checkboxQuestions.length > 0){
+
+                        const checkboxQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_checkbox_question'));
                 
                         checkboxQuestions.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -632,9 +713,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formCheckBoxTemplate = `
-                            <div class="card mb-3 form-checkbox-container">
+                            <div class="card mb-3 form-checkbox-container position-relative" data-index="${checkboxQuestionsIndex}">
                                 <div class="card-body">
                                     ${checkboxHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${checkboxQuestionsIndex}" id="removeFormCheckboxQuestionsIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -646,6 +728,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const fileUploadQuestions = formFields.filter(f => f.name.startsWith('form_file_upload_question'));
 
                     if(fileUploadQuestions.length > 0){
+
+                        const fileUploadQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_file_upload_question'));
                 
                         fileUploadQuestions.forEach(question => {
                     
@@ -660,9 +744,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formFileUploadTemplate = `
-                            <div class="card mb-3 form-file-upload-container">
+                            <div class="card mb-3 form-file-upload-container position-relative" data-index="${fileUploadQuestionsIndex}">
                                 <div class="card-body">
                                     ${fileUploadHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${fileUploadQuestionsIndex}" id="removeFormFileUploadQuestionsIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -674,6 +759,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const fileParagraphQuestions = formFields.filter(f => f.name.startsWith('form_paragraph_question'));
 
                     if(fileParagraphQuestions.length > 0){
+
+                        const fileParagraphQuestionsIndex  = formFields.findIndex(f => f.name.startsWith('form_paragraph_question'));
                 
                         fileParagraphQuestions.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -690,9 +777,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formParagraphTemplate = `
-                            <div class="card mb-3 form-paragraph-container">
+                            <div class="card mb-3 form-paragraph-container position-relative" data-index="${fileParagraphQuestionsIndex}">
                                 <div class="card-body">
                                     ${fileParagraphHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${fileParagraphQuestionsIndex}" id="removeFormParagraphQuestionsIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -704,6 +792,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const formRatingQuestions = formFields.filter(f => f.name.startsWith('form_rating_question'));
 
                     if(formRatingQuestions.length > 0){
+
+                        const formRatingQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_rating_question'));
                 
                         formRatingQuestions.forEach(question => {
                     
@@ -723,9 +813,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formFileUploadTemplate = `
-                            <div class="card mb-3 form-checkbox-container">
+                            <div class="card mb-3 form-rating-container position-relative" data-index="${formRatingQuestionsIndex}">
                                 <div class="card-body">
                                     ${formRatingHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${formRatingQuestionsIndex}" id="removeFormRatingQuestionsIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -737,6 +828,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const formDateLabel = formFields.filter(f => f.name.startsWith('form_date_label'));
 
                     if(formDateLabel.length > 0){
+
+                        const formDateLabelIndex = formFields.findIndex(f => f.name.startsWith('form_date_label'));
                 
                         formDateLabel.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -752,9 +845,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formDateTemplate = `
-                            <div class="card mb-3 form-checkbox-container">
+                            <div class="card mb-3 form-date-container position-relative" data-index="${formDateLabelIndex}">
                                 <div class="card-body">
                                     ${formDateHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${formDateLabelIndex}" id="removeFormDateIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -766,6 +860,8 @@ function retrieveFormTemplate(formId, version = null) {
                     const formTimeLabel = formFields.filter(f => f.name.startsWith('form_time_label'));
 
                     if(formTimeLabel.length > 0){
+
+                        const formTimeLabelIndex = formFields.findIndex(f => f.name.startsWith('form_time_label'));
                 
                         formTimeLabel.forEach(question => {
                             const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
@@ -781,9 +877,10 @@ function retrieveFormTemplate(formId, version = null) {
                             `;
 
                             const formTimeTemplate = `
-                            <div class="card mb-3 form-checkbox-container">
+                            <div class="card mb-3 form-time-container position-relative" data-index="${formTimeLabelIndex}">
                                 <div class="card-body">
                                     ${formTimeHTML}
+                                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${formTimeLabelIndex}" id="removeFormTimeIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                                 </div>
                             </div>`;
     
@@ -804,14 +901,69 @@ function retrieveFormTemplate(formId, version = null) {
                     }
                 });
 
+                jQuery(document).on('click', '#removeFormHeaderIndex', function () {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.card').remove();
+                    formFields.splice(indexToRemove, 1);
+                });
+
+                jQuery(document).on('click', '#removeFormRadioIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-radio-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                });
+
+                jQuery(document).on('click', '#removeformDropDownIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-dropdown-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                });
+
+                jQuery(document).on('click', '#removeFormCheckboxQuestionsIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-checkbox-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
+                jQuery(document).on('click', '#removeFormFileUploadQuestionsIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-file-upload-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
+                jQuery(document).on('click', '#removeFormParagraphQuestionsIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-paragraph-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
+                jQuery(document).on('click', '#removeFormRatingQuestionsIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-rating-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
+                jQuery(document).on('click', '#removeFormDateIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-date-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
+                jQuery(document).on('click', '#removeFormTimeIndex', function() {
+                    const indexToRemove = jQuery(this).data('index');
+                    jQuery(this).closest('.form-time-container').remove();
+                    formFields.splice(indexToRemove, 1);
+                })
+
             } else {
-                jQuery('#formTemplatesContainer').html('<p class="text-danger">Form not found or error retrieving form fields.</p>');
-                console.error('Error retrieving form fields:', response.message);
+                jQuery('#formTemplatesContainer').html(`
+                    <div class="card border border-info">
+                        <div class="card-body">
+                            <p class="card-text text-center text-danger">Form not found or error retrieving form fields.</p>
+                        </div>
+                    </div>
+                    `);
             }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-            jQuery('#formTemplatesContainer').html('<p class="text-danger">Error fetching form fields. Please try again.</p>');
         }
     });
 }
@@ -859,11 +1011,14 @@ function listFormTemplate() {
                     formCardDisplayContainer.append(formCardDisplay);
                 });
             } else {
-                formCardDisplayContainer.html('<p class="text-muted">No forms available.</p>');
+                formCardDisplayContainer.html(`
+                    <div class="card border border-info">
+                        <div class="card-body">
+                            <p class="text-muted card-text text-center">No forms available.</p>
+                        </div>
+                    </div>
+                    `);
             }
-        },
-        error: function () {
-            formCardDisplayContainer.html('<p class="text-danger">Error fetching forms. Please try again.</p>');
         }
     });
 }

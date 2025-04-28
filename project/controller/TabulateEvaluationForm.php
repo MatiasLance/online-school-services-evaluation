@@ -81,4 +81,5 @@ echo json_encode([
     "gender_data" => $gender_data,
     "email_data" => $email_data
 ]);
+
 $conn->close();

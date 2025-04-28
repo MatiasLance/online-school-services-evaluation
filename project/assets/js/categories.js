@@ -2,7 +2,6 @@ let currentPage = 1;
 let debounceTimer;
 
 jQuery(function($){
-    // Add Category
     $(document).on('click', '#saveCategory', function(){
         const payload = {
             category_name: $('#categoryNameFormControlInput1').val(),

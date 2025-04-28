@@ -4,11 +4,11 @@ session_start();
 require_once __DIR__ . '/../config/db_connection.php';
 require_once __DIR__ . '/../helper/helper.php';
 
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $formId = isset($_GET['form_id']) ? intval($_GET['form_id']) : 0;
-    $version = isset($_GET['version']) ? intval($_GET['version']) : null;  // Optional: version parameter
+    $version = isset($_GET['version']) ? intval($_GET['version']) : null;
 
     // Validate Form ID
     if ($formId <= 0) {
@@ -52,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         echo json_encode(["status" => "error", "message" => "Database error. Please contact support."]);
     }
 
-    // Close connection
     $conn->close();
 }
 ?>

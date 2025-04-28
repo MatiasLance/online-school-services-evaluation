@@ -57,6 +57,10 @@ jQuery(function($) {
                             }, 500)
                         }
                     });
+
+                    if(response.user_type === 'admin'){
+                        $('#formTemplatesContainer').hide();
+                    }
                 } else {
                     Swal.fire({
                         title: 'error',

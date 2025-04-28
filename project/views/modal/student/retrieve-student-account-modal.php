@@ -6,8 +6,9 @@
         <h1 class="modal-title modal-primary-title fs-5" id="retrieveStudentAccountModalLabel">Edit Student Account</h1>
         <button type="button" class="btn-close modal-primary-button-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form id="addStudentForm">
+      <form id="EditStudentAccountDetail">
         <div class="modal-body">
+            <input type="hidden" id="studentAccountId">
             <!-- First Name -->
             <div class="col-12 mb-3">
                 <label for="firstName" class="form-label montserrat-medium">First Name <span class="text-danger">*</span></label>
@@ -120,8 +121,8 @@
                 <label for="password" class="form-label montserrat-medium">Password <span class="text-danger">*</span></label>
                 <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password" class="form-control" name="password" id="password">
-                <span class="input-group-text" id="newStudentPassword"><i class="bi bi-eye"></i></span>
+                <input type="password" class="form-control" name="password" id="studentPassword" required>
+                <span class="input-group-text" id="toggleNewStudentPassword"><i class="bi bi-eye"></i></span>
                 </div>
             </div>
 
@@ -130,13 +131,13 @@
                 <label for="confirmPassword" class="form-label montserrat-medium">Confirm Password <span class="text-danger">*</span></label>
                 <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password" class="form-control" name="confirm_password" id="confirmPassword">
-                <span class="input-group-text" id="newStudenConfirmPassword"><i class="bi bi-eye"></i></span>
+                <input type="password" class="form-control" name="confirm_password" id="studentConfirmPassword" required>
+                <span class="input-group-text" id="toggleNewStudentConfirmPassword"><i class="bi bi-eye"></i></span>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-vibrant-golden-yellow btn-sm" data-bs-dismiss="modal">Save Changes</button>
+            <button type="submit" class="btn btn-vibrant-golden-yellow btn-sm">Save Changes</button>
         </div>
       </form>
     </div>

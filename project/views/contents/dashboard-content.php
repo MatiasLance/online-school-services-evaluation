@@ -59,6 +59,8 @@
     include __DIR__ . '/../modal/profile/edit-profile-modal.php';
     include __DIR__ . '/../modal/student/add-student-account-modal.php';
     include __DIR__ . '/../modal/student/retrieve-student-account-modal.php';
+    include __DIR__ . '/../modal/student/preview-student-account-modal.php';
+    include __DIR__ . '/../modal/student/delete-student-account-modal.php';
 ?>
 
 <!-- Footer -->

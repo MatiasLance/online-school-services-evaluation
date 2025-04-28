@@ -2,7 +2,6 @@ let departmentCurrentPage = 1;
 let departmentDebounceTimer;
 
 jQuery(function($){
-    // Add Category
     $(document).on('click', '#saveDepartment', function(){
         const payload = {
             department: $('#departmentFormControlInput1').val(),

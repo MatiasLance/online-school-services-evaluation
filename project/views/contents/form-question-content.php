@@ -1,14 +1,14 @@
 <div class="row">
-    <form id="formSubmission">
-    <input type="hidden" name="form_id" id="formTemplateId">
-    <div class="col" id="formTemplatesContainer">
-        <!-- Form dropdown container -->
-        <div class="card mb-3" id="formDropDownParentContainer">
-            <div class="card-body form-dropdown-container"></div>
+    <form id="formTemplateUpdate" class="d-flex flex-column w-100">
+        <input type="hidden" id="formTemplateId">
+        <div class="col" id="formTemplatesContainer"></div>
+        <div class="d-flex justify-content-end mt-2">
+            <button type="submit" class="btn btn-vibrant-golden-yellow me-2" id="submitFeedBack">
+                <span>Submit Feedback</span>
+            </button>
+            <button type="submit" class="btn btn-vibrant-golden-yellow" id="saveEvaluationFormChanges">
+                <span>Save Changes</span>
+            </button>
         </div>
-    </div>
-        <button type="submit" class="btn btn-vibrant-golden-yellow" id="submitFeedBack">
-            <span>Submit Feedback</span>
-        </button>
     </form>
 </div>

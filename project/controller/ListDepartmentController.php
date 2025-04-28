@@ -4,19 +4,16 @@ session_start();
 require_once __DIR__ . '/../config/db_connection.php';
 require_once __DIR__ . '/../helper/helper.php';
 
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
-// Fetch Department with Pagination and Search
 $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $search = isset($_GET['search']) ? sanitizeData($_GET['search']) : '';
 
 $offset = ($page - 1) * $limit;
 
-// Search condition
 $searchCondition = $search ? "WHERE name LIKE ?" : "";
 
-// Count total records
 $countQuery = "SELECT COUNT(*) AS total FROM departments $searchCondition";
 if ($stmt = $conn->prepare($countQuery)) {
     if ($search) {
@@ -29,7 +26,6 @@ if ($stmt = $conn->prepare($countQuery)) {
     $stmt->close();
 }
 
-// Fetch paginated data
 $sql = "SELECT id, department FROM departments $searchCondition LIMIT ?, ?";
 if ($stmt = $conn->prepare($sql)) {
     if ($search) {

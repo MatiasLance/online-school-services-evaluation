@@ -13,16 +13,15 @@ $errors = [];
 $data = json_decode(file_get_contents("php://input"), true);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize Inputs
+
     $title = isset($data['title']) ? trim($data['title']) : null;
     $description = isset($data['description']) ? trim($data['description']) : null;
     $studentId = isset($data['student_id']) ? intval($data['student_id']) : null;
     $categoryId = isset($data['category_id']) ? intval($data['category_id']) : null;
     $formFields = isset($data['form_fields']) ? json_encode($data['form_fields']) : null;
     $status = isset($data['status']) ? trim($data['status']) : 'draft';
-    $createdBy = isset($_SESSION['id']) ? intval($_SESSION['id']) : null; // Get user ID from session
+    $createdBy = isset($_SESSION['id']) ? intval($_SESSION['id']) : null;
 
-    // Validate Inputs
     if (empty($title)) {
         $errors[] = "Title is required.";
     }
@@ -42,13 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "User authentication required.";
     }
 
-    // If validation fails, return errors
     if (!empty($errors)) {
         echo json_encode(["status" => "error", "messages" => $errors]);
         exit();
     }
 
-    // Insert data into 'forms' table using Prepared Statement
     $sql = "INSERT INTO forms (title, description, student_id, category_id, status, created_by) 
             VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -56,9 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssiisi", $title, $description, $studentId, $categoryId, $status, $createdBy);
 
         if ($stmt->execute()) {
-            $formId = $stmt->insert_id; // Get the last inserted form ID
+            $formId = $stmt->insert_id;
 
-            // Insert into 'form_versions' table
             $sqlVersion = "INSERT INTO form_versions (form_id, version, form_fields, created_by) 
                            VALUES (?, 1, ?, ?)";
 
@@ -78,7 +74,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode(["status" => "error", "messages" => ["Database error. Please contact support."]]);
     }
 
-    // Close connection
     $conn->close();
 }
 ?>
