@@ -115,7 +115,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(dropdownTemplate);
+        $('#displayFormTemplate, #formTemplatesContainer').append(dropdownTemplate);
     });
 
     // Add Additional Dropdown Option
@@ -156,7 +156,7 @@ jQuery(function($){
                 </div>
             </div>`;
 
-            $('#displayFormTemplate').append(fileUploadTemplate);
+            $('#displayFormTemplate, #formTemplatesContainer').append(fileUploadTemplate);
         }else{
             Swal.fire({
                 title: 'Warning!',
@@ -192,7 +192,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(radioTemplate);
+        $('#displayFormTemplate, #formTemplatesContainer').append(radioTemplate);
     });
 
     // Add Additional Radio Option
@@ -236,7 +236,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(paragraphTemplate);
+        $('#displayFormTemplate, #formTemplatesContainer').append(paragraphTemplate);
     });
 
     /******************************************Rating Template***************************************************/
@@ -263,7 +263,7 @@ jQuery(function($){
                 </div>
             </div>`;
 
-            $('#displayFormTemplate').append(ratingTemplate);
+            $('#displayFormTemplate, #formTemplatesContainer').append(ratingTemplate);
         }else{
             Swal.fire({
                 title: 'Warning!',
@@ -308,7 +308,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(dateTemplate);
+        $('#displayFormTemplate, #formTemplatesContainer').append(dateTemplate);
     });
     /******************************************Time Template***************************************************/
      // Add Time Template
@@ -329,7 +329,7 @@ jQuery(function($){
             </div>
         </div>`;
 
-        $('#displayFormTemplate').append(timeTemplate);
+        $('#displayFormTemplate, #formTemplatesContainer').append(timeTemplate);
     });
     /******************************************Delete Form Template***************************************************/
     $(document).on('click', '#deleteConfirmationForformTemplate', function(){
@@ -495,6 +495,7 @@ function saveFormTemplate(payload) {
 }
 
 function updateFormTemplate(payload) {
+    jQuery('#formTemplatesContainer').empty();
     jQuery.ajax({
         url: './controller/EditFormTemplateController.php',
         type: 'POST',
@@ -503,6 +504,7 @@ function updateFormTemplate(payload) {
         dataType: 'json',
         processData: false,
         success: function (response) {
+            console.log(response.form_id)
             if (response.status === 'success') {
                 Swal.fire({
                     title: 'Success!',
@@ -510,7 +512,7 @@ function updateFormTemplate(payload) {
                     icon: 'success'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        listFormTemplate();
+                        retrieveFormTemplate(response.form_id, 1);
                     }
                 });
             } else {
@@ -520,7 +522,7 @@ function updateFormTemplate(payload) {
                     icon: 'warning'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        listFormTemplate();
+                        retrieveFormTemplate(response.form_id, 1);
                     }
                 });
             }
@@ -579,7 +581,7 @@ function retrieveFormTemplate(formId, version = null) {
                     const formTitleAndDescriptionIndex = formFields.findIndex(f => f.name === 'form_title');
                     let formHeader = `
                     <div class="card mb-3" data-index="${formTitleAndDescriptionIndex}">
-                        <div class="card-body position-relative">
+                        <div class="card-body">
                             <div class="mb-3">
                                 <label for="formTitle" class="form-label fw-bold">Title</label>
                                 <input type="text" class="form-control" id="formTitle" name="form_title" value="${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}">
@@ -588,13 +590,12 @@ function retrieveFormTemplate(formId, version = null) {
                                     <label for="formDescription" class="form-label fw-bold">Description</label>
                                 <textarea class="form-control" id="formDescription" name="form_description" rows="3">${formFields.find(f => f.name === 'form_description')?.value || 'No description'}</textarea>
                             </div>
-                            <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger" data-index="${formTitleAndDescriptionIndex}" id="removeFormHeaderIndex" style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
                         </div>
                     </div>`;
 
                     parentContainer.append(formHeader);
 
-                    // Form Radio
+                    // Form Multiple Choice
                     const radioQuestions = formFields.filter(f => f.name.startsWith('form_radio_question'));
 
                     if(radioQuestions.length > 0) {
@@ -856,7 +857,7 @@ function retrieveFormTemplate(formId, version = null) {
                         });
                     }
 
-                    // Form Label
+                    // Form Time
                     const formTimeLabel = formFields.filter(f => f.name.startsWith('form_time_label'));
 
                     if(formTimeLabel.length > 0){
@@ -899,12 +900,6 @@ function retrieveFormTemplate(formId, version = null) {
                     } else {
                         $container.show();
                     }
-                });
-
-                jQuery(document).on('click', '#removeFormHeaderIndex', function () {
-                    const indexToRemove = jQuery(this).data('index');
-                    jQuery(this).closest('.card').remove();
-                    formFields.splice(indexToRemove, 1);
                 });
 
                 jQuery(document).on('click', '#removeFormRadioIndex', function() {

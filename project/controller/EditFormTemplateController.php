@@ -32,13 +32,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
         if($stmt->execute()){
             if($stmt->affected_rows > 0) {
-                echo json_encode(["status" => "success", "message" => "Form Updated successfully."]);
+                echo json_encode(['status' => 'success', 'message' => 'Form Updated successfully.', 'form_id' => $formID]);
             }else{
-                echo json_encode(["status" => "error", "message" => "No changes made or form field not found."]);
+                echo json_encode(['status' => 'error', 'message' => 'No changes made or form field not found.']);
             }
             
         }else{
-            echo json_encode(["status" => "error", "message" => "Failed to update form. Please try again."]);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to update form. Please try again.']);
         }
 
         $stmt->close();
