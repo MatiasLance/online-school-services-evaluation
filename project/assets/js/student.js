@@ -173,6 +173,7 @@ function listOfStudentAccounts(page = 1, search = ''){
 
             if (response.status === 'success') {
                 for(let i = 0; i < response.data.length; i++){
+                    jQuery('#assignStudent').append(`<option value="${response.data[i].id}">${response.data[i].first_name} ${response.data[i].last_name}</option>`);
                     tbody.append(`
                         <tr>
                             <td>${response.data[i].first_name}</td>

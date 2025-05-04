@@ -122,6 +122,7 @@ function loadDepartments(page = 1, search = '') {
 
             if (response.status === 'success') {
                 for(let i = 0; i < response.data.length; i++){
+                    jQuery('#assignDepartment').append(`<option value="${response.data[i].id}">${response.data[i].department}</option>`)
                     tbody.append(`
                         <tr>
                             <td>${response.data[i].department}</td>

@@ -19,7 +19,8 @@ $pageJS = [
     "./assets/js/department.js",
     "./assets/js/account.js",
     "./assets/js/profile.js",
-    "./assets/js/form.js"
+    "./assets/js/form.js",
+    "./assets/js/student.js"
 ];
 
 $pageContent = __DIR__ . "/contents/view-form-content.php";

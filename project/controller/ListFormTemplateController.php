@@ -7,7 +7,6 @@ require_once __DIR__ . '/../helper/helper.php';
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $studentId = isset($_GET['student_id']) ? intval($_GET['student_id']) : null;
     $categoryId = isset($_GET['category_id']) ? intval($_GET['category_id']) : null;
     $status = isset($_GET['status']) ? trim($_GET['status']) : null;
 
@@ -17,16 +16,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         exit();
     }
 
-    $sql = "SELECT id, title, description, student_id, category_id, version, status, created_by, created_at 
+    $sql = "SELECT id, title, description, category_id, version, status, created_by, created_at 
             FROM forms WHERE 1=1";
     $params = [];
     $types = "";
 
-    if (!empty($studentId)) {
-        $sql .= " AND student_id = ?";
-        $params[] = $studentId;
-        $types .= "i";
-    }
     if (!empty($categoryId)) {
         $sql .= " AND category_id = ?";
         $params[] = $categoryId;

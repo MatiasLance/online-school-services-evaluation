@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $title = isset($data['title']) ? trim($data['title']) : null;
     $description = isset($data['description']) ? trim($data['description']) : null;
-    $studentId = isset($data['student_id']) ? intval($data['student_id']) : null;
     $categoryId = isset($data['category_id']) ? intval($data['category_id']) : null;
     $formFields = isset($data['form_fields']) ? json_encode($data['form_fields']) : null;
     $status = isset($data['status']) ? trim($data['status']) : 'draft';
@@ -24,9 +23,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($title)) {
         $errors[] = "Title is required.";
-    }
-    if (!empty($studentId) && $studentId <= 0) {
-        $errors[] = "Invalid student ID.";
     }
     if (!empty($categoryId) && $categoryId <= 0) {
         $errors[] = "Invalid category ID.";
@@ -46,11 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $sql = "INSERT INTO forms (title, description, student_id, category_id, status, created_by) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO forms (title, description, category_id, status, created_by) 
+            VALUES (?, ?, ?, ?, ?)";
 
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("ssiisi", $title, $description, $studentId, $categoryId, $status, $createdBy);
+        $stmt->bind_param("ssisi", $title, $description, $categoryId, $status, $createdBy);
 
         if ($stmt->execute()) {
             $formId = $stmt->insert_id;

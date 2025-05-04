@@ -450,6 +450,20 @@ jQuery(function($){
         });
         console.log(data);
     });
+
+    /****************************************Form Template Update***********************************************/
+    $('#saveFormSettingChanges').on('submit', function(e){
+        e.preventDefault();
+        const payload = {
+            formId: $('#formSettingTemplateId').val(),
+            isPublish: $('#switchCheckPublishFormDefault').prop('checked'),
+            assignStudent: $('#assignStudent').val(),
+            assignCategory: $('#assignCategory').val(),
+            assignDepartment: $('#assignDepartment').val(),
+        }
+        
+        saveFormSetting(payload)
+    })
     
 
     listFormTemplate();
@@ -494,6 +508,41 @@ function saveFormTemplate(payload) {
     });
 }
 
+function saveFormSetting(payload) {
+    jQuery.ajax({
+        url: './controller/EditFormSettingController.php',
+        type: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        listOfAssignStudent();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: response.message,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
 function updateFormTemplate(payload) {
     jQuery('#formTemplatesContainer').empty();
     jQuery.ajax({
@@ -504,7 +553,6 @@ function updateFormTemplate(payload) {
         dataType: 'json',
         processData: false,
         success: function (response) {
-            console.log(response.form_id)
             if (response.status === 'success') {
                 Swal.fire({
                     title: 'Success!',
@@ -537,6 +585,45 @@ function updateFormTemplate(payload) {
     });
 }
 
+function listOfAssignStudent() {
+    jQuery.ajax({
+        url: './controller/ListOfAssignStudentController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const formId = urlParams.get('form_id');
+                if(formId == parseInt(response.form_id)){
+                    for(let i = 0; i < response.students.length; i++){
+                        jQuery('#selectedStudentsContainer').append(`
+                            <div class="col-12 col-md-4">
+                                <span class="badge bg-primary w-100 text-wrap text-center p-2">
+                                    ${response.students[i].full_name}
+                                </span>
+                            </div>
+                        `);
+                    }
+                }
+                
+            } else {
+                Swal.fire({
+                    title: 'Warning!',
+                    text: response.message,
+                    icon: 'warning'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
 function retrieveFormTemplate(formId, version = null) {
     jQuery.ajax({
         url: './controller/RetrieveFormTemplateController.php',
@@ -547,8 +634,9 @@ function retrieveFormTemplate(formId, version = null) {
 
             if (response.status === 'success') {
                 const form = response.data;
+                listOfAssignStudent();
 
-                jQuery('#formTemplateId').val(form.form_id);
+                jQuery('#formTemplateId, #formSettingTemplateId').val(form.form_id);
 
                 const formFields = typeof form.form_fields === 'string' 
                     ? JSON.parse(form.form_fields) 
@@ -980,6 +1068,12 @@ function listFormTemplate() {
 
             if (response.status === 'success' && response.data.length > 0) {
                 response.data.forEach(form => {
+                    if(form.status === 'published'){
+                        jQuery('#switchCheckPublishFormDefault').prop('checked', true);
+                    }else{
+                        jQuery('#switchCheckPublishFormDefault').prop('checked', false);
+                    }
+
                     // Render Form Cards
                     let formCardDisplay = `
                         <div class="col-md-6 col-lg-4 mb-4">

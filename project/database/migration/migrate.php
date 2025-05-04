@@ -57,27 +57,27 @@ class DatabaseMigrator
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 description TEXT,
-                student_id INT, -- if specific to students
+                department_id INT,
                 category_id INT,
                 version INT DEFAULT 1,
                 status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                created_by INT, -- user who created the form
-                published_at TIMESTAMP NULL, -- when status changed to published
+                created_by INT,
+                published_at TIMESTAMP NULL,
                 FOREIGN KEY (created_by) REFERENCES users(id),
-                CONSTRAINT fk_forms_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
                 CONSTRAINT fk_forms_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+                FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE,
                 CONSTRAINT fk_forms_created_by FOREIGN KEY (created_by) REFERENCES users(id)
             )",
             "form versions" => "CREATE TABLE form_versions (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 form_id INT NOT NULL,
                 version INT NOT NULL,
-                form_fields JSON NOT NULL, -- stores the complete form structure
+                form_fields JSON NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 created_by INT,
-                notes TEXT, -- version notes/changelog
+                notes TEXT,
                 FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
                 FOREIGN KEY (created_by) REFERENCES users(id),
                 UNIQUE KEY (form_id, version)
@@ -86,16 +86,25 @@ class DatabaseMigrator
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 form_id INT NOT NULL,
                 form_version INT NOT NULL,
-                submitted_by INT, -- user_id if logged in
-                student_id INT, -- if specific to students
-                submission_data JSON NOT NULL, -- stores all answers
+                submitted_by INT,
+                student_id INT,
+                submission_data JSON NOT NULL,
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 ip_address VARCHAR(45),
                 FOREIGN KEY (form_id) REFERENCES forms(id),
                 FOREIGN KEY (form_id, form_version) REFERENCES form_versions(form_id, version),
                 FOREIGN KEY (submitted_by) REFERENCES users(id)
+            )",
+            "form student" => "CREATE TABLE IF NOT EXISTS form_student (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                form_id INT NOT NULL,
+                student_id INT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+                UNIQUE (form_id, student_id)
             )"
-
         ];
 
         // Execute each table migration

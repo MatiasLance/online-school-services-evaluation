@@ -18,10 +18,8 @@ class DatabaseSeeder
     {
         $passwordHash = password_hash('superadmin1', PASSWORD_BCRYPT);
 
-        // Seed users
         $userSql = "INSERT INTO users (firstname, lastname, email, password, user_type) VALUES
-            ('admin', 'admin', 'admin@smcbi.edu.ph', '$passwordHash', 'admin'),
-            ('Jane', 'Smith', 'student@smcbi.edu.ph', '$passwordHash', 'user')";
+            ('admin', 'admin', 'admin@smcbi.edu.ph', '$passwordHash', 'admin')";
 
         if ($this->conn->query($userSql) === TRUE) {
             echo "Users seeded successfully.\n";
@@ -31,7 +29,6 @@ class DatabaseSeeder
     }
 }
 
-// Command-line arguments
 $arguments = getopt("f:", ["seed"]);
 $seeder = new DatabaseSeeder($conn);
 
