@@ -17,7 +17,7 @@ $pageJS = [
     "./assets/js/image-upload.js",
     "./assets/js/categories.js",
     "./assets/js/student-dashboard.js",
-    "./assets/js/profile.js"
+    "./assets/js/profile.js",
 ];
 
 $pageContent = __DIR__ . "/contents/student-dashboard-content.php";

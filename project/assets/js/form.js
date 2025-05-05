@@ -467,6 +467,9 @@ jQuery(function($){
     
 
     listFormTemplate();
+    listOfAssignStudent();
+    listOfAssignDepartment();
+    listOfAssignCategory();
 });
 
 
@@ -523,6 +526,8 @@ function saveFormSetting(payload) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         listOfAssignStudent();
+                        listOfAssignDepartment();
+                        listOfAssignCategory();
                     }
                 });
             } else {
@@ -595,8 +600,10 @@ function listOfAssignStudent() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const formId = urlParams.get('form_id');
                 if(formId == parseInt(response.form_id)){
+                    const selectedStudentContainer = jQuery('#selectedStudentsContainer');
+                    selectedStudentContainer.empty();
                     for(let i = 0; i < response.students.length; i++){
-                        jQuery('#selectedStudentsContainer').append(`
+                        selectedStudentContainer.append(`
                             <div class="col-12 col-md-4">
                                 <span class="badge bg-primary w-100 text-wrap text-center p-2">
                                     ${response.students[i].full_name}
@@ -606,6 +613,91 @@ function listOfAssignStudent() {
                     }
                 }
                 
+            } else {
+                Swal.fire({
+                    title: 'Warning!',
+                    text: response.message,
+                    icon: 'warning'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
+function listOfAssignDepartment() {
+    jQuery.ajax({
+        url: './controller/ListOfAssignDepartmentController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const formId = urlParams.get('form_id');
+                for(let i = 0; i < response.form_id.length; i++){
+                    if(formId == parseInt(response.form_id[i])){
+                        for(let i = 0; i < response.department.length; i++){
+                            const assignDepartmentId = response.department[i].id;
+                            const assignDepartment = jQuery('#assignDepartment');
+                            const seletedDepartment = response.department[i].department;
+                            const existingAssignDepartment = assignDepartment.find(`option[value="${assignDepartmentId}"]`);
+                            if (existingAssignDepartment.length === 0 && seletedDepartment !== '') {
+                                assignDepartment.append(`<option value="${assignDepartmentId}" selected>${seletedDepartment}</option>`);
+                            } else {
+                                existingAssignDepartment.prop('selected', true);
+                            }
+                        }
+                    }
+                }
+                
+            } else {
+                Swal.fire({
+                    title: 'Warning!',
+                    text: response.message,
+                    icon: 'warning'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
+function listOfAssignCategory() {
+    jQuery.ajax({
+        url: './controller/ListOfAssignCategoryController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                const urlParams = new URLSearchParams(window.location.search);
+                const formId = urlParams.get('form_id');
+                for(let i = 0; i < response.form_id.length; i++){
+                    if(formId == parseInt(response.form_id[i])){
+                        for(let i = 0; i < response.category.length; i++){
+                            const assignCategoryId = response.category[i].id;
+                            const assignCategory = jQuery('#assignCategory');
+                            const seletedCategory = response.category[i].name;
+                            const existingAssignCategory = assignCategory.find(`option[value="${assignCategoryId}"]`);
+                            if (existingAssignCategory.length === 0 && seletedCategory !== '') {
+                                assignCategory.append(`<option value="${assignCategoryId}" selected>${seletedCategory}</option>`);
+                            } else {
+                                existingAssignCategory.prop('selected', true);
+                            }
+                        }
+                    }
+                }
             } else {
                 Swal.fire({
                     title: 'Warning!',

@@ -14,8 +14,8 @@ switch($path) {
   case '/student-dashboard':
     require  __DIR__ . $viewDir . 'student-dashboard.php';
     break;
-  case '/student-categories':
-    require  __DIR__ . $viewDir . 'student-categories.php';
+  case '/student-evaluation-form':
+    require  __DIR__ . $viewDir . 'student-evaluation-form.php';
     break;
   case '/admin':
     require  __DIR__ . $viewDir . 'login.php';

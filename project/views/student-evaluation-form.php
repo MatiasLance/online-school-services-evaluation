@@ -12,13 +12,12 @@ $pageCss = [
 ];
 
 $pageJS = [
-    "./assets/js/toggle-side-bar.js",
     "./assets/js/logout.js",
-    "./assets/js/image-upload.js",
     "./assets/js/categories.js",
-    "./assets/js/profile.js"
+    "./assets/js/profile.js",
+    "./assets/js/form.js"
 ];
 
-$pageContent = __DIR__ . "/contents/student-categories-content.php";
+$pageContent = __DIR__ . "/contents/student-evaluation-form-content.php";
 
 include __DIR__ . "/../layout/layout.php";

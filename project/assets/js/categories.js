@@ -103,7 +103,7 @@ function loadCategories(page = 1, search = '') {
             if (response.status === 'success') {
                 for(let i = 0; i < response.data.length; i++){
                     // Load category names in the user categories selection.
-                    jQuery('#userSelectCategory').append(`<option value="${response.data[i].id}">${response.data[i].name}</option>`);
+                    jQuery('#studentSelectCategory').append(`<option value="${response.data[i].id}">${response.data[i].name}</option>`);
                     jQuery('#assignCategory').append(`<option value="${response.data[i].id}">${response.data[i].name}</option>`)
                     tbody.append(`
                         <tr>
