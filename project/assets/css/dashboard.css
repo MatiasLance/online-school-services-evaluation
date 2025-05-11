@@ -35,6 +35,7 @@
     transform: scale(1.05); /* Subtle pop effect */
 }
 
+.student-view-form-container,
 .dashboard-tabs-container,
 .form-tabs-container {
     background-color: var(--primary-color);

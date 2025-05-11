@@ -1,7 +1,7 @@
 <?php
 require_once  __DIR__ .  "/../middleware/auth_check.php";
 
-$pageTitle = "Student - Dashboard";
+$pageTitle = "Student - Evaluation Form";
 
 $pageCss = [
     "./assets/css/dashboard.css",

@@ -420,6 +420,15 @@ jQuery(function($){
         retrieveFormTemplate(formId, version);
     }
 
+    if (window.location.search.includes('form_id=')) {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const formId = urlParams.get('form_id');
+        const version = urlParams.get('form_version');
+        
+        retrieveFormTemplate(formId, version);
+    }
+
     /****************************************Update Evaluation Form****************************************/
     $('#formTemplateUpdate').on('submit', function(e){
         e.preventDefault();
@@ -734,12 +743,313 @@ function retrieveFormTemplate(formId, version = null) {
                     ? JSON.parse(form.form_fields) 
                     : form.form_fields || [];
                 
+                // Admin
                 const parentContainer = jQuery('#formTemplatesContainer');
-
+                // Student
+                const studentParentContainer = jQuery('#formStudentTemplateContainer');
+                // Admin
                 parentContainer.empty();
+                // Student
+                studentParentContainer.empty();
 
                 jQuery('#formNameToBeDeleted').text(formFields.find(f => f.name === 'form_title')?.value)
 
+                // Student
+                if (studentParentContainer.length > 0) {
+                    jQuery('#submitFeedBack').show();
+
+                    // Form Title and Description
+                    let formHeader = `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="studentFormTitle" class="form-label fw-bold">${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}</label>
+                                <input type="hidden" id="studentFormTitle" name="form_title" value="${formFields.find(f => f.name === 'form_title')?.value || 'Untitled Form'}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="formDescription" class="form-label fw-bold">Description</label>
+                                <textarea class="form-control" id="formDescription" name="form_description" rows="3" readonly="true">${formFields.find(f => f.name === 'form_description')?.value || 'No description'}</textarea>
+                            </div>
+                        </div>
+                    </div>`;
+
+                    studentParentContainer.append(formHeader);
+
+                    // Form Multiple Choice
+                    const radioQuestions = formFields.filter(f => f.name.startsWith('form_radio_question'));
+
+                    if(radioQuestions.length > 0) {
+
+                        radioQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const radioOptions = formFields
+                                .filter(f => f.name.startsWith(`form_radio_label[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <div class="form-check mb-3">
+                                        
+                                        <input class="form-check-input" type="radio" name="form_radio_label[${questionIndex}]" id="formRadioLabel[${questionIndex}]" value="${option.value}">
+                                        <label class="form-check-label">
+                                            ${option.value}
+                                        </label>
+                                    </div>
+                                `)
+                                .join('');
+                    
+                            const formRadioHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" id="formRadioQuestion[${questionIndex}]" name="form_radio_question[${questionIndex}]" value="${question.value}">
+                                </div>
+                                ${radioOptions}`;
+
+
+                            const formRadioTemplate = `
+                            <div class="card mb-3 form-radio-container">
+                                <div class="card-body">
+                                    ${formRadioHTML}
+                                </div>
+                            </div>`;
+                            
+                            studentParentContainer.append(formRadioTemplate)
+                        });
+                    }
+
+                    // Form Dropdown
+                    const dropDownQuestions = formFields.filter(f => f.name.startsWith('form_dropdown_question'));
+
+                    if(dropDownQuestions.length > 0){
+                        dropDownQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            if (!questionIndex) {
+                                console.error(`Error: Unable to extract index from question name: ${question.name}`);
+                                return;
+                            }
+                    
+                            const dropdownOptions = formFields
+                                .filter(f => f.name.startsWith(`form_dropdown_option[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <option value="${option.value}">${option.value}</option>
+                                `)
+                                .join('');
+                    
+                            const dropdownHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_dropdown_question[${questionIndex}]" value="${question.value}">
+                                </div>
+                                <select class="form-select" name="form_dropdown_answer" aria-label="Default select example">
+                                    <option selected>Select answer</option>
+                                    ${dropdownOptions}
+                                </select>
+                            `;
+
+                            const formDropDownTemplate = `
+                            <div class="card mb-3 form-dropdown-container">
+                                <div class="card-body">
+                                    ${dropdownHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formDropDownTemplate)
+                        });
+                    }
+
+                    // Form checkbox
+                    const checkboxQuestions = formFields.filter(f => f.name.startsWith('form_checkbox_question'));
+
+                    if(checkboxQuestions.length > 0){
+                
+                        checkboxQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            if (!questionIndex) {
+                                console.error(`Error: Unable to extract index from question name: ${question.name}`);
+                                return;
+                            }
+                    
+                            const checkboxOptions = formFields
+                                .filter(f => f.name.startsWith(`form_checkbox_option_label[${questionIndex}]`))
+                                .map((option, index) => `
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" name="form_checkbox_option_label[${index + 1}]" value="${option.value}" id="formCheckBoxOptionLabel[${index + 1}]">
+                                        <label class="form-check-label" for="formCheckBoxOptionLabel[${index + 1}]">
+                                            ${option.value}
+                                        </label>
+                                    </div>
+                                `)
+                                .join('');
+                    
+                            const checkboxHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_checkbox_question[${questionIndex}]" value="${question.value}" id="formCheckBoxQuestion[${questionIndex}]">
+                                </div>
+                                ${checkboxOptions}
+                            `;
+
+                            const formCheckBoxTemplate = `
+                            <div class="card mb-3 form-checkbox-container">
+                                <div class="card-body">
+                                    ${checkboxHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formCheckBoxTemplate)
+                        });
+                    }
+
+                    // Form Upload
+                    const fileUploadQuestions = formFields.filter(f => f.name.startsWith('form_file_upload_question'));
+
+                    if(fileUploadQuestions.length > 0){
+                
+                        fileUploadQuestions.forEach(question => {
+                    
+                            const fileUploadHTML = `
+                                <div class="mb-3">
+                                    <label for="formFileUploadQuestion" class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_file_upload_question" value="${question.value}" id="formFileUploadQuestion">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" name="form_file_upload_input">
+                                </div>
+                            `;
+
+                            const formFileUploadTemplate = `
+                            <div class="card mb-3 form-file-upload-container">
+                                <div class="card-body">
+                                    ${fileUploadHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formFileUploadTemplate)
+                        });
+                    }
+
+                    // Form Paragraph
+                    const fileParagraphQuestions = formFields.filter(f => f.name.startsWith('form_paragraph_question'));
+
+                    if(fileParagraphQuestions.length > 0){
+                
+                        fileParagraphQuestions.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const fileParagraphHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_paragraph_question[${questionIndex}]" value="${question.value}" id="formParagraphQuestion[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="formParagraphText[${questionIndex}]" rows="3" name="form_paragraph_answer[${questionIndex}]"></textarea>
+                                </div>
+                            `;
+
+                            const formParagraphTemplate = `
+                            <div class="card mb-3 form-paragraph-container">
+                                <div class="card-body">
+                                    ${fileParagraphHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formParagraphTemplate)
+                        });
+                    }
+
+                    // Form Rating
+                    const formRatingQuestions = formFields.filter(f => f.name.startsWith('form_rating_question'));
+
+                    if(formRatingQuestions.length > 0){
+                
+                        formRatingQuestions.forEach(question => {
+                    
+                            const formRatingHTML = `
+                                <div class="mb-3">
+                                    <label for="formRatingQuestion" class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_rating_question" value="${question.value}" id="formRatingQuestion">
+                                </div>
+                                <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
+                                    <i class="fa-regular fa-star star fs-3" data-value="1"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="2"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="3"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="4"></i>
+                                    <i class="fa-regular fa-star star fs-3" data-value="5"></i>
+                                    <input type="hidden" name="form_rating_value" class="rating-value">
+                                </div>
+                            `;
+
+                            const formFileUploadTemplate = `
+                            <div class="card mb-3 form-rating-container">
+                                <div class="card-body">
+                                    ${formRatingHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formFileUploadTemplate)
+                        });
+                    }
+
+                    // Form Date
+                    const formDateLabel = formFields.filter(f => f.name.startsWith('form_date_label'));
+
+                    if(formDateLabel.length > 0){
+                
+                        formDateLabel.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const formDateHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_date_label[${questionIndex}]" value="${question.value}" id="formDateLabel[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="date" class="form-control" name="form_date_value[${questionIndex}]">
+                                </div>
+                            `;
+
+                            const formDateTemplate = `
+                            <div class="card mb-3 form-date-container">
+                                <div class="card-body">
+                                    ${formDateHTML}
+                                </div>
+                            </div>`;
+    
+                            studentParentContainer.append(formDateTemplate)
+                        });
+                    }
+
+                    // Form Time
+                    const formTimeLabel = formFields.filter(f => f.name.startsWith('form_time_label'));
+
+                    if(formTimeLabel.length > 0){
+                
+                        formTimeLabel.forEach(question => {
+                            const questionIndex = question.name.match(/\[(\d+)\]/)?.[1];
+                    
+                            const formTimeHTML = `
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">${question.value}</label>
+                                    <input type="hidden" class="form-control" name="form_time_label[${questionIndex}]" value="${question.value}" id="formTimeLabel[${questionIndex}]">
+                                </div>
+                                <div class="mb-3">
+                                    <input type="time" class="form-control" name="form_time_value[${questionIndex}]">
+                                </div>
+                            `;
+
+                            const formTimeTemplate = `
+                            <div class="card mb-3 form-time-container">
+                                <div class="card-body">
+                                    ${formTimeHTML}
+                                </div>
+                            </div>`;
+    
+                            parentContainer.append(formTimeTemplate)
+                        });
+                    }
+                }
+
+                // Admin
                 if (parentContainer.length > 0) {
 
                     parentContainer.append(`
