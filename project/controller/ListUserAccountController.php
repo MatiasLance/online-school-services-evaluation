@@ -27,7 +27,7 @@ if ($stmt = $conn->prepare($countQuery)) {
     $stmt->close();
 }
 
-$sql = "SELECT id, firstname, lastname, email FROM users WHERE user_type = 'user' $searchCondition LIMIT ?, ?";
+$sql = "SELECT id, firstname, lastname, email FROM users WHERE user_type = 'admin' $searchCondition LIMIT ?, ?";
 if ($stmt = $conn->prepare($sql)) {
     if ($search) {
         $stmt->bind_param("sssii", $searchTerm, $searchTerm, $searchTerm, $offset, $limit);

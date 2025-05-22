@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             $categoryId[] = $row['category_id'];
             $formId[] = $row['id'];
         }
-
         $formCategoryStatement->close();
 
         $selectCategoryStatement = $conn->prepare("SELECT id, name FROM categories WHERE id = ?");
@@ -34,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $category = [];
 
-        $selectCategoryStatement->bind_param('i', $categoryId);
+        $selectCategoryStatement->bind_param('i', $categoryId[1]);
         $selectCategoryStatement->execute();
         $result = $selectCategoryStatement->get_result();
         if($result->num_rows === 0){

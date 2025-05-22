@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $department = [];
 
-        $selectDepartmentStatement->bind_param('i', $departmentId);
+        $selectDepartmentStatement->bind_param('i', $departmentId[1]);
         $selectDepartmentStatement->execute();
         $result = $selectDepartmentStatement->get_result();
         if($result->num_rows === 0){

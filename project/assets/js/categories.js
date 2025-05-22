@@ -166,9 +166,9 @@ function retrieveCategory(categoryId){
             }
             if(response.status === 'error'){
                 Swal.fire({
-                    title: 'Success',
+                    title: 'Error',
                     text: response.message,
-                    icon: 'success'
+                    icon: 'error'
                 });
             }
         }

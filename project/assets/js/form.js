@@ -442,22 +442,14 @@ jQuery(function($){
     });
 
     /****************************************Form Submission***********************************************/
-    $('#formSubmission').on('submit', function(e){
+    $('#formFeedBack').on('submit', function(e){
         e.preventDefault();
 
-        const data = $(this).serializeArray()
-        .filter(item => {
-            const emptyValues = ['', 'null', 'undefined', '0'];
-            
-            return (
-                item.name &&
-                item.name.trim() !== '' && 
-                item.value !== undefined &&
-                item.value !== null &&
-                !emptyValues.includes(item.value.trim())
-            );
-        });
-        console.log(data);
+        const data = new FormData(this)
+
+        for (let [key, value] of data.entries()) {
+            console.log(key, value);
+        }
     });
 
     /****************************************Form Template Update***********************************************/
@@ -620,14 +612,7 @@ function listOfAssignStudent() {
                             </div>
                         `);
                     }
-                }
-                
-            } else {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: response.message,
-                    icon: 'warning'
-                });
+                } 
             }
         },
         error: function () {
@@ -664,13 +649,6 @@ function listOfAssignDepartment() {
                         }
                     }
                 }
-                
-            } else {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: response.message,
-                    icon: 'warning'
-                });
             }
         },
         error: function () {
@@ -707,12 +685,6 @@ function listOfAssignCategory() {
                         }
                     }
                 }
-            } else {
-                Swal.fire({
-                    title: 'Warning!',
-                    text: response.message,
-                    icon: 'warning'
-                });
             }
         },
         error: function () {

@@ -15,7 +15,8 @@ $pageJS = [
     "./assets/js/logout.js",
     "./assets/js/categories.js",
     "./assets/js/profile.js",
-    "./assets/js/form.js"
+    "./assets/js/form.js",
+    "./assets/js/student-dashboard.js",
 ];
 
 $pageContent = __DIR__ . "/contents/student-evaluation-form-content.php";

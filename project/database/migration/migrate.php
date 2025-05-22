@@ -90,7 +90,6 @@ class DatabaseMigrator
                 student_id INT,
                 submission_data JSON NOT NULL,
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                ip_address VARCHAR(45),
                 FOREIGN KEY (form_id) REFERENCES forms(id),
                 FOREIGN KEY (form_id, form_version) REFERENCES form_versions(form_id, version),
                 FOREIGN KEY (submitted_by) REFERENCES users(id)

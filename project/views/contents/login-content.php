@@ -7,6 +7,7 @@
             <div class="col-12">
               <div class="text-center mb-4">
                 <img id="adminLoginFormLogo" src="<?php echo isset($_SESSION['sidebar_menu_logo']) ? $_SESSION['sidebar_menu_logo']: 'https://i.imgur.com/HLqsP73.png'?>" alt="Goat Farm Logo" width="175" height="157">
+                <h2 class="mt-3 fw-bold">Admin Login</h2>
               </div>
             </div>
           </div>
