@@ -2,11 +2,12 @@ let timerInterval;
 
 jQuery(function($){
     $(document).on('click', '#proceedToAssignedForm', function(){
+        let categoriesContainer = $(this).closest('.category-card');
         const payload = {
             student_id: $('#studentLoginId').val(),
-            category_id: $('#categorySelection').data('id')
+            category_id: categoriesContainer.find('#categorySelection').data('id')
         }
-
+        
         $.ajax({
             url: './controller/CheckEvaluationFormAccessController.php',
             type: 'POST',

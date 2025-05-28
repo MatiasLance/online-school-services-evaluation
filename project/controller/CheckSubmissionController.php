@@ -26,7 +26,7 @@ if (!$formId || !$formVersion || !$studentId) {
 }
 
 try {
-    $sql = "SELECT id, student_id FROM form_submissions 
+    $sql = "SELECT form_id, student_id FROM form_submissions 
             WHERE form_id = ? AND form_version = ? AND student_id = ?";
     
     $stmt = $conn->prepare($sql);
@@ -41,7 +41,7 @@ try {
         $stmt->bind_result($id, $student_id);
         $stmt->fetch();
         $submissionData = [
-            'id' => $id,
+            'form_id' => $id,
             'student_id' => $student_id
         ];
     }

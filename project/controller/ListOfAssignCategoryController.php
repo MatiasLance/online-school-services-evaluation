@@ -6,52 +6,64 @@ require_once __DIR__ . '/../helper/helper.php';
 
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    try {
-        $formCategoryStatement = $conn->prepare("SELECT id, category_id FROM forms");
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+    exit;
+}
 
-        if (!$formCategoryStatement) {
-            throw new Exception("Failed to prepare statement.");
-        }
+if (!isset($_GET['form_id']) || !is_numeric($_GET['form_id']) || intval($_GET['form_id']) <= 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or missing form ID.']);
+    exit;
+}
 
-        $formCategoryStatement->execute();
-        $result = $formCategoryStatement->get_result();
+$form_id = intval($_GET['form_id']);
 
-        $categoryId = [];
-        $formId = [];
-        while ($row = $result->fetch_assoc()) {
-            $categoryId[] = $row['category_id'];
-            $formId[] = $row['id'];
-        }
-        $formCategoryStatement->close();
-
-        $selectCategoryStatement = $conn->prepare("SELECT id, name FROM categories WHERE id = ?");
-
-        if (!$selectCategoryStatement) {
-            throw new Exception("Failed to prepare the statement for fetching category.");
-        }
-
-        $category = [];
-
-        $selectCategoryStatement->bind_param('i', $categoryId[0]);
-        $selectCategoryStatement->execute();
-        $result = $selectCategoryStatement->get_result();
-        if($result->num_rows === 0){
-            throw new Exception("No category found.");
-        }else{
-            $category[] = $result->fetch_assoc();
-        }
-
-        $selectCategoryStatement->close();
-        
-        $conn->close();
-
-        if (empty($category)) {
-            echo json_encode(['status' => 'error', 'message' => 'No category found.']);
-        } else {
-            echo json_encode(['status' => 'success', 'category' => $category, 'form_id' => $formId]);
-        }
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+try {
+    $formStmt = $conn->prepare("SELECT id, category_id FROM forms WHERE id = ?");
+    if (!$formStmt) {
+        throw new Exception("Failed to prepare statement for forms.");
     }
+
+    $formStmt->bind_param("i", $form_id);
+    $formStmt->execute();
+    $result = $formStmt->get_result();
+
+    if ($result->num_rows === 0) {
+        throw new Exception("Form not found.");
+    }
+
+    $form = $result->fetch_assoc();
+    $formStmt->close();
+
+    $categoryStmt = $conn->prepare("SELECT id, name FROM categories WHERE id = ?");
+    if (!$categoryStmt) {
+        throw new Exception("Failed to prepare statement for categories.");
+    }
+
+    $category_id = $form['category_id'];
+    $categoryStmt->bind_param("i", $category_id);
+    $categoryStmt->execute();
+    $categoryResult = $categoryStmt->get_result();
+
+    if ($categoryResult->num_rows === 0) {
+        throw new Exception("Category not found for this form.");
+    }
+
+    $category = $categoryResult->fetch_assoc();
+    $categoryStmt->close();
+    $conn->close();
+
+    echo json_encode([
+        'status' => 'success',
+        'data' => [
+            'form_id' => $form['id'],
+            'category' => $category
+        ]
+    ]);
+
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }

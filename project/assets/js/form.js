@@ -454,8 +454,11 @@ jQuery(function($){
         e.preventDefault();
 
         const data = new FormData(this)
+        for (const [key, value] of data.entries()) {
+            console.log(key, value);
+        }
 
-        submitFeedback(data);
+        // submitFeedback(data);
     });
 
     /****************************************Form Template Update***********************************************/
@@ -500,7 +503,7 @@ function viewStudentResponse(payload) {
                 const container = jQuery('#studentViewResponseDetailsContainer');
                 container.empty();
 
-                response.data.forEach(submission => {
+                response.data.forEach((submission, index) => {
                     const data = submission.submission_data;
                     const submittedAt = new Date(submission.submitted_at);
                     const formattedDate = submittedAt.toLocaleString('en-US', {
@@ -511,6 +514,18 @@ function viewStudentResponse(payload) {
                         minute: '2-digit'
                     });
 
+                    // Render all ratings dynamically
+                    let ratingsHTML = '';
+                    if (data.form_rating_question) {
+                        ratingsHTML = renderRatings(data.form_rating_question, data.form_rating_value);
+                    }
+
+                    // Build Paragraph Questions & Answers
+                    let paragraphsHTML = '';
+                    if (data.form_paragraph_question) {
+                        paragraphsHTML = renderParagraphs(data.form_paragraph_question, data.form_paragraph_answer)
+                    }
+
                     const html = `
                         <div class="card shadow-sm mb-4">
                             <div class="card-header bg-white py-3">
@@ -519,23 +534,8 @@ function viewStudentResponse(payload) {
                             </div>
                             <div class="card-body">
                                 <p class="card-text text-secondary">${data.form_description}</p>
-
-                                <div class="mb-3">
-                                    <strong>${data.form_rating_question}</strong>
-                                    <div class="d-flex align-items-center mt-2">
-                                        <!-- Star rating -->
-                                        ${renderStarRating(data.form_rating_value)}
-                                        <span class="ms-2 fw-bold">${data.form_rating_value}/5</span>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <strong>${data.form_paragraph_question['1']}</strong>
-                                    <p class="mt-2 p-3 border rounded bg-light">
-                                        ${data.form_paragraph_answer['1']}
-                                    </p>
-                                </div>
-
+                                ${paragraphsHTML}
+                                ${ratingsHTML}
                                 <div class="text-muted small mt-3">
                                     <i class="bi bi-clock-history me-1"></i>
                                     Submitted on: ${formattedDate}
@@ -618,7 +618,7 @@ function hasSubmittedFeedback(payload){
                                     </h5>
 
                                     <!-- Button to Trigger Modal -->
-                                    <button type="button" class="btn btn-outline-primary mt-2" id="viewStudentResponse" data-bs-toggle="modal" data-bs-target="#viewResponseModal" data-id="${response.data.id}">
+                                    <button type="button" class="btn btn-outline-primary mt-2" id="viewStudentResponse" data-bs-toggle="modal" data-bs-target="#viewResponseModal" data-id="${response.data.form_id}">
                                         View your response
                                     </button>
                                 </div>
@@ -757,14 +757,15 @@ function updateFormTemplate(payload) {
 }
 
 function listOfAssignStudent() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get('form_id');
     jQuery.ajax({
         url: './controller/ListOfAssignStudentController.php',
         type: 'GET',
+        data: { form_id: formId },
         dataType: 'json',
         success: function (response) {
             if (response.status === 'success') {
-                const urlParams = new URLSearchParams(window.location.search);
-                const formId = urlParams.get('form_id');
                 if(formId == parseInt(response.form_id)){
                     const selectedStudentContainer = jQuery('#selectedStudentsContainer');
                     selectedStudentContainer.empty();
@@ -791,27 +792,24 @@ function listOfAssignStudent() {
 }
 
 function listOfAssignDepartment() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get('form_id');
     jQuery.ajax({
         url: './controller/ListOfAssignDepartmentController.php',
         type: 'GET',
+        data: { form_id: formId },
         dataType: 'json',
         success: function (response) {
             if (response.status === 'success') {
-                const urlParams = new URLSearchParams(window.location.search);
-                const formId = urlParams.get('form_id');
-                for(let i = 0; i < response.form_id.length; i++){
-                    if(formId == parseInt(response.form_id[i])){
-                        for(let i = 0; i < response.department.length; i++){
-                            const assignDepartmentId = response.department[i].id;
-                            const assignDepartment = jQuery('#assignDepartment');
-                            const seletedDepartment = response.department[i].department;
-                            const existingAssignDepartment = assignDepartment.find(`option[value="${assignDepartmentId}"]`);
-                            if (existingAssignDepartment.length === 0 && seletedDepartment !== '') {
-                                assignDepartment.append(`<option value="${assignDepartmentId}" selected>${seletedDepartment}</option>`);
-                            } else {
-                                existingAssignDepartment.prop('selected', true);
-                            }
-                        }
+                if(formId == parseInt(response.data.form.form_id)){
+                    const assignDepartmentId = response.data.department.id;
+                    const assignDepartment = jQuery('#assignDepartment');
+                    const seletedDepartment = response.data.department.department;
+                    const existingAssignDepartment = assignDepartment.find(`option[value="${assignDepartmentId}"]`);
+                    if (existingAssignDepartment.length === 0 && seletedDepartment !== '') {
+                        assignDepartment.append(`<option value="${assignDepartmentId}" selected>${seletedDepartment}</option>`);
+                    } else {
+                        existingAssignDepartment.prop('selected', true);
                     }
                 }
             }
@@ -827,27 +825,24 @@ function listOfAssignDepartment() {
 }
 
 function listOfAssignCategory() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formId = urlParams.get('form_id');
     jQuery.ajax({
         url: './controller/ListOfAssignCategoryController.php',
         type: 'GET',
+        data: { form_id: formId },
         dataType: 'json',
         success: function (response) {
             if (response.status === 'success') {
-                const urlParams = new URLSearchParams(window.location.search);
-                const formId = urlParams.get('form_id');
-                for(let i = 0; i < response.form_id.length; i++){
-                    if(formId == parseInt(response.form_id[i])){
-                        for(let i = 0; i < response.category.length; i++){
-                            const assignCategoryId = response.category[i].id;
-                            const assignCategory = jQuery('#assignCategory');
-                            const seletedCategory = response.category[i].name;
-                            const existingAssignCategory = assignCategory.find(`option[value="${assignCategoryId}"]`);
-                            if (existingAssignCategory.length === 0 && seletedCategory !== '') {
-                                assignCategory.append(`<option value="${assignCategoryId}" selected>${seletedCategory}</option>`);
-                            } else {
-                                existingAssignCategory.prop('selected', true);
-                            }
-                        }
+                 if(formId == parseInt(response.data.form_id)){
+                    const assignCategoryId = response.data.category.id;
+                    const assignCategory = jQuery('#assignCategory');
+                    const seletedCategory = response.data.category.name;
+                    const existingAssignCategory = assignCategory.find(`option[value="${assignCategoryId}"]`);
+                    if (existingAssignCategory.length === 0 && seletedCategory !== '') {
+                        assignCategory.append(`<option value="${assignCategoryId}" selected>${seletedCategory}</option>`);
+                    } else {
+                        existingAssignCategory.prop('selected', true);
                     }
                 }
             }
@@ -1691,6 +1686,72 @@ function deleteFormTemplate(payload){
             });
         }
     });
+}
+
+function renderParagraphs(questions, answers) {
+    let html = '';
+
+    if (typeof questions === 'string' && typeof answers !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${answers || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof questions === 'object' && questions !== null) {
+        Object.keys(questions).forEach(key => {
+            const question = questions[key];
+            const answer = (typeof answers === 'object' && answers !== null && answers[key] !== undefined)
+                ? answers[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${answer}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html;
+}
+
+function renderRatings(questions, values) {
+    let html = '';
+
+    if (typeof questions === 'string' && typeof values !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <div class="d-flex align-items-center mt-2">
+                    ${renderStarRating(values)}
+                    <span class="ms-2 fw-bold">${values}/5</span>
+                </div>
+            </div>
+        `;
+    }else if (typeof questions === 'object' && questions !== null) {
+        Object.keys(questions).forEach(key => {
+            const question = questions[key];
+            const value = (typeof values === 'object' && values !== null) ? values[key] || '0' : '0';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <div class="d-flex align-items-center mt-2">
+                        ${renderStarRating(value)}
+                        <span class="ms-2 fw-bold">${value}/5</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    return html;
 }
 
 function renderStarRating(rating) {

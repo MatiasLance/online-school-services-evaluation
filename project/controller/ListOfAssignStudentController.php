@@ -6,58 +6,78 @@ require_once __DIR__ . '/../helper/helper.php';
 
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    try {
-        $formStudentStatement = $conn->prepare("SELECT form_id, student_id FROM form_student");
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+    exit;
+}
 
-        if (!$formStudentStatement) {
-            throw new Exception("Failed to prepare statement.");
-        }
+if (!isset($_GET['form_id']) || !is_numeric($_GET['form_id']) || intval($_GET['form_id']) <= 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or missing form ID.']);
+    exit;
+}
 
-        $formStudentStatement->execute();
-        $result = $formStudentStatement->get_result();
+$form_id = intval($_GET['form_id']);
 
-        $studentsIds = [];
-        $formIds = [];
-        while ($row = $result->fetch_assoc()) {
-            $studentsIds[] = $row['student_id'];
-            $formIds[] = $row['form_id'];
-        }
-
-        $formStudentStatement->close();
-
-        $selectedStudentStatement = $conn->prepare("SELECT CONCAT(first_name, ' ', last_name) as full_name FROM students WHERE id = ?");
-
-        if (!$selectedStudentStatement) {
-            throw new Exception("Failed to prepare the statement for fetching student names.");
-        }
-
-        $students = [];
-
-        foreach($studentsIds as $id){
-            $selectedStudentStatement->bind_param('i', $id);
-            $selectedStudentStatement->execute();
-            $result = $selectedStudentStatement->get_result();
-            if($result->num_rows === 0){
-                throw new Exception("No students found.");
-            }else{
-                $students[] = $result->fetch_assoc();
-            }
-        }
-
-        $selectedStudentStatement->close();
-        
-        $conn->close();
-
-        $uniqueFormId = array_unique($formIds);
-        $formId = array_values($uniqueFormId);
-
-        if (empty($students)) {
-            echo json_encode(['status' => 'error', 'message' => 'No students found.']);
-        } else {
-            echo json_encode(['status' => 'success', 'students' => $students, 'form_id' => implode(',', $formId)]);
-        }
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+try {
+    // Step 1: Get all student_ids for the given form_id
+    $stmt = $conn->prepare("SELECT student_id FROM form_student WHERE form_id = ?");
+    if (!$stmt) {
+        throw new Exception("Failed to prepare statement.");
     }
+
+    $stmt->bind_param("i", $form_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $studentIds = [];
+    while ($row = $result->fetch_assoc()) {
+        $studentIds[] = $row['student_id'];
+    }
+    $stmt->close();
+
+    if (empty($studentIds)) {
+        echo json_encode([
+            'status' => 'success',
+            'students' => [],
+            'form_id' => $form_id,
+            'message' => 'No students found for this form.'
+        ]);
+        exit;
+    }
+
+    $placeholders = implode(',', array_fill(0, count($studentIds), '?'));
+    $types = str_repeat('i', count($studentIds));
+
+    $studentQuery = "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name FROM students WHERE id IN ($placeholders)";
+    $studentStmt = $conn->prepare($studentQuery);
+
+    if (!$studentStmt) {
+        throw new Exception("Failed to fetch student names.");
+    }
+
+    $studentStmt->bind_param($types, ...$studentIds);
+    $studentStmt->execute();
+    $studentResult = $studentStmt->get_result();
+
+    $students = [];
+    while ($row = $studentResult->fetch_assoc()) {
+        $students[] = [
+            'id' => $row['id'],
+            'full_name' => $row['full_name']
+        ];
+    }
+    $studentStmt->close();
+    $conn->close();
+
+    echo json_encode([
+        'status' => 'success',
+        'students' => $students,
+        'form_id' => $form_id
+    ]);
+
+} catch (Exception $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $e->getMessage()
+    ]);
 }

@@ -37,7 +37,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $checkStudentAccessInTheForm->close();
 
-    $checkingForCategoryIDSetInFormStatement = $conn->prepare("SELECT id FROM forms WHERE category_id = ?");
+    $checkingForCategoryIDSetInFormStatement = $conn->prepare("SELECT id FROM forms WHERE category_id = ? ORDER BY created_at DESC LIMIT 1");
     $checkingForCategoryIDSetInFormStatement->bind_param('i', $categoryId);
     $checkingForCategoryIDSetInFormStatement->execute();
     $result = $checkingForCategoryIDSetInFormStatement->get_result();
@@ -68,6 +68,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         }
 
         $fetchFormTemplate->close();
+    }else{
+        echo json_encode(['status' => 'error', 'message' => 'You don\'t have permission to proceed with this category.']);
+        exit;
     }
 
 

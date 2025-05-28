@@ -100,7 +100,7 @@
                     <label class="input-group-text" for="inputGroupSection">
                         <i class="bi bi-mortarboard"></i>
                     </label>
-                    <select class="form-select" id="inputGroupSection" name="section" required>
+                    <select class="form-select" id="inputGroupSection" name="section">
                         <option value="" disabled selected>Select Section</option>
                         <option class="one" value="1A">1A</option>
                         <option class="two" value="1B">1B</option>
