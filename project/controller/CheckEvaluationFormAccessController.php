@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
       $error[] = "Invalid category ID.";
     }
 
-    $checkStudentAccessInTheForm = $conn->prepare('SELECT form_id FROM form_student WHERE student_id = ?');
+    $checkStudentAccessInTheForm = $conn->prepare('SELECT form_id FROM form_student WHERE student_id = ? ORDER BY created_at DESC LIMIT 1');
     $checkStudentAccessInTheForm->bind_param('i', $studentId);
     $checkStudentAccessInTheForm->execute();
     $result = $checkStudentAccessInTheForm->get_result();

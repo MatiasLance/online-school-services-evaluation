@@ -1,8 +1,9 @@
 jQuery(function($){
     let checkboxCount = 0;
     let dropdownCount = 0;
-    let radioGroupCount = 0;;
+    let radioGroupCount = 0;
     let paragraphCount = 0;
+    let ratingStarCount = 0;
     let dateCount = 0;
     let timeCount = 0;
 
@@ -242,35 +243,28 @@ jQuery(function($){
     /******************************************Rating Template***************************************************/
     // Add Rating Template
     $(document).on('click', '#addRating', function(){
+        ratingStarCount++;
 
-        if($('#displayFormTemplate .form-rating-star').length === 0){
-            let ratingTemplate = `
-            <div class="card mb-3 form-rating-star" id="ratingWrapper">
-                <div class="card-body position-relative">
-                    <div class="mb-3">
-                        <input type="text" class="form-control rating-label" name="form_rating_question" placeholder="Enter Question" required>
-                    </div>
-                    <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
-                        <i class="fa-regular fa-star star fs-3" data-value="1"></i>
-                        <i class="fa-regular fa-star star fs-3" data-value="2"></i>
-                        <i class="fa-regular fa-star star fs-3" data-value="3"></i>
-                        <i class="fa-regular fa-star star fs-3" data-value="4"></i>
-                        <i class="fa-regular fa-star star fs-3" data-value="5"></i>
-                        <input type="hidden" name="form_rating_value" class="rating-value">
-                    </div>
-                    <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger removeRating" 
-                    style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
+        let ratingTemplate = `
+        <div class="card mb-3 form-rating-star" id="ratingWrapper">
+            <div class="card-body position-relative">
+                <div class="mb-3">
+                    <input type="text" class="form-control rating-label" name="form_rating_question[${ratingStarCount}]" placeholder="Enter Question" required>
                 </div>
-            </div>`;
+                <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
+                    <i class="fa-regular fa-star star fs-3" data-value="1"></i>
+                    <i class="fa-regular fa-star star fs-3" data-value="2"></i>
+                    <i class="fa-regular fa-star star fs-3" data-value="3"></i>
+                    <i class="fa-regular fa-star star fs-3" data-value="4"></i>
+                    <i class="fa-regular fa-star star fs-3" data-value="5"></i>
+                    <input type="hidden" name="form_rating_value[${ratingStarCount}]" class="rating-value">
+                </div>
+                <i class="fa-regular fa-circle-xmark fs-3 position-absolute top-0 end-0 text-danger removeRating" 
+                style="transform: translateX(13px) translateY(-13px); cursor: pointer;"></i>
+            </div>
+        </div>`;
 
-            $('#displayFormTemplate, #formTemplatesContainer').append(ratingTemplate);
-        }else{
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Only one rating field can be added.',
-                icon: 'warning'
-            });
-        }
+        $('#displayFormTemplate, #formTemplatesContainer').append(ratingTemplate);
     });
 
     // Handle Star Rating Click
@@ -454,9 +448,6 @@ jQuery(function($){
         e.preventDefault();
 
         const data = new FormData(this)
-        // for (const [key, value] of data.entries()) {
-        //     console.log(key, value);
-        // }
 
         submitFeedback(data);
     });
@@ -1095,11 +1086,12 @@ function retrieveFormTemplate(formId, version = null) {
                     if(formRatingQuestions.length > 0){
                 
                         formRatingQuestions.forEach(question => {
+                            const formRatingIndex = question.name.match(/\[(\d+)\]/)?.[1];
                     
                             const formRatingHTML = `
                                 <div class="mb-3">
                                     <label for="formRatingQuestion" class="form-label fw-bold">${question.value}</label>
-                                    <input type="hidden" class="form-control" name="form_rating_question" value="${question.value}" id="formRatingQuestion">
+                                    <input type="hidden" class="form-control" name="form_rating_question[${formRatingIndex}]" value="${question.value}" id="formRatingQuestion">
                                 </div>
                                 <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
                                     <i class="fa-regular fa-star star fs-3" data-value="1"></i>
@@ -1107,7 +1099,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <i class="fa-regular fa-star star fs-3" data-value="3"></i>
                                     <i class="fa-regular fa-star star fs-3" data-value="4"></i>
                                     <i class="fa-regular fa-star star fs-3" data-value="5"></i>
-                                    <input type="hidden" name="form_rating_value" class="rating-value">
+                                    <input type="hidden" name="form_rating_value[${formRatingIndex}]" class="rating-value">
                                 </div>
                             `;
 
@@ -1419,11 +1411,12 @@ function retrieveFormTemplate(formId, version = null) {
                         const formRatingQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_rating_question'));
                 
                         formRatingQuestions.forEach(question => {
+                            const formRatingIndex = question.name.match(/\[(\d+)\]/)?.[1];
                     
                             const formRatingHTML = `
                                 <div class="mb-3">
                                     <label for="formRatingQuestion" class="form-label fw-bold">Question</label>
-                                    <input type="text" class="form-control" name="form_rating_question" value="${question.value}" id="formRatingQuestion">
+                                    <input type="text" class="form-control" name="form_rating_question[${formRatingIndex}]" value="${question.value}" id="formRatingQuestion">
                                 </div>
                                 <div class="mb-3 rating-stars d-flex justify-content-center align-items-center gap-2" data-rating="0">
                                     <i class="fa-regular fa-star star fs-3" data-value="1"></i>
@@ -1431,7 +1424,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <i class="fa-regular fa-star star fs-3" data-value="3"></i>
                                     <i class="fa-regular fa-star star fs-3" data-value="4"></i>
                                     <i class="fa-regular fa-star star fs-3" data-value="5"></i>
-                                    <input type="hidden" name="form_rating_value" class="rating-value">
+                                    <input type="hidden" name="form_rating_value[${formRatingIndex}]" class="rating-value">
                                 </div>
                             `;
 
