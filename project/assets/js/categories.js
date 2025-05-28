@@ -103,7 +103,40 @@ function loadCategories(page = 1, search = '') {
             if (response.status === 'success') {
                 for(let i = 0; i < response.data.length; i++){
                     // Load category names in the user categories selection.
-                    jQuery('#studentSelectCategory').append(`<option value="${response.data[i].id}">${response.data[i].name}</option>`);
+                    jQuery('#studentCategorySelectionContainer').prepend(`
+                        <div class="col">
+                            <div class="card category-card shadow-sm border-0 rounded-3 mb-4">
+                                <div class="card-body p-4">
+                                    <!-- Category Name -->
+                                    <h5 class="card-title text-center mb-3" id="categorySelection" data-id="${response.data[i].id}">
+                                        ${response.data[i].name}
+                                    </h5>
+
+                                    <!-- Status Badge -->
+                                    <div class="d-flex justify-content-center align-items-center mt-2">
+                                        ${response.data[i].form_statuses.length > 0 ? `
+                                            <span class="badge bg-success d-inline-flex align-items-center px-3 py-2">
+                                                <span class="me-2">&#9679;</span> Active
+                                            </span>`: `
+                                            <span class="badge bg-secondary d-inline-flex align-items-center px-3 py-2">
+                                                <span class="me-2">&#9679;</span> Inactive
+                                            </span>
+                                        `}
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex align-items-center justify-content-center">
+                                ${response.data[i].form_statuses.length > 0 ? `
+                                    <button type="button" class="btn btn-vibrant-golden-yellow" id="proceedToAssignedForm">
+                                        Proceed
+                                    </button>`:`
+                                    <button type="button" class="btn btn-secondary" disabled>
+                                        Not available
+                                    </button>`}
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        `);
                     jQuery('#assignCategory').append(`<option value="${response.data[i].id}">${response.data[i].name}</option>`)
                     tbody.append(`
                         <tr>

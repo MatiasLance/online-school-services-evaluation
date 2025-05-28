@@ -16,7 +16,7 @@ $section = sanitizeData($_POST['section'] ?? '');
 $password = sanitizeData($_POST['password'] ?? '');
 $confirm_password = sanitizeData($_POST['confirm_password'] ?? '');
 
-if (empty($firstname) || empty($lastname) || empty($email) || empty($gender) || empty($department) || empty($year_level) || empty($section) || empty($password) || empty($confirm_password)) {
+if (empty($firstname) || empty($lastname) || empty($email) || empty($gender) || empty($department) || empty($year_level) || empty($password) || empty($confirm_password)) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }

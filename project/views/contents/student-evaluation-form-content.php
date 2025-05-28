@@ -7,7 +7,7 @@
             <button class="nav-link form-nav-link active" id="backToCategorySelection" type="button">Back to Category Selection</button>
         </li>
     </ul>
-    <div class="row">
+    <div class="row" id="displayNoteMessage">
         <form id="formFeedBack" enctype="multipart/form-data" class="d-flex flex-column w-100">
             <input type="hidden" name="form_id" id="formTemplateId">
             <input type="hidden" name="form_version_id" id="formVersionId">
@@ -22,5 +22,9 @@
     </div>
 </div>
 
+
 <!-- Footer -->
-<?php include __DIR__ . '/../footer.php' ?>
+<?php
+    include __DIR__ . '/../modal/form/view-student-response-modal.php';
+    include __DIR__ . '/../footer.php';
+ ?>

@@ -1,10 +1,10 @@
 let timerInterval;
 
 jQuery(function($){
-    $('#proceedToAssignedForm').on('click', function(){
+    $(document).on('click', '#proceedToAssignedForm', function(){
         const payload = {
             student_id: $('#studentLoginId').val(),
-            category_id: $('#studentSelectCategory').val()
+            category_id: $('#categorySelection').data('id')
         }
 
         $.ajax({
@@ -31,7 +31,7 @@ jQuery(function($){
                         willClose: () => {
                             clearInterval(timerInterval);
                             setTimeout(function(){
-                                window.location.href = `/student-evaluation-form?form_id=${response.data.form_id}&form_version=${response.data.version}`;
+                                window.location.href = `/student-evaluation-form?form_id=${response.data.form_id}&form_version=${response.data.version}&student_id=${payload.student_id}`;
                             }, 500)
                         }
                     });

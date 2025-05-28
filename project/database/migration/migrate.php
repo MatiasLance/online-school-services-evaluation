@@ -86,13 +86,12 @@ class DatabaseMigrator
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 form_id INT NOT NULL,
                 form_version INT NOT NULL,
-                submitted_by INT,
                 student_id INT,
                 submission_data JSON NOT NULL,
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (form_id) REFERENCES forms(id),
                 FOREIGN KEY (form_id, form_version) REFERENCES form_versions(form_id, version),
-                FOREIGN KEY (submitted_by) REFERENCES users(id)
+                FOREIGN KEY (student_id) REFERENCES students(id)
             )",
             "form student" => "CREATE TABLE IF NOT EXISTS form_student (
                 id INT AUTO_INCREMENT PRIMARY KEY,

@@ -425,8 +425,16 @@ jQuery(function($){
 
         const formId = urlParams.get('form_id');
         const version = urlParams.get('form_version');
+        const studentId = urlParams.get('student_id');
+        jQuery('#formVersionId').val(version);
+        const payload = {
+            form_id: formId,
+            form_version: version,
+            student_id: studentId
+        }
         
         retrieveFormTemplate(formId, version);
+        hasSubmittedFeedback(payload);
     }
 
     /****************************************Update Evaluation Form****************************************/
@@ -447,9 +455,7 @@ jQuery(function($){
 
         const data = new FormData(this)
 
-        for (let [key, value] of data.entries()) {
-            console.log(key, value);
-        }
+        submitFeedback(data);
     });
 
     /****************************************Form Template Update***********************************************/
@@ -465,6 +471,16 @@ jQuery(function($){
         
         saveFormSetting(payload)
     })
+
+    /******************************************View Student Response**********************************************/
+    $(document).on('click', '#viewStudentResponse', function(){
+        const payload = {
+            student_id: $('#formSubmissionStudentId').val(),
+            form_id: $(this).data('id')
+        }
+
+        viewStudentResponse(payload);
+    })
     
 
     listFormTemplate();
@@ -472,6 +488,155 @@ jQuery(function($){
     listOfAssignDepartment();
     listOfAssignCategory();
 });
+
+function viewStudentResponse(payload) {
+    jQuery.ajax({
+        url: './controller/ViewStudenEvaluationResponseController.php',
+        type: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                const container = jQuery('#studentViewResponseDetailsContainer');
+                container.empty();
+
+                response.data.forEach(submission => {
+                    const data = submission.submission_data;
+                    const submittedAt = new Date(submission.submitted_at);
+                    const formattedDate = submittedAt.toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const html = `
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title mb-0">${data.form_title}</h5>
+                                <small class="text-muted">Version ${submission.form_version}</small>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text text-secondary">${data.form_description}</p>
+
+                                <div class="mb-3">
+                                    <strong>${data.form_rating_question}</strong>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <!-- Star rating -->
+                                        ${renderStarRating(data.form_rating_value)}
+                                        <span class="ms-2 fw-bold">${data.form_rating_value}/5</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>${data.form_paragraph_question['1']}</strong>
+                                    <p class="mt-2 p-3 border rounded bg-light">
+                                        ${data.form_paragraph_answer['1']}
+                                    </p>
+                                </div>
+
+                                <div class="text-muted small mt-3">
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    Submitted on: ${formattedDate}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.append(html);
+                });
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
+function submitFeedback(payload) {
+    jQuery.ajax({
+        url: './controller/SubmitFormFeedbackController.php',
+        type: 'POST',
+        data: payload,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const payload = {
+                            form_id: response.form_id,
+                            form_version: response.form_version,
+                            student_id: response.student_id
+                        }
+                        hasSubmittedFeedback(payload)
+                    }
+                });
+            } else {
+                for(let i = 0; i < response.messages.length; i++)
+                Swal.fire({
+                    title: 'Error!',
+                    text: response.messages[i],
+                    icon: 'error'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
+
+function hasSubmittedFeedback(payload){
+    jQuery.ajax({
+        url: './controller/CheckSubmissionController.php',
+        type: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                if(response.submitted){
+                    jQuery('#formFeedBack').removeClass('d-flex').addClass('d-none');
+                    jQuery('#displayNoteMessage').append(`
+                            <div class="card">
+                                <div class="card-body text-center">
+                                <input type="hidden" id="formSubmissionStudentId" value="${response.data.student_id}">
+                                    <!-- Thank You Message -->
+                                    <h5 class="card-title text-muted d-flex align-items-center justify-content-center mb-4">
+                                        <i class="bi bi-check-circle-fill text-success display-3 me-3"></i>
+                                        Thank you for your feedback.
+                                    </h5>
+
+                                    <!-- Button to Trigger Modal -->
+                                    <button type="button" class="btn btn-outline-primary mt-2" id="viewStudentResponse" data-bs-toggle="modal" data-bs-target="#viewResponseModal" data-id="${response.data.id}">
+                                        View your response
+                                    </button>
+                                </div>
+                            </div>`)
+                }else{
+                    jQuery('#formFeedBack').removeClass('d-none').addClass('d-flex');
+                }
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error'
+            });
+        }
+    });
+}
 
 
 function saveFormTemplate(payload) {
@@ -1526,5 +1691,26 @@ function deleteFormTemplate(payload){
             });
         }
     });
+}
+
+function renderStarRating(rating) {
+    let starsHTML = '';
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 !== 0;
+    const emptyStars = 5 - Math.ceil(rating);
+
+    for (let i = 0; i < fullStars; i++) {
+        starsHTML += '<i class="bi bi-star-fill text-warning"></i>';
+    }
+
+    if (hasHalf) {
+        starsHTML += '<i class="bi bi-star-half text-warning"></i>';
+    }
+
+    for (let i = 0; i < emptyStars; i++) {
+        starsHTML += '<i class="bi bi-star text-warning"></i>';
+    }
+
+    return starsHTML;
 }
 

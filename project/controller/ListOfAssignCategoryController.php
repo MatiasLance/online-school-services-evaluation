@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
         $category = [];
 
-        $selectCategoryStatement->bind_param('i', $categoryId[1]);
+        $selectCategoryStatement->bind_param('i', $categoryId[0]);
         $selectCategoryStatement->execute();
         $result = $selectCategoryStatement->get_result();
         if($result->num_rows === 0){
