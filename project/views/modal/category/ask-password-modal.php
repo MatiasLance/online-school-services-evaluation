@@ -1,9 +1,9 @@
 <!-- Modal -->
-<div class="modal fade" id="askPasswordModal" tabindex="-1" aria-labelledby="askPasswordModalLabel" aria-hidden="true">
+<div class="modal fade" id="categoryAskPasswordModal" tabindex="-1" aria-labelledby="categoryAskPasswordModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modal-danger-header ">
-        <h1 class="modal-title fs-5 modal-danger-title" id="askPasswordModalLabel">Enter your password to confirm the deletion.</h1>
+        <h1 class="modal-title fs-5 modal-danger-title" id="categoryAskPasswordModal">Enter your password to confirm the deletion.</h1>
         <button type="button" class="btn-close modal-danger-close-button" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -11,7 +11,7 @@
 
         <div class="mb-3">
             <label for="passwordFormControlInput1" class="form-label fw-bold">Password</label>
-            <input type="password" class="form-control" id="passwordFormControlInput1" required>
+            <input type="password" class="form-control" id="categoryPasswordFormControlInput1" required>
         </div>
 
       </div>

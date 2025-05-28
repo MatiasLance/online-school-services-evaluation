@@ -83,7 +83,7 @@ jQuery(function($){
     // Delete Category
     $(document).on('click', '#deleteCategoryDetail', function(){
         const id = $('#categoryIdToBeDeleted').val();
-        const password = $('#passwordFormControlInput1').val();
+        const password = $('#categoryPasswordFormControlInput1').val();
         deleteCategory(id, password);
     })
 
