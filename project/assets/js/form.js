@@ -454,11 +454,11 @@ jQuery(function($){
         e.preventDefault();
 
         const data = new FormData(this)
-        for (const [key, value] of data.entries()) {
-            console.log(key, value);
-        }
+        // for (const [key, value] of data.entries()) {
+        //     console.log(key, value);
+        // }
 
-        // submitFeedback(data);
+        submitFeedback(data);
     });
 
     /****************************************Form Template Update***********************************************/
