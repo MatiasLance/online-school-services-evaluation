@@ -22,8 +22,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
       $error[] = "Invalid category ID.";
     }
 
-    $checkStudentAccessInTheForm = $conn->prepare('SELECT form_id FROM form_student WHERE student_id = ? ORDER BY created_at DESC LIMIT 1');
-    $checkStudentAccessInTheForm->bind_param('i', $studentId);
+    $checkStudentAccessInTheForm = $conn->prepare('SELECT form_id FROM form_student WHERE student_id = ? AND category_id = ?');
+    $checkStudentAccessInTheForm->bind_param('ii', $studentId, $categoryId);
     $checkStudentAccessInTheForm->execute();
     $result = $checkStudentAccessInTheForm->get_result();
     if($result->num_rows > 0){
@@ -37,24 +37,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $checkStudentAccessInTheForm->close();
 
-    $checkingForCategoryIDSetInFormStatement = $conn->prepare("SELECT id FROM forms WHERE category_id = ? ORDER BY created_at DESC LIMIT 1");
-    $checkingForCategoryIDSetInFormStatement->bind_param('i', $categoryId);
-    $checkingForCategoryIDSetInFormStatement->execute();
-    $result = $checkingForCategoryIDSetInFormStatement->get_result();
-    if($result->num_rows > 0){
-        while($row = $result->fetch_assoc()){
-            $dbCategoryFormId[] = $row['id'];
-        }
-    }else{
-        echo json_encode(['status' => 'error', 'message' => 'The selected category is currently unavailable. Please wait for the admin to configure the available categories in the form. Once set, the form will be visible to you. Thank you for your patience!']);
-        exit;
-    }
+    // $checkingForCategoryIDSetInFormStatement = $conn->prepare("SELECT id FROM forms WHERE category_id = ?");
+    // $checkingForCategoryIDSetInFormStatement->bind_param('i', $categoryId);
+    // $checkingForCategoryIDSetInFormStatement->execute();
+    // $result = $checkingForCategoryIDSetInFormStatement->get_result();
+    // if($result->num_rows > 0){
+    //     while($row = $result->fetch_assoc()){
+    //         $dbCategoryFormId[] = $row['id'];
+    //     }
+    // }else{
+    //     echo json_encode(['status' => 'error', 'message' => 'The selected category is currently unavailable. Please wait for the admin to configure the available categories in the form. Once set, the form will be visible to you. Thank you for your patience!']);
+    //     exit;
+    // }
 
-    $checkingForCategoryIDSetInFormStatement->close();
+    // $checkingForCategoryIDSetInFormStatement->close();
 
-    if($dbCategoryFormId[0] === $dbStudentFormId[0]){
+    if($dbStudentFormId[0]){
         $fetchFormTemplate = $conn->prepare('SELECT form_id, version FROM form_versions WHERE form_id = ?');
-        $fetchFormTemplate->bind_param('i', $dbCategoryFormId[0]);
+        $fetchFormTemplate->bind_param('i', $dbStudentFormId[0]);
         $fetchFormTemplate->execute();
         $result = $fetchFormTemplate->get_result();
         if($result->num_rows > 0){

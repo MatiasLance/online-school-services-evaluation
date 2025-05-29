@@ -91,10 +91,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute();
             $stmt->close();
 
-            $stmt = $conn->prepare("INSERT INTO form_student (form_id, student_id) VALUES (?, ?)");
+            $stmt = $conn->prepare("INSERT INTO form_student (form_id, student_id, category_id) VALUES (?, ?, ?)");
 
             foreach ($assign_student_id as $student_id) {
-                $stmt->bind_param('ii', $form_id, $student_id);
+                $stmt->bind_param('iii', $form_id, $student_id, $assign_category_id);
                 $stmt->execute();
             }
             $stmt->close();

@@ -449,7 +449,11 @@ jQuery(function($){
 
         const data = new FormData(this)
 
-        submitFeedback(data);
+        for (const pair of data.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
+        // submitFeedback(data);
     });
 
     /****************************************Form Template Update***********************************************/
@@ -505,6 +509,18 @@ function viewStudentResponse(payload) {
                         minute: '2-digit'
                     });
 
+                    // Render all checkbox dynamically
+                    let checkboxHtml = ''
+                    if(data.form_radio_question){
+                        checkboxHtml = renderCheckbox(data.form_checkbox_question, data.form_checkbox_option_label);
+                    }
+
+                    // Render all radio dynamically
+                    let radioHtml = ''
+                    if(data.form_radio_question){
+                        radioHtml = renderRadio(data.form_radio_question, data.form_radio_label);
+                    }
+
                     // Render all ratings dynamically
                     let ratingsHTML = '';
                     if (data.form_rating_question) {
@@ -527,6 +543,8 @@ function viewStudentResponse(payload) {
                                 <p class="card-text text-secondary">${data.form_description}</p>
                                 ${paragraphsHTML}
                                 ${ratingsHTML}
+                                ${radioHtml}
+                                ${checkboxHtml}
                                 <div class="text-muted small mt-3">
                                     <i class="bi bi-clock-history me-1"></i>
                                     Submitted on: ${formattedDate}
@@ -911,7 +929,7 @@ function retrieveFormTemplate(formId, version = null) {
                                 .map((option, index) => `
                                     <div class="form-check mb-3">
                                         
-                                        <input class="form-check-input" type="radio" name="form_radio_label[${questionIndex}]" id="formRadioLabel[${questionIndex}]" value="${option.value}">
+                                        <input class="form-check-input" type="radio" name="form_radio_label[${questionIndex}]" id="formRadioLabel[${questionIndex}]" value="${option.value}" required>
                                         <label class="form-check-label">
                                             ${option.value}
                                         </label>
@@ -962,7 +980,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <label class="form-label fw-bold">${question.value}</label>
                                     <input type="hidden" class="form-control" name="form_dropdown_question[${questionIndex}]" value="${question.value}">
                                 </div>
-                                <select class="form-select" name="form_dropdown_answer" aria-label="Default select example">
+                                <select class="form-select" name="form_dropdown_answer" aria-label="Default select example" required>
                                     <option selected>Select answer</option>
                                     ${dropdownOptions}
                                 </select>
@@ -1036,7 +1054,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <input type="hidden" class="form-control" name="form_file_upload_question" value="${question.value}" id="formFileUploadQuestion">
                                 </div>
                                 <div class="mb-3">
-                                    <input type="file" class="form-control" name="form_file_upload_input">
+                                    <input type="file" class="form-control" name="form_file_upload_input" required>
                                 </div>
                             `;
 
@@ -1065,7 +1083,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <input type="hidden" class="form-control" name="form_paragraph_question[${questionIndex}]" value="${question.value}" id="formParagraphQuestion[${questionIndex}]">
                                 </div>
                                 <div class="mb-3">
-                                    <textarea class="form-control" id="formParagraphText[${questionIndex}]" rows="3" name="form_paragraph_answer[${questionIndex}]"></textarea>
+                                    <textarea class="form-control" id="formParagraphText[${questionIndex}]" rows="3" name="form_paragraph_answer[${questionIndex}]" required></textarea>
                                 </div>
                             `;
 
@@ -1128,7 +1146,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <input type="hidden" class="form-control" name="form_date_label[${questionIndex}]" value="${question.value}" id="formDateLabel[${questionIndex}]">
                                 </div>
                                 <div class="mb-3">
-                                    <input type="date" class="form-control" name="form_date_value[${questionIndex}]">
+                                    <input type="date" class="form-control" name="form_date_value[${questionIndex}]" required>
                                 </div>
                             `;
 
@@ -1157,7 +1175,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <input type="hidden" class="form-control" name="form_time_label[${questionIndex}]" value="${question.value}" id="formTimeLabel[${questionIndex}]">
                                 </div>
                                 <div class="mb-3">
-                                    <input type="time" class="form-control" name="form_time_value[${questionIndex}]">
+                                    <input type="time" class="form-control" name="form_time_value[${questionIndex}]" required>
                                 </div>
                             `;
 
@@ -1168,7 +1186,7 @@ function retrieveFormTemplate(formId, version = null) {
                                 </div>
                             </div>`;
     
-                            parentContainer.append(formTimeTemplate)
+                            studentParentContainer.append(formTimeTemplate)
                         });
                     }
                 }
@@ -1407,12 +1425,11 @@ function retrieveFormTemplate(formId, version = null) {
                     const formRatingQuestions = formFields.filter(f => f.name.startsWith('form_rating_question'));
 
                     if(formRatingQuestions.length > 0){
-
+                        
                         const formRatingQuestionsIndex = formFields.findIndex(f => f.name.startsWith('form_rating_question'));
                 
                         formRatingQuestions.forEach(question => {
                             const formRatingIndex = question.name.match(/\[(\d+)\]/)?.[1];
-                    
                             const formRatingHTML = `
                                 <div class="mb-3">
                                     <label for="formRatingQuestion" class="form-label fw-bold">Question</label>
@@ -1679,6 +1696,72 @@ function deleteFormTemplate(payload){
             });
         }
     });
+}
+
+function renderCheckbox(questions, labels) {
+       let html = '';
+
+    if (typeof questions === 'string' && typeof labels !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${answers || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof questions === 'object' && questions !== null) {
+        Object.keys(questions).forEach(key => {
+            const question = questions[key];
+            const label = (typeof labels === 'object' && labels !== null && labels[key] !== undefined)
+                ? labels[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${label}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html; 
+}
+
+function renderRadio(questions, labels) {
+       let html = '';
+
+    if (typeof questions === 'string' && typeof labels !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${answers || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof questions === 'object' && questions !== null) {
+        Object.keys(questions).forEach(key => {
+            const question = questions[key];
+            const label = (typeof labels === 'object' && labels !== null && labels[key] !== undefined)
+                ? labels[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${label}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html; 
 }
 
 function renderParagraphs(questions, answers) {

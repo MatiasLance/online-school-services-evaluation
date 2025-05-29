@@ -97,6 +97,7 @@ class DatabaseMigrator
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 form_id INT NOT NULL,
                 student_id INT NOT NULL,
+                category_id INT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
