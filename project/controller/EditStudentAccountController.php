@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssssssi", $firstname, $lastname, $email, $gender, $department, $year_level, $section, $hashed_password, $userId);
 
     if ($stmt->execute()) {
-        echo json_encode(['status' => 'success', 'message' => 'Registration successful!']);
+        echo json_encode(['status' => 'success', 'message' => 'Your profile has been updated successfully.']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Error saving data: ' . $stmt->error]);
     }

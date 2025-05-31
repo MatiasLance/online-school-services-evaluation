@@ -26,5 +26,6 @@
 <!-- Footer -->
 <?php
     include __DIR__ . '/../modal/form/view-student-response-modal.php';
+    include __DIR__ . '/../modal/profile/student-edit-profile-modal.php';
     include __DIR__ . '/../footer.php';
  ?>

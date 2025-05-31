@@ -142,7 +142,7 @@ jQuery(function($){
      // Add File Upload Template
      $(document).on('click', '#addFileUpload', function(){
 
-        if($('#displayFormTemplate .form-file-upload').length === 0){
+        if($('#displayFormTemplate .form-file-upload, #formTemplatesContainer .form-file-upload, #formTemplatesContainer .form-file-upload-container').length === 0){
             let fileUploadTemplate = `
             <div class="card mb-3 form-file-upload" id="fileUploadWrapper">
                 <div class="card-body position-relative">
@@ -449,11 +449,11 @@ jQuery(function($){
 
         const data = new FormData(this)
 
-        for (const pair of data.entries()) {
-            console.log(pair[0], pair[1]);
-        }
+        // for (const pair of data.entries()) {
+        //     console.log(pair[0], pair[1]);
+        // }
 
-        // submitFeedback(data);
+        submitFeedback(data);
     });
 
     /****************************************Form Template Update***********************************************/
@@ -500,6 +500,7 @@ function viewStudentResponse(payload) {
 
                 response.data.forEach((submission, index) => {
                     const data = submission.submission_data;
+                    console.log(data)
                     const submittedAt = new Date(submission.submitted_at);
                     const formattedDate = submittedAt.toLocaleString('en-US', {
                         year: 'numeric',
@@ -509,28 +510,44 @@ function viewStudentResponse(payload) {
                         minute: '2-digit'
                     });
 
-                    // Render all checkbox dynamically
                     let checkboxHtml = ''
-                    if(data.form_radio_question){
+                    if(data.form_checkbox_question){
                         checkboxHtml = renderCheckbox(data.form_checkbox_question, data.form_checkbox_option_label);
                     }
 
-                    // Render all radio dynamically
                     let radioHtml = ''
                     if(data.form_radio_question){
                         radioHtml = renderRadio(data.form_radio_question, data.form_radio_label);
                     }
 
-                    // Render all ratings dynamically
                     let ratingsHTML = '';
                     if (data.form_rating_question) {
                         ratingsHTML = renderRatings(data.form_rating_question, data.form_rating_value);
                     }
 
-                    // Build Paragraph Questions & Answers
                     let paragraphsHTML = '';
                     if (data.form_paragraph_question) {
                         paragraphsHTML = renderParagraphs(data.form_paragraph_question, data.form_paragraph_answer)
+                    }
+
+                    let dateHtml = ''
+                    if (data.form_date_label) {
+                        dateHtml = renderDate(data.form_date_label, data.form_date_value)
+                    }
+
+                    let timeHtml = ''
+                    if (data.form_time_label) {
+                        timeHtml = renderTime(data.form_time_label, data.form_time_value)
+                    }
+
+                    let dropdownHtml = ''
+                    if (data.form_dropdown_question) {
+                        dropdownHtml = renderDropdown(data.form_dropdown_question, data.form_dropdown_answer)
+                    }
+
+                    let renderFileHtml = ''
+                    if (data.form_file_upload_question) {
+                        renderFileHtml = renderFileUpload(data.form_file_upload_question, data.form_file_upload_input)
                     }
 
                     const html = `
@@ -545,6 +562,10 @@ function viewStudentResponse(payload) {
                                 ${ratingsHTML}
                                 ${radioHtml}
                                 ${checkboxHtml}
+                                ${dropdownHtml}
+                                ${renderFileHtml}
+                                ${dateHtml}
+                                ${timeHtml}
                                 <div class="text-muted small mt-3">
                                     <i class="bi bi-clock-history me-1"></i>
                                     Submitted on: ${formattedDate}
@@ -980,7 +1001,7 @@ function retrieveFormTemplate(formId, version = null) {
                                     <label class="form-label fw-bold">${question.value}</label>
                                     <input type="hidden" class="form-control" name="form_dropdown_question[${questionIndex}]" value="${question.value}">
                                 </div>
-                                <select class="form-select" name="form_dropdown_answer" aria-label="Default select example" required>
+                                <select class="form-select" name="form_dropdown_answer[${questionIndex}]" aria-label="Default select example" required>
                                     <option selected>Select answer</option>
                                     ${dropdownOptions}
                                 </select>
@@ -1014,8 +1035,8 @@ function retrieveFormTemplate(formId, version = null) {
                                 .filter(f => f.name.startsWith(`form_checkbox_option_label[${questionIndex}]`))
                                 .map((option, index) => `
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="form_checkbox_option_label[${index + 1}]" value="${option.value}" id="formCheckBoxOptionLabel[${index + 1}]">
-                                        <label class="form-check-label" for="formCheckBoxOptionLabel[${index + 1}]">
+                                        <input type="checkbox" class="form-check-input" name="form_checkbox_option_label[${questionIndex}]" value="${option.value}" id="formCheckBoxOptionLabel[${index + 1}]">
+                                        <label class="form-check-label" for="formCheckBoxOptionLabel[${questionIndex}]">
                                             ${option.value}
                                         </label>
                                     </div>
@@ -1698,15 +1719,166 @@ function deleteFormTemplate(payload){
     });
 }
 
+function renderFileUpload(label, file = null) {
+    let html = '';
+
+    if (!file) {
+        html += `
+            <div class="mb-3">
+                <label><strong>${label}</strong></label>
+                <div class="mt-2">
+                    <input type="file" class="form-control" name="fileUpload" />
+                </div>
+            </div>
+        `;
+    } else {
+        let displayContent;
+
+        if (typeof file === 'string') {
+            displayContent = `
+                <a href="/uploads/${file}" target="_blank">${file}</a>
+            `;
+        } else if (file instanceof File) {
+            const fileName = file.name;
+            const fileSizeKB = (file.size / 1024).toFixed(2) + ' KB';
+            displayContent = `
+                ${fileName} 
+                <small class="text-muted">(${fileSizeKB})</small>
+            `;
+        } else if (typeof file === 'object' && file !== null) {
+            const fileName = file.name || 'Unknown File';
+            const fileSize = file.size ? (file.size / 1024).toFixed(2) + ' KB' : '';
+            const fileURL = file.url || '#';
+
+            displayContent = `
+                <a href="${fileURL}" target="_blank">${fileName}</a>
+                ${fileSize ? `<small class="text-muted">(${fileSize})</small>` : ''}
+            `;
+        } else {
+            displayContent = 'No file was uploaded.';
+        }
+
+        html += `
+            <div class="mb-3">
+                <label><strong>${label}</strong></label>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${displayContent}
+                </p>
+            </div>
+        `;
+    }
+
+    return html;
+}
+
+function renderDate(labels, values){
+    let html = '';
+
+    if (typeof labels === 'string' && typeof values !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${labels}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${values || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof labels === 'object' && labels !== null) {
+        Object.keys(labels).forEach(key => {
+            const question = labels[key];
+            const label = (typeof values === 'object' && values !== null && values[key] !== undefined)
+                ? values[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${label}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html; 
+}
+
+function renderDropdown(questions, answers){
+    let html = '';
+
+    if (typeof questions === 'string' && typeof answers !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${answers || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof questions === 'object' && questions !== null) {
+        Object.keys(questions).forEach(key => {
+            const question = questions[key];
+            const label = (typeof answers === 'object' && answers !== null && answers[key] !== undefined)
+                ? answers[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${label}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html; 
+}
+
+function renderTime(labels, values){
+    let html = '';
+
+    if (typeof labels === 'string' && typeof values !== 'object') {
+        html += `
+            <div class="mb-3">
+                <strong>${questions}</strong>
+                <p class="mt-2 p-3 border rounded bg-light">
+                    ${values || 'No answer provided.'}
+                </p>
+            </div>
+        `;
+    } else if (typeof labels === 'object' && labels !== null) {
+        Object.keys(labels).forEach(key => {
+            const question = labels[key];
+            const label = (typeof values === 'object' && values !== null && values[key] !== undefined)
+                ? values[key]
+                : 'No answer provided.';
+
+            html += `
+                <div class="mb-3" key="${key}">
+                    <strong>${question}</strong>
+                    <p class="mt-2 p-3 border rounded bg-light">
+                        ${label}
+                    </p>
+                </div>
+            `;
+        });
+    }
+
+    return html; 
+}
+
 function renderCheckbox(questions, labels) {
-       let html = '';
+    let html = '';
 
     if (typeof questions === 'string' && typeof labels !== 'object') {
         html += `
             <div class="mb-3">
                 <strong>${questions}</strong>
                 <p class="mt-2 p-3 border rounded bg-light">
-                    ${answers || 'No answer provided.'}
+                    ${labels || 'No answer provided.'}
                 </p>
             </div>
         `;
@@ -1850,4 +2022,3 @@ function renderStarRating(rating) {
 
     return starsHTML;
 }
-

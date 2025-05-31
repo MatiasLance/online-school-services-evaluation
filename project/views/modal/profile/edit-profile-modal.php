@@ -3,7 +3,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header modal-primary-header">
-        <h1 class="modal-title modal-primary-title fs-5" id="rprofileModalLabel">Edit Profile</h1>
+        <h1 class="modal-title modal-primary-title fs-5" id="adminProfileModalLabel">Edit Profile</h1>
         <button type="button" class="btn-close modal-primary-button-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

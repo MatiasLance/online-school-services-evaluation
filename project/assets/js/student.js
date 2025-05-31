@@ -14,8 +14,8 @@ let visibilityMapForDepartment = {
 
 jQuery(function($){
 
-    const passwordField = $('#password, #studentPassword');
-    const confirmPasswordField = $('#confirmPassword, #studentConfirmPassword');
+    const passwordField = $('#password, #studentPassword, #newStudentPassword');
+    const confirmPasswordField = $('#confirmPassword, #studentConfirmPassword, #confirmNewStudentPassoword');
     const passwordIcon = $('#togglePassword i, #toggleNewStudentPassword i');
     const confirmPasswordIcon = $('#toggleConfirmPassword i, #toggleNewStudentConfirmPassword i');
 
@@ -127,20 +127,20 @@ jQuery(function($){
     })
 
     // Update Student Account
-    $(document).on('submit', '#EditStudentAccountDetail', function(e){
+    $(document).on('submit', '#EditStudentAccountDetail, #saveEditStudentDetailAccount', function(e){
         e.preventDefault();
 
         const payload = {
-            id: $('#studentAccountId').val(),
-            first_name: $('#retrieveStudentFirstName').val(),
-            last_name: $('#retrieveStudentLastName').val(),
-            email: $('#retrieveStudentEmail').val(),
-            gender: $('#retrieveSelectedStudentGender').val(),
-            year_level: $('#retrieveStudentYearLevel').val(),
-            department: $('#retrieveStudentDepartment').val(),
-            section: $('#retrieveStudentSection').val(),
-            password: $('#studentPassword').val(),
-            confirm_password: $('#studentConfirmPassword').val()
+            id: $('#studentAccountId, #studentProfileId').val(),
+            first_name: $('#retrieveStudentFirstName, #editStudentFirstName').val(),
+            last_name: $('#retrieveStudentLastName, #editStudentLastName').val(),
+            email: $('#retrieveStudentEmail, #editStudentEmail').val(),
+            gender: $('#retrieveSelectedStudentGender, #editStudentGender').val(),
+            year_level: $('#retrieveStudentYearLevel, #editStudentYearLevel').val(),
+            department: $('#retrieveStudentDepartment, #editStudentDepartment').val(),
+            section: $('#retrieveStudentSection, #editStudentSection').val(),
+            password: $('#studentPassword, #newStudentPassword').val(),
+            confirm_password: $('#studentConfirmPassword, #confirmNewStudentPassoword').val()
         }
 
         if (payload.password !== payload.confirm_password) {
@@ -155,7 +155,13 @@ jQuery(function($){
         updateStudentAccountDetail(payload);
     })
 
-    $('#retrieveStudentYearLevel,#retrieveStudentDepartment, #inputGroupYearLevel, #inputGroupDepartment').on('change', updateVisibility);
+    // Open Student Detail Modal
+    $('#openStudentProfile').on('click', function(){
+        const id = $('#studentProfileId').val();
+        retrieveStudentAccount(id);
+    });
+
+    $('#retrieveStudentYearLevel,#retrieveStudentDepartment, #inputGroupYearLevel, #inputGroupDepartment, #editStudentYearLevel, #editStudentDepartment').on('change', updateVisibility);
 
     listOfStudentAccounts();
 
@@ -237,11 +243,11 @@ function retrieveStudentAccount(studentAccountId){
                 jQuery('#studentAccountToBeDeleted').text(`${response.data.firstname} ${response.data.lastname}`)
                 jQuery('#studentAccountIDToBeDeleted').val(response.data.id);
                 jQuery('#studentAccountId').val(response.data.id);
-                jQuery('#retrieveStudentFirstName').val(response.data.firstname);
-                jQuery('#retrieveStudentLastName').val(response.data.lastname);
-                jQuery('#retrieveStudentEmail').val(response.data.email);
+                jQuery('#retrieveStudentFirstName, #editStudentFirstName').val(response.data.firstname);
+                jQuery('#retrieveStudentLastName, #editStudentLastName').val(response.data.lastname);
+                jQuery('#retrieveStudentEmail, #editStudentEmail').val(response.data.email);
                 // Handle Gender dropdown
-                const genderSelect = jQuery('#retrieveSelectedStudentGender');
+                const genderSelect = jQuery('#retrieveSelectedStudentGender, #editStudentGender');
                 const selectedGender = response.data.gender.toLowerCase();
                 const existingGenderOption = genderSelect.find(`option[value="${selectedGender}"]`);
                 if (existingGenderOption.length === 0 && selectedGender !== '') {
@@ -250,7 +256,7 @@ function retrieveStudentAccount(studentAccountId){
                     existingGenderOption.prop('selected', true);
                 }
                 // Handle Year Level Dropdown
-                const yearLevelSelect = jQuery('#retrieveStudentYearLevel');
+                const yearLevelSelect = jQuery('#retrieveStudentYearLevel, #editStudentYearLevel');
                 const selectedYearLevel = response.data.year_level;
                 const existingYearLevelOption = yearLevelSelect.find(`option[value="${selectedYearLevel}"]`);
                 if (existingYearLevelOption.length === 0 && selectedYearLevel !== '') {
@@ -259,7 +265,7 @@ function retrieveStudentAccount(studentAccountId){
                     existingYearLevelOption.prop('selected', true);
                 }
                 // Handle Department Dropdown
-                const departmentSelect = jQuery('#retrieveStudentDepartment');
+                const departmentSelect = jQuery('#retrieveStudentDepartment, #editStudentDepartment');
                 const selectedDepartment = response.data.department;
                 const existingDepartmentOption = departmentSelect.find(`option[value="${selectedDepartment}"]`);
                 if (existingDepartmentOption.length === 0 && selectedDepartment !== '') {
@@ -268,7 +274,7 @@ function retrieveStudentAccount(studentAccountId){
                     existingDepartmentOption.prop('selected', true);
                 }
                 // Handle Section Dropdown
-                const sectionSelect = jQuery('#retrieveStudentSection');
+                const sectionSelect = jQuery('#retrieveStudentSection, #editStudentSection');
                 const selectedSection = response.data.section;
                 const existingSectionOption = sectionSelect.find(`option[value="${selectedSection}"]`);
                 if (existingDepartmentOption.length === 0 && selectedSection !== '') {
@@ -302,7 +308,7 @@ function updateStudentAccountDetail(payload){
                     icon: 'success'
                 }).then((result) => {
                     if(result.isConfirmed){
-                        jQuery('#studentPassword, #studentConfirmPassword').val('');
+                        jQuery('#studentPassword, #studentConfirmPassword, #newStudentPassword, #confirmNewStudentPassoword').val('');
                         listOfStudentAccounts();
                     }
                 });
@@ -369,8 +375,8 @@ function deleteStudentAccount(payload){
 }
 
 function updateVisibility() {
-    let selectedYear = jQuery('#retrieveStudentYearLevel, #inputGroupYearLevel').val();
-    let selectedDepartment = jQuery('#retrieveStudentDepartment, #inputGroupDepartment').val();
+    let selectedYear = jQuery('#retrieveStudentYearLevel, #inputGroupYearLevel, #editStudentYearLevel').val();
+    let selectedDepartment = jQuery('#retrieveStudentDepartment, #inputGroupDepartment, #editStudentDepartment').val();
     
     let yearClasses = visibilityMapForYearLevel[selectedYear] || [];
     let departmentClasses = visibilityMapForDepartment[selectedDepartment] || [];

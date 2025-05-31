@@ -10,4 +10,7 @@
  </div>
 
 <!-- Footer -->
-<?php include __DIR__ . '/../footer.php' ?>
+<?php
+    include __DIR__ . '/../modal/profile/student-edit-profile-modal.php';
+    include __DIR__ . '/../footer.php';
+?>

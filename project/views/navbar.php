@@ -4,11 +4,19 @@
     <div class="dropdown">
         <i class="fa-solid fa-gear gear-dropdown-menu-icon fs-4" id="userDropdown" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false"></i>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
-            <li>
+            <?php if(isset($_SESSION['student_id'])){ ?>
+                <li>
+                    <a class="dropdown-item montserrat-medium text-capitalize" id="openStudentProfile" data-bs-toggle="modal" data-bs-target="#studentProfileModal" href="#">
+                        <i class="fa-solid fa-user"></i> profile
+                    </a>
+                </li>
+           <?php }else{ ?>
+              <li>
                 <a class="dropdown-item montserrat-medium text-capitalize" data-bs-toggle="modal" data-bs-target="#adminProfileModal" href="#">
                     <i class="fa-solid fa-user"></i> profile
                 </a>
             </li>
+            <?php } ?>
             <li><hr class="dropdown-divider"></li>
             <li>
                 <a class="dropdown-item montserrat-medium text-capitalize logout" href="#">
