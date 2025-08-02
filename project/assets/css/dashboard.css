@@ -32,12 +32,11 @@
 
 .btn-vibrant-golden-yellow:hover {
     background-color:  var(--darken-golden-shade);
-    transform: scale(1.05); /* Subtle pop effect */
+    transform: scale(1.05);
 }
 
 .student-view-form-container,
-.dashboard-tabs-container,
-.form-tabs-container {
+.dashboard-tabs-container {
     background-color: var(--primary-color);
     display: flex;
     flex-direction: column;
@@ -59,4 +58,34 @@
 .dashboard-nav-link:hover,
 .form-nav-link:hover {
     color: var(--font-color-white);
+}
+
+/* Css enhancement for card form */
+.card {
+  border-radius: 10px;
+}
+
+.form-control[readonly] {
+  background-color: #fff;
+  opacity: 1;
+}
+
+.bg-custom-info {
+    background-color: var(--primary-color);
+}
+
+.response-list div {
+    margin-bottom: 5px;
+}
+
+.status-progress div {
+    margin-bottom: 5px;
+}
+
+.progress {
+    height: 10px;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
 }

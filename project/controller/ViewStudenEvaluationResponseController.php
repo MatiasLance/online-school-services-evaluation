@@ -25,9 +25,9 @@ if (!$formId || !$studentId) {
 }
 
 try {
-    $sql = "SELECT id, form_id, form_version, student_id, submission_data, submitted_at
-            FROM form_submissions
-            WHERE form_id = ? AND student_id = ?";
+    $sql = "SELECT form_response, submitted_at
+            FROM forms
+            WHERE id = ? OR student_id = ?";
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $formId, $studentId);
@@ -47,7 +47,8 @@ try {
 
     $submissions = [];
     while ($row = $result->fetch_assoc()) {
-        $row['submission_data'] = json_decode($row['submission_data'], true);
+        $row['submission_data'] = json_decode($row['form_response'], true);
+        $row['submitted_at'] = $row['submitted_at'];
         $submissions[] = $row;
     }
 

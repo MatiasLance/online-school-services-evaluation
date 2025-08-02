@@ -16,7 +16,15 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" id="deleteDepartmentDetail" class="btn btn-vibrant-golden-yellow btn-sm" data-bs-dismiss="modal">Delete</button>
+        <button 
+          type="button" 
+          id="deleteDepartmentDetail" 
+          class="btn btn-danger d-flex align-items-center gap-2 px-3 py-2 btn-sm" 
+          data-bs-dismiss="modal"
+        >
+          <i class="bi bi-trash" style="font-size: 1.1rem;"></i>
+          <span>Delete</span>
+        </button>
       </div>
     </div>
   </div>

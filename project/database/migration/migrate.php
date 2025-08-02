@@ -55,54 +55,11 @@ class DatabaseMigrator
             )",
             "forms" => "CREATE TABLE IF NOT EXISTS forms (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                description TEXT,
-                department_id INT,
-                category_id INT,
-                version INT DEFAULT 1,
-                status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                created_by INT,
-                published_at TIMESTAMP NULL,
-                FOREIGN KEY (created_by) REFERENCES users(id),
-                CONSTRAINT fk_forms_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-                FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE,
-                CONSTRAINT fk_forms_created_by FOREIGN KEY (created_by) REFERENCES users(id)
-            )",
-            "form versions" => "CREATE TABLE form_versions (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                form_id INT NOT NULL,
-                version INT NOT NULL,
-                form_fields JSON NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                created_by INT,
-                notes TEXT,
-                FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
-                FOREIGN KEY (created_by) REFERENCES users(id),
-                UNIQUE KEY (form_id, version)
-            )",
-            "form submissions" => "CREATE TABLE form_submissions (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                form_id INT NOT NULL,
-                form_version INT NOT NULL,
-                student_id INT,
-                submission_data JSON NOT NULL,
-                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (form_id) REFERENCES forms(id),
-                FOREIGN KEY (form_id, form_version) REFERENCES form_versions(form_id, version),
-                FOREIGN KEY (student_id) REFERENCES students(id)
-            )",
-            "form student" => "CREATE TABLE IF NOT EXISTS form_student (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                form_id INT NOT NULL,
                 student_id INT NOT NULL,
-                category_id INT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE,
-                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-                UNIQUE (form_id, student_id)
+                form_response JSON NOT NULL,
+                is_submitted BOOLEAN DEFAULT FALSE,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
             )"
         ];
 

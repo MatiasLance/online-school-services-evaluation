@@ -8,82 +8,89 @@ header('Content-Type: application/json');
 
 $errors = [];
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    echo json_encode([
+        "status" => "error",
+        "messages" => ["Method not allowed."]
+    ]);
+    exit();
+}
 
-    $formId = isset($_POST['form_id']) ? intval($_POST['form_id']) : null;
-    $formVersion = isset($_POST['form_version_id']) ? intval($_POST['form_version_id']) : null;
-    $studentId = isset($_POST['student_form_feedback_id']) ? intval($_POST['student_form_feedback_id']) : null;
+$input = file_get_contents("php://input");
+if (!$input) {
+    echo json_encode([
+        "status" => "error",
+        "messages" => ["No data received."]
+    ]);
+    exit();
+}
 
-    if (empty($formId)) $errors[] = "Form ID is required.";
-    if (empty($formVersion)) $errors[] = "Form version is required.";
-    if (empty($studentId)) $errors[] = "Student ID is required.";
+$data = json_decode($input, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo json_encode([
+        "status" => "error",
+        "messages" => ["Invalid JSON input: " . json_last_error_msg()]
+    ]);
+    exit();
+}
 
-    if (!empty($errors)) {
-        echo json_encode(["status" => "error", "messages" => $errors]);
-        exit();
-    }
+$student_id = isset($data['student_id']) ? filter_var($data['student_id'], FILTER_VALIDATE_INT) : null;
+$form_response = json_decode($data['form_response']) ?? null;
 
-    $submissionData = [];
+if ($student_id === null || $student_id < 1) {
+    $errors[] = "Valid Student ID is required.";
+}
 
-    foreach ($_POST as $key => $value) {
-        if ($key !== 'form_id' && $key !== 'form_version_id' && $key !== 'student_form_feedback_id') {
-            $submissionData[$key] = sanitizeInput($value);
-        }
-    }
-
-    if (isset($_FILES['signature']) && $_FILES['signature']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = __DIR__ . '/../../uploads/signatures/';
-        $uploadUrl = '/uploads/signatures/';
-        $fileName = uniqid('sig_') . '_' . basename($_FILES['signature']['name']);
-        $filePath = $uploadDir . $fileName;
-
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        $fileType = mime_content_type($_FILES['signature']['tmp_name']);
-
-        if (!in_array($fileType, $allowedTypes)) {
-            $errors[] = "Only JPEG, PNG, and GIF files are allowed for signature.";
-        } elseif (move_uploaded_file($_FILES['signature']['tmp_name'], $filePath)) {
-            $submissionData['signature'] = $uploadUrl . $fileName;
-        } else {
-            $errors[] = "Failed to upload signature.";
-        }
-    }
-
-    if (!empty($errors)) {
-        echo json_encode(["status" => "error", "messages" => $errors]);
-        exit();
-    }
-
-    $submissionJson = json_encode($submissionData);
-
-    $sql = "INSERT INTO form_submissions (form_id, form_version, student_id, submission_data)
-            VALUES (?, ?, ?, ?)";
-
-    if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("iiis", $formId, $formVersion, $studentId, $submissionJson);
-
-        if ($stmt->execute()) {
-            echo json_encode([
-                "status" => "success",
-                "message" => "Feedback submitted successfully.",
-                "form_id" => $formId,
-                "form_version" => $formVersion,
-                "student_id" => $studentId
-            ]);
-        } else {
-            echo json_encode([
-                "status" => "error",
-                "messages" => ["Failed to submit feedback. Please try again."]
-            ]);
-        }
-
-        $stmt->close();
-    } else {
-        echo json_encode([
-            "status" => "error",
-            "messages" => ["Database error. Could not process submission."]
-        ]);
+if (!is_array($form_response) || empty($form_response)) {
+    $errors[] = "Form response must be a non-empty JSON object.";
+} else {
+  $encoded_response = json_encode($form_response, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $errors[] = "Form response contains invalid data (cannot encode to JSON).";
     }
 }
 
+if (!empty($errors)) {
+    echo json_encode([
+        "status" => "error",
+        "messages" => $errors
+    ]);
+    exit();
+}
+
+$final_form_response = $encoded_response ?? json_encode($form_response);
+
+$is_submitted = 1;
+
+$sql = "INSERT INTO forms (student_id, form_response, is_submitted)
+        VALUES (?, ?, ?)";
+
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode([
+        "status" => "error",
+        "messages" => ["Failed to process request. Please try again later."]
+    ]);
+    exit();
+}
+
+$stmt->bind_param("isi", $student_id, $final_form_response, $is_submitted);
+
+if ($stmt->execute()) {
+    echo json_encode([
+        "status" => "success",
+        "message" => "Feedback submitted successfully.",
+        "student_id" => $student_id,
+        "is_submitted" => (bool)$is_submitted,
+        "feedback_id" => $stmt->insert_id
+    ]);
+} else {
+    echo json_encode([
+        "status" => "error",
+        "messages" => ["Failed to save feedback. Please try again."]
+    ]);
+}
+
+$stmt->close();
 $conn->close();

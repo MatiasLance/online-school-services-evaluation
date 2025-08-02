@@ -137,7 +137,13 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-vibrant-golden-yellow btn-sm">Save Changes</button>
+            <button 
+                type="submit" 
+                class="btn btn-vibrant-golden-yellow d-flex align-items-center gap-2 px-3 py-2 btn-sm" 
+            >
+                <i class="bi bi-save" style="font-size: 1.1rem;"></i>
+                <span>Save Changes</span>
+            </button>
         </div>
       </form>
     </div>

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mt-5">
     <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -8,6 +8,8 @@
                 <th scope="col">Status</th>
             </tr>
         </thead>
+        <tbody id="analytics-table-body">
+        </tbody>
     </table>
     </div>
 </div>

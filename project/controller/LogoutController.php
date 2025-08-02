@@ -6,7 +6,7 @@ if(isset($_SESSION['id'])){
     echo json_encode([
         'success' => true,
         'message' => 'Logout successfully!',
-        'redirect' => '/admin'
+        'redirect' => '/'
     ]);
 } elseif (isset($_SESSION['student_id'])) {
     session_unset();

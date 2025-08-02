@@ -20,7 +20,8 @@ $pageJS = [
     "./assets/js/account.js",
     "./assets/js/profile.js",
     "./assets/js/form.js",
-    "./assets/js/student.js"
+    "./assets/js/student.js",
+    "./assets/js/analytics.js"
 ];
 
 $pageContent = __DIR__ . "/contents/view-form-content.php";

@@ -1,6 +1,12 @@
-<button type="button" class="btn btn-vibrant-golden-yellow d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserAccountModal">
-    <i class="fa-regular fa-square-plus" style="font-size: 25px;"></i>
-    <span>Add Admin</span>
+<button 
+  type="button" 
+  class="btn btn-vibrant-golden-yellow d-flex align-items-center gap-2 px-3 py-2" 
+  data-bs-toggle="modal" 
+  data-bs-target="#addUserAccountModal"
+  aria-label="Add New Admin"
+>
+  <i class="bi bi-plus-square me-1" style="font-size: 1.2rem;"></i>
+  <span>Add Admin</span>
 </button>
 
 <div class="d-flex flex-column flex-md-row justify-content-between mt-5">

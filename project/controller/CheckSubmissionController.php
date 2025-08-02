@@ -13,51 +13,58 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$formId = isset($_POST['form_id']) ? intval($_POST['form_id']) : null;
-$formVersion = isset($_POST['form_version']) ? intval($_POST['form_version']) : null;
-$studentId = isset($_POST['student_id']) ? intval($_POST['student_id']) : null;
+$student_id = filter_input(INPUT_POST, 'student_id', FILTER_VALIDATE_INT);
 
-if (!$formId || !$formVersion || !$studentId) {
+if (!$student_id) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Missing required parameters: form_id, form_version, student_id'
+        'message' => 'Missing required parameters: student_id, feedback_id'
     ]);
     exit;
 }
 
 try {
-    $sql = "SELECT form_id, student_id FROM form_submissions 
-            WHERE form_id = ? AND form_version = ? AND student_id = ?";
-    
+    $sql = "SELECT id, student_id, is_submitted 
+            FROM forms 
+            WHERE student_id = ?";
+
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iii", $formId, $formVersion, $studentId);
+    $stmt->bind_param("i", $student_id);
     $stmt->execute();
-    $stmt->store_result();
+    $result = $stmt->get_result();
 
-    $submitted = $stmt->num_rows > 0;
-    $submissionData = [];
-
-    if ($submitted) {
-        $stmt->bind_result($id, $student_id);
-        $stmt->fetch();
-        $submissionData = [
-            'form_id' => $id,
-            'student_id' => $student_id
-        ];
+    if ($row = $result->fetch_assoc()) {
+        echo json_encode([
+            'status' => 'success',
+            'submitted' => (bool)$row['is_submitted'],
+            'data' => [
+                'form_response_id' => (int)$row['id'],
+                'student_id' => (int)$row['student_id'],
+                'is_submitted' => (bool)$row['is_submitted']
+            ],
+            'message' => 'Student has already submitted feedback.'
+        ]);
+    } else {
+        echo json_encode([
+            'status' => 'success',
+            'submitted' => false,
+            'data' => [],
+            'message' => 'Student has not submitted feedback yet.'
+        ]);
     }
 
+    $stmt->close();
+
+} catch (mysqli_sql_exception $e) {
     echo json_encode([
-        'status' => 'success',
-        'submitted' => $submitted,
-        'data' => $submissionData,
-        'message' => $submitted ? 'Student has already submitted feedback.' : 'Student has not submitted feedback yet.'
+        'status' => 'error',
+        'message' => 'Failed to check submission status. Please try again later.'
     ]);
 
-    $stmt->close();
 } catch (Exception $e) {
     echo json_encode([
         'status' => 'error',
-        'message' => 'Database error: ' . $e->getMessage()
+        'message' => 'An unexpected error occurred.'
     ]);
 }
 

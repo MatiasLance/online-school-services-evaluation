@@ -1,177 +1,134 @@
 jQuery(function($) {
-    $.get('./controller/TabulateEvaluationFormController.php')
-      .done(function (res) {
-          if (res.status === 'success') {
-              renderAnalyticsTable(res.data);
-          } else {
-              $('#analytics-table-body').append(`
-                  <tr>
-                      <td colspan="3" class="text-danger text-center">❌ ${res.message}</td>
-                  </tr>
-              `);
-          }
-      })
-      .fail(function () {
-          $('#analytics-table-body').append(`
-              <tr>
-                  <td colspan="3" class="text-danger text-center">⛔ Failed to load analytics data.</td>
-              </tr>
-          `);
-      });
+    function loadAllResponses() {
+        $.ajax({
+            url: 'https://script.google.com/macros/s/AKfycbwoj4kgiDPLDaNSwzPkFAROj6VXFD1n2YZC9WP0IMoyiJN7l3fEpwuSheRCYvjMnIYFzQ/exec',
+            dataType: 'jsonp',
+            success: function(data) {
+                const body = $('#analytics-table-body');
+                body.empty();
+
+                if (data.error) {
+                    body.append(`
+                        <tr>
+                            <td colspan="3" class="text-danger text-center">
+                                ⛔ Error: ${data.error}
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+
+                const { responses } = data;
+
+                if (!responses || responses.length === 0) {
+                    body.append(`
+                        <tr>
+                            <td colspan="3" class="text-muted text-center">
+                                No responses yet.
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+
+                const allQuestions = Object.keys(responses[0] || {});
+                const surveyQuestions = allQuestions.filter(q => 
+                    q.toLowerCase().trim() !== 'timestamp'
+                );
+
+                if (surveyQuestions.length === 0) {
+                    body.append(`
+                        <tr>
+                            <td colspan="3" class="text-muted text-center">
+                                No survey questions found.
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+
+                surveyQuestions.forEach(question => {
+                    const counts = {};
+                    let total = 0;
+
+                    responses.forEach(r => {
+                        const rawAnswer = r[question];
+                        const ans = (rawAnswer || '').trim();
+                        const key = ans === '' ? 'No answer' : ans;
+                        counts[key] = (counts[key] || 0) + 1;
+                        total++;
+                    });
+
+                    const allAreNoAnswer = counts['No answer'] === total && total > 0;
+
+                    let responseText;
+
+                    if (allAreNoAnswer) {
+                        responseText = '<div>No responses</div>';
+                    } else {
+                        const validEntries = Object.entries(counts).filter(([answer]) => answer !== 'No answer');
+                        
+                        if (validEntries.length === 0) {
+                            responseText = '<div>No responses</div>';
+                        } else {
+                            responseText = validEntries
+                                .map(([answer, count]) => {
+                                    return count === 1
+                                        ? `<div>${answer} (${count} response)</div>`
+                                        : `<div>${answer} (${count} responses)</div>`;
+                                })
+                                .join('');
+                        }
+                    }
+
+                    const progressBarHtml = allAreNoAnswer
+                        ? `
+                            <div class="mb-1">
+                                <small>No responses: 0%</small>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        `
+                        : Object.entries(counts)
+                            .filter(([answer]) => answer !== 'No answer')
+                            .map(([answer, count]) => {
+                                const uniqueAnswers = Object.keys(counts).filter(ans => ans !== 'No answer').length;
+                                const percent = uniqueAnswers === 1 ? 100 : ((count / total) * 100).toFixed(1);
+
+                                return `
+                                    <div class="mb-1">
+                                        <small>${answer}: ${percent}%</small>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-custom-info" role="progressbar"
+                                                style="width: ${percent}%;"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+
+                    body.append(`
+                        <tr>
+                            <td><strong>${question}</strong></td>
+                            <td><small class="response-list">${responseText}</small></td>
+                            <td>${progressBarHtml}</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function() {
+                $('#analytics-table-body').html(`
+                    <tr>
+                        <td colspan="3" class="text-danger text-center">
+                            ⛔ Failed to load data. Check deployment.
+                        </td>
+                    </tr>
+                `);
+            }
+        });
+    }
+
+    loadAllResponses();
+
+    setInterval(loadAllResponses, 30000);
 });
-
-function renderAnalyticsTable(data) {
-    let body = jQuery('#analytics-table-body');
-    body.empty();
-
-    function addRow(question, response, status) {
-        body.append(`
-            <tr>
-                <td>${question}</td>
-                <td><strong>${response}</strong></td>
-                <td>${status}</td>
-            </tr>
-        `);
-    }
-
-    function addSpacer() {
-        body.append('<tr><td colspan="3">&nbsp;</td></tr>');
-    }
-
-    body.append(`
-        <tr class="table-info">
-            <td><strong>Total Submissions Analyzed</strong></td>
-            <td colspan="2"><strong>${data.total_submissions_analyzed}</strong></td>
-        </tr>
-    `);
-
-    const q1Responses = data.text_responses.question_one.responses;
-    if (q1Responses.length > 0) {
-        q1Responses.forEach(resp => {
-            addRow(
-                data.text_responses.question_one.question,
-                `Student ID ${resp.student_id}`,
-                resp.answer_one
-            );
-        });
-    } else {
-        addRow(
-            data.text_responses.question_one.question,
-            '–',
-            '<em>No responses yet.</em>'
-        );
-    }
-
-    addSpacer();
-
-    const q2Responses = data.text_responses.question_two.responses;
-    if (q2Responses.length > 0) {
-        q2Responses.forEach(resp => {
-            addRow(
-                data.text_responses.question_two.question,
-                `Student ID ${resp.student_id}`,
-                resp.answer_two
-            );
-        });
-    } else {
-        addRow(
-            data.text_responses.question_two.question,
-            '–',
-            '<em>No responses yet.</em>'
-        );
-    }
-
-    addSpacer();
-
-    const rec = data.recommendation_responses;
-    addRow(
-        rec.question,
-        'Yes',
-        `
-        <div class="progress mt-2" style="height: 20px;">
-            <div class="progress-bar bg-success" 
-                role="progressbar" 
-                style="width: ${rec.responses.yes.percentage}%;" 
-                aria-valuenow="${rec.responses.yes.percentage}" 
-                aria-valuemin="0" 
-                aria-valuemax="100">
-                ${rec.responses.yes.percentage}%
-            </div>
-        </div>
-        `
-    );
-    addRow(
-        '',
-        'No',
-        `
-        <div class="progress mt-2" style="height: 20px;">
-            <div class="progress-bar bg-success" 
-                role="progressbar" 
-                style="width: ${rec.responses.no.percentage}%;" 
-                aria-valuenow="${rec.responses.no.percentage}" 
-                aria-valuemin="0" 
-                aria-valuemax="100">
-                ${rec.responses.no.percentage}%
-            </div>
-        </div>
-        `
-    );
-    addRow(
-        '',
-        'Maybe',
-        `
-        <div class="progress mt-2" style="height: 20px;">
-            <div class="progress-bar bg-success" 
-                role="progressbar" 
-                style="width: ${rec.responses.maybe.percentage}%;" 
-                aria-valuenow="${rec.responses.maybe.percentage}" 
-                aria-valuemin="0" 
-                aria-valuemax="100">
-                ${rec.responses.maybe.percentage}%
-            </div>
-        </div>
-        `
-    );
-    if (rec.responses.unknown.count > 0) {
-        addRow('', 'Unknown', `${rec.responses.unknown.count} responses`);
-    }
-
-    addSpacer();
-
-    const act = data.extracurricular_responses;
-    addRow(
-        act.question,
-        'Sports',
-        `
-        <div class="progress mt-2" style="height: 20px;">
-            <div class="progress-bar bg-success" 
-                role="progressbar" 
-                style="width: ${act.responses.sports.percentage}%;" 
-                aria-valuenow="${act.responses.sports.percentage}" 
-                aria-valuemin="0" 
-                aria-valuemax="100">
-                ${act.responses.sports.percentage}%
-            </div>
-        </div>
-        `
-    );
-    addRow('', 'Arts & Culture', `${act.responses.arts_culture.count} students (${act.responses.arts_culture.percentage}%)`);
-    addRow('', 'Scouts', `${act.responses.scouts.count} students (${act.responses.scouts.percentage}%)`);
-    addRow('', 'Academic Clubs', `${act.responses.academic_clubs.count} students (${act.responses.academic_clubs.percentage}%)`);
-
-    addSpacer();
-
-    const sat = data.satisfaction_responses;
-    addRow(
-        sat.question,
-        'Very Satisfied',
-        `${sat.responses.very_satisfied.count} students (${sat.responses.very_satisfied.percentage}%)`
-    );
-    addRow('', 'Satisfied', `${sat.responses.satisfied.count} students (${sat.responses.satisfied.percentage}%)`);
-    addRow('', 'Neutral', `${sat.responses.neutral.count} students (${sat.responses.neutral.percentage}%)`);
-    addRow('', 'Dissatisfied', `${sat.responses.dissatisfied.count} students (${sat.responses.dissatisfied.percentage}%)`);
-    addRow('', 'Very Dissatisfied', `${sat.responses.very_dissatisfied.count} students (${sat.responses.very_dissatisfied.percentage}%)`);
-    if (sat.responses.unknown.count > 0) {
-        addRow('', 'Unknown', `${sat.responses.unknown.count} responses`);
-    }
-}

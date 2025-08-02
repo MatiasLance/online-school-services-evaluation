@@ -15,7 +15,15 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" id="saveEditedCategoryDetail" class="btn btn-vibrant-golden-yellow btn-sm" data-bs-dismiss="modal">Save</button>
+        <button 
+          type="button" 
+          id="saveEditedCategoryDetail" 
+          class="btn btn-vibrant-golden-yellow d-flex align-items-center gap-2 px-3 py-2 btn-sm" 
+          data-bs-dismiss="modal"
+        >
+          <i class="bi bi-save" style="font-size: 1.1rem;"></i>
+          <span>Save</span>
+        </button>
       </div>
     </div>
   </div>

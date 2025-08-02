@@ -10,7 +10,16 @@
             <p class="fs-6 text-muted">Are you sure you want to delete <strong id="categoryNameToBeDeleted"></strong>? This action cannot be undone.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-vibrant-golden-yellow btn-sm" data-bs-toggle="modal" data-bs-target="#categoryAskPasswordModal" data-bs-auto-close="false">Continue</button>
+            <button 
+              type="button" 
+              class="btn btn-danger d-flex align-items-center gap-2 px-3 py-2 btn-sm" 
+              data-bs-toggle="modal" 
+              data-bs-target="#categoryAskPasswordModal" 
+              data-bs-auto-close="false"
+            >
+              <i class="bi bi-arrow-right" style="font-size: 1.1rem;"></i>
+              <span>Continue</span>
+            </button>
           </div>
         </div>
       </div>

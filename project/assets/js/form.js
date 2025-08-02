@@ -10,6 +10,12 @@ jQuery(function($){
     // Initially hide these button
     $('#saveFormButton, #submitFeedBack, #saveEvaluationFormChanges').hide();
 
+    const currentStudentLoginID = $('#student_id').val()
+
+    const payload = {student_id: currentStudentLoginID};
+
+    hasSubmittedFeedback(payload);
+
     // Generate form header
     $('#createForm').on('click', function(){
 
@@ -396,13 +402,29 @@ jQuery(function($){
             title: $('#formTitle').val().trim(),
             description: $('#formDescription').val().trim(),
             student_id: $('#student_id').val() || null,
-            category_id: $('#category_id').val() || null, //
+            category_id: $('#category_id').val() || null,
             form_fields: JSON.stringify($(this).serializeArray()),
             status: $('#status').val() || 'draft'
         };
     
         saveFormTemplate(payload);
     });
+
+    /****************************************Save Form Question Form***********************************************/
+    $('#formQuestion').on('submit', function(e) {
+        e.preventDefault();
+
+        const payload = {
+            title: $('#formTitle').val().trim(),
+            description: $('#formDescription').val().trim(),
+            student_id: $('#student_id').val() || null,
+            category_id: $('#category_id').val() || null,
+            form_fields: JSON.stringify($(this).serializeArray()),
+            status: $('#status').val() || 'draft'
+        }
+
+        console.log(payload);
+    })
 
     /****************************************Retrieve Form***********************************************/
     if (window.location.pathname === '/view-form' && window.location.search.includes('form_id=')) {
@@ -446,14 +468,12 @@ jQuery(function($){
     /****************************************Form Submission***********************************************/
     $('#formFeedBack').on('submit', function(e){
         e.preventDefault();
+        const payload = {
+            student_id: $('#student_id').val(),
+            form_response: JSON.stringify($(this).serializeArray())
+        }
 
-        const data = new FormData(this)
-
-        // for (const pair of data.entries()) {
-        //     console.log(pair[0], pair[1]);
-        // }
-
-        submitFeedback(data);
+        submitFeedback(payload);
     });
 
     /****************************************Form Template Update***********************************************/
@@ -495,12 +515,9 @@ function viewStudentResponse(payload) {
         dataType: 'json',
         success: function (response) {
             if (response.status === 'success') {
-                const container = jQuery('#studentViewResponseDetailsContainer');
-                container.empty();
 
                 response.data.forEach((submission, index) => {
                     const data = submission.submission_data;
-                    console.log(data)
                     const submittedAt = new Date(submission.submitted_at);
                     const formattedDate = submittedAt.toLocaleString('en-US', {
                         year: 'numeric',
@@ -510,71 +527,9 @@ function viewStudentResponse(payload) {
                         minute: '2-digit'
                     });
 
-                    let checkboxHtml = ''
-                    if(data.form_checkbox_question){
-                        checkboxHtml = renderCheckbox(data.form_checkbox_question, data.form_checkbox_option_label);
-                    }
+                    const feedbackMap = groupFeedback(data);
+                    renderFeedback(feedbackMap, formattedDate);
 
-                    let radioHtml = ''
-                    if(data.form_radio_question){
-                        radioHtml = renderRadio(data.form_radio_question, data.form_radio_label);
-                    }
-
-                    let ratingsHTML = '';
-                    if (data.form_rating_question) {
-                        ratingsHTML = renderRatings(data.form_rating_question, data.form_rating_value);
-                    }
-
-                    let paragraphsHTML = '';
-                    if (data.form_paragraph_question) {
-                        paragraphsHTML = renderParagraphs(data.form_paragraph_question, data.form_paragraph_answer)
-                    }
-
-                    let dateHtml = ''
-                    if (data.form_date_label) {
-                        dateHtml = renderDate(data.form_date_label, data.form_date_value)
-                    }
-
-                    let timeHtml = ''
-                    if (data.form_time_label) {
-                        timeHtml = renderTime(data.form_time_label, data.form_time_value)
-                    }
-
-                    let dropdownHtml = ''
-                    if (data.form_dropdown_question) {
-                        dropdownHtml = renderDropdown(data.form_dropdown_question, data.form_dropdown_answer)
-                    }
-
-                    let renderFileHtml = ''
-                    if (data.form_file_upload_question) {
-                        renderFileHtml = renderFileUpload(data.form_file_upload_question, data.form_file_upload_input)
-                    }
-
-                    const html = `
-                        <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-white py-3">
-                                <h5 class="card-title mb-0">${data.form_title}</h5>
-                                <small class="text-muted">Version ${submission.form_version}</small>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text text-secondary">${data.form_description}</p>
-                                ${paragraphsHTML}
-                                ${ratingsHTML}
-                                ${radioHtml}
-                                ${checkboxHtml}
-                                ${dropdownHtml}
-                                ${renderFileHtml}
-                                ${dateHtml}
-                                ${timeHtml}
-                                <div class="text-muted small mt-3">
-                                    <i class="bi bi-clock-history me-1"></i>
-                                    Submitted on: ${formattedDate}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    container.append(html);
                 });
             }
         },
@@ -588,10 +543,10 @@ function submitFeedback(payload) {
     jQuery.ajax({
         url: './controller/SubmitFormFeedbackController.php',
         type: 'POST',
-        data: payload,
-        contentType: false,
-        processData: false,
+        data: JSON.stringify(payload),
+        contentType: 'application/json',
         dataType: 'json',
+        processData: false,
         success: function (response) {
             if (response.status === 'success') {
                 Swal.fire({
@@ -600,11 +555,7 @@ function submitFeedback(payload) {
                     icon: 'success'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const payload = {
-                            form_id: response.form_id,
-                            form_version: response.form_version,
-                            student_id: response.student_id
-                        }
+                        const payload = {student_id: response.student_id}
                         hasSubmittedFeedback(payload)
                     }
                 });
@@ -635,7 +586,7 @@ function hasSubmittedFeedback(payload){
         dataType: 'json',
         success: function (response) {
             if (response.status === 'success') {
-                if(response.submitted){
+                if(response.submitted === true){
                     jQuery('#formFeedBack').removeClass('d-flex').addClass('d-none');
                     jQuery('#displayNoteMessage').append(`
                             <div class="card">
@@ -648,11 +599,11 @@ function hasSubmittedFeedback(payload){
                                     </h5>
 
                                     <!-- Button to Trigger Modal -->
-                                    <button type="button" class="btn btn-outline-primary mt-2" id="viewStudentResponse" data-bs-toggle="modal" data-bs-target="#viewResponseModal" data-id="${response.data.form_id}">
+                                    <button type="button" class="btn btn-outline-primary mt-2" id="viewStudentResponse" data-bs-toggle="modal" data-bs-target="#viewResponseModal" data-id="${response.data.form_response_id}">
                                         View your response
                                     </button>
                                 </div>
-                            </div>`)
+                            </div>`);
                 }else{
                     jQuery('#formFeedBack').removeClass('d-none').addClass('d-flex');
                 }
@@ -2021,4 +1972,84 @@ function renderStarRating(rating) {
     }
 
     return starsHTML;
+}
+
+function groupFeedback(responseData) {
+    const map = {};
+
+    jQuery.each(responseData, function (index, item) {
+        const match = item.name.match(/^(question|answer)_([\w-]+)$/);
+        if (!match) return;
+
+        const [ , type, key ] = match;
+
+        if (!map[key]) {
+            map[key] = { question: '', answers: [] };
+        }
+
+        if (type === 'question') {
+            map[key].question = item.value;
+        } else if (type === 'answer') {
+            map[key].answers.push(item.value);
+        }
+    });
+
+    return map;
+}
+
+function renderFeedback(feedbackMap, submittedAt) {
+    const container = jQuery('#studentViewResponseDetailsContainer');
+    container.empty();
+
+    // --- Step 1: Render Submission Date Header ---
+    if (submittedAt) {
+        const dateEl = jQuery('<div>')
+            .addClass('submission-date mb-4 p-3 bg-light border rounded text-muted small')
+            .html(`
+                <strong>📅 Submitted on:</strong> ${submittedAt}
+            `);
+        container.append(dateEl);
+    }
+
+    // --- Step 2: Render Each Question/Answer ---
+    jQuery.each(feedbackMap, function (key, entry) {
+        if (!entry.question) return;
+
+        let answerContent;
+
+        // Handle multiple answers (e.g., checkboxes)
+        if (entry.answers.length > 1 || ['four', 'five'].includes(key)) {
+            answerContent = jQuery('<div>');
+            jQuery.each(entry.answers, function (i, val) {
+                const label = toTitleCase(val.replace(/-/g, ' '));
+                jQuery('<span>')
+                    .addClass('badge bg-primary me-1 mb-1')
+                    .text(label)
+                    .appendTo(answerContent);
+            });
+        } else {
+            const label = toTitleCase(entry.answers[0]?.replace(/-/g, ' ') || 'No answer');
+            answerContent = jQuery('<span>').addClass('text-muted').text(label);
+        }
+
+        // Create question-answer item
+        const $item = jQuery('<div>')
+            .addClass('feedback-item p-3 mb-3 border rounded bg-white shadow-sm');
+
+        $item.html(`
+            <strong>Q:</strong> ${entry.question}<br>
+            <strong>A:</strong>
+        `).append(' ', answerContent);
+
+        container.append($item);
+    });
+}
+
+// Helper: Convert "academic-clubs" → "Academic Clubs"
+function toTitleCase(str) {
+    return str.split(' ').map(word =>
+        word.split('-').map(part =>
+            part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+        ).join(' ')
+    ).join(' ');
 }

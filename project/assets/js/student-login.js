@@ -52,7 +52,7 @@ jQuery(function($) {
                         if(result.isConfirmed){
                             $(emailField, passwordField).val('');
                             setTimeout(function(){
-                                window.location.href = '/student-dashboard';
+                                window.location.href = '/student-evaluation-form';
                             }, 500)
                         }
                     });
