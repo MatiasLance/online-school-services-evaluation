@@ -1,6 +1,5 @@
-<div class="row mt-5">
-    <div class="table-responsive">
-    <table class="table table-striped">
+<div class="table-responsive">
+    <table class="table">
         <thead>
             <tr>
                 <th scope="col">Questions</th>
@@ -8,7 +7,7 @@
                 <th scope="col">Status</th>
             </tr>
         </thead>
-        <tbody id="analytics-table-body">
+        <tbody id="pod-service-analytics-table-body">
         </tbody>
     </table>
     </div>

@@ -1,42 +1,51 @@
-# Use the official PHP-FPM image
+# syntax=docker/dockerfile:1
+
 FROM php:8.2-fpm
 
 COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 
-# Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libwebp-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    curl \
-    unzip \
-    && docker-php-ext-configure gd --with-jpeg --with-freetype --with-webp \
-    && docker-php-ext-install \
-    gd \
-    mysqli \
-    pdo \
-    pdo_mysql \
-    mbstring \
-    exif \
-    xml \
-    intl \
-    bcmath \
-    opcache
-
-# Install Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/html/
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files to the container
-COPY . /var/www/html
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libzip-dev \
+    libgd-dev \
+    zip \
+    curl \
+    unzip \
+    git \
+    vim \
+    jpegoptim optipng pngquant gifsicle \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set user dynamically based on local user
+# Install PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mysqli \
+        mbstring \
+        zip \
+        exif \
+        pcntl \
+        gd
+
+# Optional: if you need to reconfigure GD (you're using external)
+RUN docker-php-ext-configure gd --with-external-gd
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY . .
+
 ARG USER_ID
 ARG GROUP_ID
 
@@ -44,11 +53,8 @@ RUN groupadd -g $GROUP_ID lance && \
     useradd -l -u $USER_ID -g $GROUP_ID -m -s /bin/bash lance && \
     chown -R lance:lance /var/www/html
 
-# Switch to new user
 USER lance
 
-# Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Start PHP-FPM
 CMD ["php-fpm"]

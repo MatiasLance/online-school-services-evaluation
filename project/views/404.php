@@ -1,7 +1,10 @@
 <?php
 $pageTitle = "Page Not Found";
 
-$pageCss = ["./assets/css/404.css"];
+$pageCss = [
+    "./assets/css/main.css",
+    "./assets/css/404.css"
+];
 
 $pageJS = [""];
 

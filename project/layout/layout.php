@@ -23,7 +23,7 @@
     }
 ?>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <?php 
     if (isset($pageContent)) {
         require $pageContent;

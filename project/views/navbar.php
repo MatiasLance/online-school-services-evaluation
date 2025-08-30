@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-custom-blue">
   <div class="container d-flex justify-content-between">
-    <span class="navbar-brand mb-0 h1 montserrat-medium text-capitalize">Good day, <?php echo isset($_SESSION['firstname']) ? $_SESSION['firstname'] : $_SESSION['student_firstname']  ?>. <i class="fa-regular fa-hand"></i></span>
+    <span class="navbar-brand mb-0 h1 montserrat-medium text-capitalize color-custom-white">Good day, <?php echo isset($_SESSION['firstname']) ? $_SESSION['firstname'] : $_SESSION['student_firstname']  ?>. <i class="fa-regular fa-hand"></i></span>
     <div class="dropdown">
         <i class="fa-solid fa-gear gear-dropdown-menu-icon fs-4" id="userDropdown" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false"></i>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="userDropdown">
