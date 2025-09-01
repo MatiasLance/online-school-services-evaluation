@@ -13,7 +13,7 @@
                     <th scope="col">Most Common Answer</th>
                 </tr>
             </thead>
-            <tbody id="clinicServiceMostCommonAnswerCard">
+            <tbody id="guidanceServiceMostCommonAnswerCard">
             </tbody>
         </table>
     </div>
