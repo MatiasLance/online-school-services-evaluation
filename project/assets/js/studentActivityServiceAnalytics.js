@@ -6,23 +6,26 @@ const generalWeightAverageContainer = jQuery('#generalWeightAverageContainer');
 let currentCount = 0;
 var isLoading = false;
 
-jQuery(function() {
+jQuery(function($) {
     generalWeightAverageContainer.hide();
     loadAllResponses();
-    setInterval(loadAllResponses, 30000);
+    $('#refreshStudentActivityServiceEvaluationResult').on('click', function(){
+        loadAllResponses();
+    });
 });
 
 function loadAllResponses() {
     jQuery.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbwXLeA1aTEmVtTGCid6sUszwiG_2J_fHVexgQAfjJNVwON8lARzjaqM69obCAgvq2DaOA/exec',
+        url: 'https://script.google.com/macros/s/AKfycbz-Zwt7LZz2GEkTqIzYWexKca6ULZS66y_Kw_Pl9Ek7A8osFzK7enJMjBWy9tbCgffPew/exec',
         dataType: 'jsonp',
         beforeSend: function() {
             body.empty();
             mostCommonAnswerCard.empty();
             generalWeightAverageContainer.hide();
+             jQuery('#summarizeBtn').attr('disabled', true)
             body.append(`
                 <tr>
-                    <td colspan="3" class="text-danger text-center">
+                    <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
                             <div class="spinner-border" role="status">
                                 <span class="visually-hidden">Loading...</span>
@@ -49,11 +52,14 @@ function loadAllResponses() {
             mostCommonAnswerCard.empty();
             generalWeightAverage.empty();
             generalWeightAverageContainer.show();
+             jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
+                generalWeightAverageContainer.hide();
+                jQuery('#summarizeBtn').attr('disabled', true)
                 body.append(`
                     <tr>
-                        <td colspan="3" class="text-secondary text-center">
+                        <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
                         </td>
                     </tr>
@@ -61,12 +67,14 @@ function loadAllResponses() {
                 return;
             }
 
-            const { responses, mostCommonResponses, weightedAverages } = data;
+            const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
+                generalWeightAverageContainer.hide();
+                jQuery('#summarizeBtn').attr('disabled', true)
                 body.append(`
                     <tr>
-                        <td colspan="3" class="text-muted text-center">
+                        <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
@@ -89,7 +97,7 @@ function loadAllResponses() {
             if (surveyQuestions.length === 0) {
                 body.append(`
                     <tr>
-                        <td colspan="3" class="text-muted text-center">
+                        <td colspan="4" class="text-muted text-center">
                             No survey questions found.
                         </td>
                     </tr>
@@ -161,12 +169,16 @@ function loadAllResponses() {
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
                         <td style="width: 250px;">${progressBarHtml}</td>
+                        <td>${formYearCreated}</td>
                     </tr>
                 `);
             });
 
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
+                    if(item.question.toLowerCase() === 'comments and suggestions'){
+                        summarizeCommenAndSuggestion(item.mostCommon)
+                    }
                     mostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
@@ -188,15 +200,6 @@ function loadAllResponses() {
                         `);
                     }
                 });
-                
-
-                generalWeightAverage.prepend(`
-                 <div class="card shadow-sm border-0 rounded-3 mb-5">
-                        <div class="card-header bg-custom-blue text-center p-3">
-                            <h5 class="card-title mb-0">General Weight Average</h5>
-                        </div>
-                    </div>
-                `);
             }
 
         },
@@ -212,5 +215,28 @@ function loadAllResponses() {
                 </tr>
             `);
         }
+    });
+}
+
+function summarizeCommenAndSuggestion(textToSummarize) {
+    jQuery('#summarizeBtn').on('click', function () {
+        jQuery.ajax({
+            url: './controller/AutoSummarizeSuggestionAndComment.php',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({ text: textToSummarize }),
+            success: function(response) {
+                if (response && response.summary) {
+                    jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
+                } else {
+                    jQuery('#summaryOutput').text('Invalid response from server.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                jQuery('#summaryOutput').text('Error generating summary.');
+            }
+        });
     });
 }

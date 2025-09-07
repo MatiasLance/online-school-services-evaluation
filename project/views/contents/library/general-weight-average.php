@@ -1,8 +1,9 @@
-<div class="row" id="libraryServiceGeneralWeightAverageContainer">
-    <div class="col-12 mt-4">
-        <div class="card stats-card p-4 fade-in shadow-sm border-0">
-            <ul class="list-group list-group-flush rounded-3 overflow-hidden" id="libraryServiceGWA">
-            </ul>
+<div class="col-12 mb-4" id="libraryServiceGeneralWeightAverageContainer">
+    <div class="card fade-in">
+        <div class="card-header bg-custom-blue text-center">
+            <h5 class="card-title mb-0">General Weight Average</h5>
         </div>
+        <ul class="list-group list-group-flush rounded-3 overflow-hidden" id="libraryServiceGWA">
+        </ul>
     </div>
 </div>

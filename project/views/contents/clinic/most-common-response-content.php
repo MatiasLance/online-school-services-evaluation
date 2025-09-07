@@ -1,6 +1,6 @@
-<div class="row">
-    <div class="card shadow-sm border-0 rounded-3 my-5">
-        <div class="card-header bg-custom-blue text-center p-3">
+<div class="col-12 mb-4">
+    <div class="card fade-in">
+        <div class="card-header bg-custom-blue text-center">
             <h5 class="card-title mb-0">Most Common Anwser</h5>
         </div>
     </div>
