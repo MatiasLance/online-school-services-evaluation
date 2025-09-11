@@ -5,13 +5,20 @@ const generalWeightAverage = jQuery('#campusMinistryServiceGWA');
 const generalWeightAverageContainer = jQuery('#campusMinistryGeneralWeightAverageContainer');
 let currentCount = 0;
 var isLoading = false;
+let evaluationSection = {
+    title: 'Campus Ministry Service',
+    gwa: {}
+};
 
 jQuery(function($) {
     generalWeightAverageContainer.hide();
     loadAllResponses();
     $('#refreshCampusMinistryServiceEvaluationResult').on('click', function(){
         loadAllResponses();
-    })
+    });
+    $('#summarizeBtn').on('click', function () {
+        summarizeCommenAndSuggestion(evaluationSection)
+    });
 });
 
 function loadAllResponses() {
@@ -176,7 +183,7 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        summarizeCommenAndSuggestion(item.mostCommon)
+                        evaluationSection.mca = item.mostCommon
                     }
                     mostCommonAnswerCard.append(`
                          <tr>
@@ -192,6 +199,7 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
+                        evaluationSection.gwa[item.question] = item.average;
                         generalWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
@@ -217,25 +225,23 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(textToSummarize) {
-    jQuery('#summarizeBtn').on('click', function () {
-        jQuery.ajax({
-            url: './controller/AutoSummarizeSuggestionAndComment.php',
-            type: 'POST',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({ text: textToSummarize }),
-            success: function(response) {
-                if (response && response.summary) {
-                    jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
-                } else {
-                    jQuery('#summaryOutput').text('Invalid response from server.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error);
-                jQuery('#summaryOutput').text('Error generating summary.');
+function summarizeCommenAndSuggestion(payload) {
+    jQuery.ajax({
+        url: './controller/AutoSummarizeSuggestionAndComment.php',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(payload),
+        success: function(response) {
+            if (response && response.summary) {
+                jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
+            } else {
+                jQuery('#summaryOutput').text('Invalid response from server.');
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+            jQuery('#summaryOutput').text('Error generating summary.');
+        }
     });
 }

@@ -4,6 +4,10 @@
         <img id="sideBarMenuLogo" src="<?php echo isset($_SESSION['sidebar_menu_logo']) ? $_SESSION['sidebar_menu_logo']: 'https://i.imgur.com/HLqsP73.png'?>" alt="Goat Farm">
     </div>
     <nav class="nav flex-column">
+        <a class="nav-link d-flex align-items-center gap-2" href="/">
+            <i class="fas fa-registered"></i>
+            <span style="transform: translateY(2px);">Dashboard</span>
+        </a>
         <a class="nav-link d-flex align-items-center gap-2" href="/registrar">
             <i class="fas fa-registered"></i>
             <span style="transform: translateY(2px);">Registrar</span>

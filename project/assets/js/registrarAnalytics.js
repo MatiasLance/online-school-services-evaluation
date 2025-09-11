@@ -1,16 +1,25 @@
-const counter = jQuery('#answerCounter');
 const body = jQuery('#registrar-service-analytics-table-body');
 const mostCommonAnswerCard = jQuery('#registrarServiceMostCommonAnswerCard');
 const generalWeightAverage = jQuery('#registrarServiceGWA');
 const generalWeightAverageContainer = jQuery('#registrarServiceGeneralWeightAverageContainer');
+const yearEvaluated = jQuery('#evaluated-year');
+const satisfactionPercent = jQuery('#registrar-satisfaction-percent');
+const satisfactionBar = jQuery('#registrar-satisfaction-bar');
 let currentCount = 0;
 var isLoading = false;
+let evaluationSection = {
+    title: 'Registrar Service',
+    gwa: {}
+};
 
 jQuery(function($) {
     generalWeightAverageContainer.hide();
     loadAllResponses();
     $('#refreshRegistrarServiceEvaluationResult').on('click', function(){
         loadAllResponses();
+    });
+    $('#summarizeBtn').on('click', function () {
+        summarizeCommenAndSuggestion(evaluationSection)
     });
 });
 
@@ -21,6 +30,8 @@ function loadAllResponses() {
         beforeSend: function() {
             body.empty();
             mostCommonAnswerCard.empty();
+            satisfactionPercent.empty();
+            yearEvaluated.empty();
             generalWeightAverageContainer.hide();
             jQuery('#summarizeBtn').attr('disabled', true)
             body.append(`
@@ -45,12 +56,27 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
+            satisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            yearEvaluated.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+
             isLoading = true;
         },
         success: function(data) {
             body.empty();
             mostCommonAnswerCard.empty();
             generalWeightAverage.empty();
+            satisfactionPercent.empty();
+            yearEvaluated.empty();
             generalWeightAverageContainer.show();
             jQuery('#summarizeBtn').attr('disabled', false)
 
@@ -86,6 +112,7 @@ function loadAllResponses() {
                         </td>
                     </tr>
                 `);
+                satisfactionPercent.text(0)
                 return;
             }
 
@@ -177,7 +204,7 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        summarizeCommenAndSuggestion(item.mostCommon)
+                        evaluationSection.mca = item.mostCommon
                     }
                     mostCommonAnswerCard.append(`
                          <tr>
@@ -192,6 +219,7 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
+                        evaluationSection.gwa[item.question] = item.average;
                         generalWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
@@ -200,6 +228,30 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const validAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const overallAverage = validAverages.length > 0 
+                    ? validAverages.reduce((sum, avg) => sum + avg, 0) / validAverages.length 
+                    : 0;
+                const overallSatisfactionPercent = (overallAverage / 5.0) * 100;
+
+                const displayPercent = overallSatisfactionPercent.toFixed(2);
+
+                satisfactionPercent.text(displayPercent + '%');
+                satisfactionBar
+                    .css('width', displayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        overallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        overallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
+                yearEvaluated.text(formYearCreated);
             }
         },
         complete: function() {
@@ -217,25 +269,23 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(textToSummarize) {
-    jQuery('#summarizeBtn').on('click', function () {
-        jQuery.ajax({
-            url: './controller/AutoSummarizeSuggestionAndComment.php',
-            type: 'POST',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({ text: textToSummarize }),
-            success: function(response) {
-                if (response && response.summary) {
-                    jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
-                } else {
-                    jQuery('#summaryOutput').text('Invalid response from server.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error);
-                jQuery('#summaryOutput').text('Error generating summary.');
+function summarizeCommenAndSuggestion(payload) {
+    jQuery.ajax({
+        url: './controller/AutoSummarizeSuggestionAndComment.php',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(payload),
+        success: function(response) {
+            if (response && response.summary) {
+                jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
+            } else {
+                jQuery('#summaryOutput').text('Invalid response from server.');
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+            jQuery('#summaryOutput').text('Error generating summary.');
+        }
     });
 }

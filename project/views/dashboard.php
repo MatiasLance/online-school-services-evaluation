@@ -18,6 +18,8 @@ $pageJS = [
     "./assets/js/account.js",
     "./assets/js/form.js",
     "./assets/js/student.js",
+    "./assets/js/registrarAnalytics.js",
+    // "./assets/js/studentActivityServiceAnalytics.js",
 ];
 
 $pageContent = __DIR__ . "/contents/dashboard-content.php";
