@@ -5,7 +5,7 @@ FROM php:8.2-fpm
 COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 
 # Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/html/
+COPY composer.lock composer.json /var/www/osse/html/
 
 # Set working directory
 WORKDIR /var/www/html
