@@ -11,46 +11,46 @@ services:
       networks:
         - osse-network
 
-    nginx:
-      image: nginx:alpine
-      container_name: nginx
-      restart: unless-stopped
-      volumes:
-        - .:/var/www/html
-        - ./nginx/nginx-prod.conf:/etc/nginx/conf.d/nginx-prod.conf
-      ports:
-        - "8000:80"
-      networks:
-        - osse-network
+    # nginx:
+    #   image: nginx:alpine
+    #   container_name: nginx
+    #   restart: unless-stopped
+    #   volumes:
+    #     - .:/var/www/html
+    #     - ./nginx/nginx-prod.conf:/etc/nginx/conf.d/nginx-prod.conf
+    #   ports:
+    #     - "8000:80"
+    #   networks:
+    #     - osse-network
 
-    db:
-      image: mysql:8.0
-      container_name: mysql
-      restart: unless-stopped
-      environment:
-        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-        MYSQL_DATABASE: ${DB_DATABASE}
-        MYSQL_USER: ${DB_USERNAME}
-        MYSQL_PASSWORD: ${DB_PASSWORD}
-      volumes:
-        - ./storage/db-data:/var/lib/mysql
-      networks:
-        - osse-network
+    # db:
+    #   image: mysql:8.0
+    #   container_name: mysql
+    #   restart: unless-stopped
+    #   environment:
+    #     MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    #     MYSQL_DATABASE: ${DB_DATABASE}
+    #     MYSQL_USER: ${DB_USERNAME}
+    #     MYSQL_PASSWORD: ${DB_PASSWORD}
+    #   volumes:
+    #     - ./storage/db-data:/var/lib/mysql
+    #   networks:
+    #     - osse-network
 
-    phpmyadmin:
-        platform: linux/amd64
-        image: phpmyadmin:5
-        container_name: pma
-        depends_on:
-            - db
-        restart: unless-stopped
-        environment:
-            PMA_HOST: db
-            PMA_PASSWORD: ${DB_ROOT_PASSWORD}
-        ports:
-            - 8001:80
-        networks:
-            - osse-network
+    # phpmyadmin:
+    #     platform: linux/amd64
+    #     image: phpmyadmin:5
+    #     container_name: pma
+    #     depends_on:
+    #         - db
+    #     restart: unless-stopped
+    #     environment:
+    #         PMA_HOST: db
+    #         PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+    #     ports:
+    #         - 8001:80
+    #     networks:
+    #         - osse-network
 
 networks:
   osse-network:
