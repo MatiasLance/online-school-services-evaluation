@@ -2,7 +2,7 @@
 $requestUri = $_SERVER['REQUEST_URI'];
 $parsedUrl = parse_url($requestUri);
 $path = $parsedUrl['path'];
-$viewDir = '/views/';
+$viewDir = 'views/';
 
 switch($path) {
   case '/':
