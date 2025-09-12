@@ -4,6 +4,7 @@ FROM php:8.2-fpm
 
 COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 
+WORKDIR /var/www/osse/html
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json /var/www/osse/html/
 
