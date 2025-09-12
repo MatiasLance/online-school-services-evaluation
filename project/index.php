@@ -8,6 +8,9 @@ switch($path) {
   case '/':
     require  __DIR__ . $viewDir . 'login.php';
     break;
+  case '/create-form':
+    require  __DIR__ . $viewDir . 'form.php';
+    break;
   case '/dashboard':
     require  __DIR__ . $viewDir . 'dashboard.php';
     break;

@@ -79,7 +79,7 @@
 
 /* Sidebar */
 .sidebar {
-  width: 260px;
+  width: 290px;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -89,6 +89,7 @@
   color: white;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease;
+  overflow-y: auto;
 }
 
 .sidebar-header {
@@ -105,7 +106,7 @@
 }
 
 .sidebar .nav {
-    margin-top: 20px;
+    margin: 20px 0 20px 0;
 }
 
 .sidebar .nav-link {
@@ -124,7 +125,7 @@
 
 /* Main Content */
 .container-content {
-  margin-left: 260px;
+  margin-left: 290px;
   padding: 2rem 1rem;
   background-color: #f8f9fa;
   min-height: calc(100vh - 100px);

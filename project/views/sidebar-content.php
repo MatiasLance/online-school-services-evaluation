@@ -5,8 +5,12 @@
     </div>
     <nav class="nav flex-column">
         <a class="nav-link d-flex align-items-center gap-2" href="/">
-            <i class="fas fa-registered"></i>
+            <i class="fas fa-grip"></i>
             <span style="transform: translateY(2px);">Dashboard</span>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-2" href="/create-form">
+            <i class="fas fa-square-plus"></i>
+            <span style="transform: translateY(2px);">Create Form</span>
         </a>
         <a class="nav-link d-flex align-items-center gap-2" href="/registrar">
             <i class="fas fa-registered"></i>

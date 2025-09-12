@@ -129,6 +129,11 @@ body {
   color: var(--secondary-color);
 }
 
+.bg-custom-blue:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
 .color-custom-white {
   color: var(--secondary-color);
 }
