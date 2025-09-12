@@ -54,4 +54,4 @@ services:
 
 networks:
   osse-network:
-    driver: bridge
+    external: true
