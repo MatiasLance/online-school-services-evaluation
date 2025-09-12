@@ -1,0 +1,51 @@
+# syntax=docker/dockerfile:1
+
+FROM php:8.2-fpm
+
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/html/
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libzip-dev \
+    libgd-dev \
+    zip \
+    curl \
+    unzip \
+    git \
+    vim \
+    jpegoptim optipng pngquant gifsicle \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mysqli \
+        mbstring \
+        zip \
+        exif \
+        pcntl \
+        gd
+
+# Optional: if you need to reconfigure GD (you're using external)
+RUN docker-php-ext-configure gd --with-external-gd
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY . .
+
+EXPOSE 9000
+
+CMD ["php-fpm"]
