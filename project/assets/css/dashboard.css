@@ -79,7 +79,7 @@
 
 /* Sidebar */
 .sidebar {
-  width: 290px;
+  width: 0;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -93,7 +93,7 @@
 }
 
 .sidebar-header {
-  margin-top: 50px;
+  margin-top: 13px;
   padding: 1rem;
   text-align: center;
   background-color: #ffffff;
@@ -125,7 +125,6 @@
 
 /* Main Content */
 .container-content {
-  margin-left: 290px;
   padding: 2rem 1rem;
   background-color: #f8f9fa;
   min-height: calc(100vh - 100px);

@@ -14,6 +14,7 @@ $pageJS = [
     "./assets/js/logout.js",
     "./assets/js/account.js",
     "./assets/js/registrarAnalytics.js",
+    "./assets/js/toggleSidebar.js",
 ];
 
 $pageContent = __DIR__ . "/contents/registrar/registrar-content.php";

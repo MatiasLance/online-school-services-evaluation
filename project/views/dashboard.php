@@ -13,13 +13,15 @@ $pageCss = [
 
 $pageJS = [
     "./assets/js/logout.js",
-    "./assets/js/categories.js",
-    "./assets/js/department.js",
-    "./assets/js/account.js",
-    "./assets/js/form.js",
-    "./assets/js/student.js",
+    // "./assets/js/categories.js",
+    // "./assets/js/department.js",
+    // "./assets/js/account.js",
+    // "./assets/js/form.js",
+    // "./assets/js/student.js",
     "./assets/js/registrarAnalytics.js",
-    // "./assets/js/studentActivityServiceAnalytics.js",
+    "./assets/js/studentActivityServiceAnalytics.js",
+    "./assets/js/podServiceAnalytics.js",
+    "./assets/js/toggleSidebar.js",
 ];
 
 $pageContent = __DIR__ . "/contents/dashboard-content.php";

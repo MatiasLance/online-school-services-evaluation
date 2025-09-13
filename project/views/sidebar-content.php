@@ -1,5 +1,8 @@
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar">
+    <button type="button" class="btn bg-custom-blue btn-sm" style="transform: translate(15px, 7px);" id="closeSideNavigationBar">
+        <i class="bi bi-x-circle" style="font-size: 30px;"></i>
+    </button>
     <div class="sidebar-header">
         <img id="sideBarMenuLogo" src="<?php echo isset($_SESSION['sidebar_menu_logo']) ? $_SESSION['sidebar_menu_logo']: 'https://i.imgur.com/HLqsP73.png'?>" alt="Goat Farm">
     </div>

@@ -1,36 +1,36 @@
-const counter = jQuery('#podServiceAnswerCounter');
-const body = jQuery('#pod-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#podServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#podServiceGWA');
-const generalWeightAverageContainer = jQuery('#podServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const podBody = jQuery('#pod-service-analytics-table-body');
+const podMostCommonAnswerCard = jQuery('#podServiceMostCommonAnswerCard');
+const podGeneralWeightAverage = jQuery('#podServiceGWA');
+const podGeneralWeightAverageContainer = jQuery('#podServiceGeneralWeightAverageContainer');
+const podSatisfactionPercent = jQuery('#pod-satisfaction-percent');
+const podSatisfactionBar = jQuery('#pod-satisfaction-bar');
+let isLoadingPOD = false;
+let podEvaluationSection = {
     title: 'POD Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    podGeneralWeightAverageContainer.hide();
+    loadAllPODResponses();
     $('#refreshPODServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllPODResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForPOD(podEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllPODResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbz0019GBbTfP4z2KHn2Uo0iZguzAqQOzCGxpgjpAjBkrJOOdkJVzFi0oqe4e5V_dTDxHQ/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            podBody.empty();
+            podMostCommonAnswerCard.empty();
+            podGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            podBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +41,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            podMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +52,19 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            isLoadingPOD = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            podBody.empty();
+            podMostCommonAnswerCard.empty();
+            podGeneralWeightAverage.empty();
+            podGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                podGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                podBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,16 +77,16 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                podGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                podBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                podMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
@@ -102,7 +102,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                podBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +171,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                podBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -184,9 +184,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        podEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    podMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +199,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        podEvaluationSection.gwa[item.question] = item.average;
+                        podGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +208,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const podValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const podOverallAverage = podValidAverages.length > 0 
+                    ? podValidAverages.reduce((sum, avg) => sum + avg, 0) / podValidAverages.length 
+                    : 0;
+                const podOverallSatisfactionPercent = (podOverallAverage / 5.0) * 100;
+
+                const podDisplayPercent = podOverallSatisfactionPercent.toFixed(2);
+
+                podSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    podOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    podOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(podDisplayPercent + '%');
+                podSatisfactionBar
+                    .css('width', podDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        podOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        podOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingPOD = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +254,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForPOD(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

@@ -14,6 +14,7 @@ $pageJS = [
     "./assets/js/logout.js",
     "./assets/js/account.js",
     "./assets/js/libraryServiceAnalytics.js",
+    "./assets/js/toggleSidebar.js",
 ];
 
 $pageContent = __DIR__ . "/contents/library/library-content.php";

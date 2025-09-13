@@ -1,39 +1,37 @@
-const body = jQuery('#student-activity-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#studentActivityServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#studentActivityServiceGWA');
-const generalWeightAverageContainer = jQuery('#generalWeightAverageContainer');
-const satisfactionPercent = jQuery('#student-satisfaction-percent');
-const satisfactionBar = jQuery('#student-satisfaction-bar');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const studentBody = jQuery('#student-activity-service-analytics-table-body');
+const studentMostCommonAnswerCard = jQuery('#studentActivityServiceMostCommonAnswerCard');
+const studentGeneralWeightAverage = jQuery('#studentActivityServiceGWA');
+const studentGeneralWeightAverageContainer = jQuery('#generalWeightAverageContainer');
+const studentSatisfactionPercent = jQuery('#student-satisfaction-percent');
+const studentSatisfactionBar = jQuery('#student-satisfaction-bar');
+let isLoadingStudent = false;
+let studentEvaluationSection = {
     title: 'Student Activity Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    studentGeneralWeightAverageContainer.hide();
+    loadAllStudentResponses();
     $('#refreshStudentActivityServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllStudentResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        console.log(evaluationSection)
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForStudent(studentEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllStudentResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbz-Zwt7LZz2GEkTqIzYWexKca6ULZS66y_Kw_Pl9Ek7A8osFzK7enJMjBWy9tbCgffPew/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            satisfactionPercent.empty();
-            generalWeightAverageContainer.hide();
+            studentBody.empty();
+            studentMostCommonAnswerCard.empty();
+            studentSatisfactionPercent.empty();
+            studentGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            studentBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -44,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            studentMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -55,26 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            satisfactionPercent.append(`
+            studentSatisfactionPercent.append(`
                 <div class="d-flex justify-content-center">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>`);
-            isLoading = true;
+            isLoadingStudent = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            satisfactionPercent.empty();
-            generalWeightAverageContainer.show();
+            studentBody.empty();
+            studentMostCommonAnswerCard.empty();
+            studentGeneralWeightAverage.empty();
+            studentSatisfactionPercent.empty();
+            studentGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                studentGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                studentBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -87,16 +85,16 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                studentGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                studentBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                studentMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
@@ -112,7 +110,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                studentBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -181,7 +179,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                studentBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -194,9 +192,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        studentEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    studentMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -209,8 +207,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        studentEvaluationSection.gwa[item.question] = item.average;
+                        studentGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -219,34 +217,40 @@ function loadAllResponses() {
                     }
                 });
 
-                const validAverages = weightedAverages
+                const studentEvaluation = weightedAverages
                     .filter(item => 
                         item.average !== null && 
                         item.question.toLowerCase().trim() !== 'year level'
                     )
                     .map(item => item.average);
 
-                const overallAverage = validAverages.length > 0 
-                    ? validAverages.reduce((sum, avg) => sum + avg, 0) / validAverages.length 
+                const studentOverallAverage = studentEvaluation.length > 0 
+                    ? studentEvaluation.reduce((sum, avg) => sum + avg, 0) / studentEvaluation.length 
                     : 0;
-                const overallSatisfactionPercent = (overallAverage / 5.0) * 100;
+                const studentOverallSatisfactionPercent = (studentOverallAverage / 5.0) * 100;
 
-                const displayPercent = overallSatisfactionPercent.toFixed(2);
+                const studentDisplayPercent = studentOverallSatisfactionPercent.toFixed(2);
 
-                satisfactionPercent.text(displayPercent + '%');
-                satisfactionBar
-                    .css('width', displayPercent + '%')
+                studentSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    studentOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    studentOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(studentDisplayPercent + '%');
+                studentSatisfactionBar
+                    .css('width', studentDisplayPercent + '%')
                     .removeClass('bg-danger bg-warning bg-custom-blue')
                     .addClass(
-                        overallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
-                        overallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                        studentOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        studentOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
                     );
-                yearEvaluated.text(formYearCreated);
+                // studentActivityYearEvaluated.text(formYearCreated);
             }
 
         },
         complete: function() {
-            isLoading = false;
+            isLoadingStudent = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -260,7 +264,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForStudent(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

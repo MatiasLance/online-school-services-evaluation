@@ -14,6 +14,7 @@ $pageJS = [
     "./assets/js/logout.js",
     "./assets/js/account.js",
     "./assets/js/financeServiceAnalytics.js",
+    "./assets/js/toggleSidebar.js",
 ];
 
 $pageContent = __DIR__ . "/contents/finance/finance-content.php";

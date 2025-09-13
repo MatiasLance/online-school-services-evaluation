@@ -53,7 +53,7 @@ jQuery(function($) {
                     }).then((result) => {
                         if(result.isConfirmed){
                             setTimeout(function(){
-                                window.location.href = '/registrar';
+                                window.location.href = '/dashboard';
                             }, 500)
                         }
                     });
