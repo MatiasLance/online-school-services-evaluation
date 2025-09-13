@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-custom-blue px-2">
   <div class="container-fluid d-flex justify-content-between">
     <button type="button" class="btn bg-custom-blue btn-sm" id="openSideNavigationBar">
-        <i class="bi bi-list" style="font-size: 30px;"></i>
+        <i class="bi bi-arrow-right-circle" style="font-size: 30px;"></i>
     </button>
     <div class="dropstart">
         <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="false" >

@@ -1,34 +1,35 @@
-const counter = jQuery('#maintenanceServiceAnswerCounter');
 const body = jQuery('#maintenance-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#maintenanceServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#maintenanceServiceGWA');
-const generalWeightAverageContainer = jQuery('#maintenanceServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const maintenanceMostCommonAnswerCard = jQuery('#maintenanceServiceMostCommonAnswerCard');
+const maintenanceGeneralWeightAverage = jQuery('#maintenanceServiceGWA');
+const maintenanceGeneralWeightAverageContainer = jQuery('#maintenanceServiceGeneralWeightAverageContainer');
+const maintenanceSatisfactionPercent = jQuery('#maintenance-satisfaction-percent');
+const maintenanceSatisfactionBar = jQuery('#maintenance-satisfaction-bar');
+var isLoadingMaintenance = false;
+let maintenanceEvaluationSection = {
     title: 'Maintenance Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    maintenanceGeneralWeightAverageContainer.hide();
+    loadAllMaintenanceResponses();
     $('#refreshMaintenanceServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllMaintenanceResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForMaintenance(maintenanceEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllMaintenanceResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbwb2WTqcSyR-HuUn_hsR5zD-gb2VcvKLg_eNW2SxRkEZk9-c2bATVBED2yYChPSs-WHjw/exec',
         dataType: 'jsonp',
         beforeSend: function() {
             body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            maintenanceMostCommonAnswerCard.empty();
+            maintenanceSatisfactionPercent.empty();
+            maintenanceGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
             body.append(`
                 <tr>
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            maintenanceMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,17 +53,24 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            maintenanceSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingMaintenance = true;
         },
         success: function(data) {
             body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            maintenanceMostCommonAnswerCard.empty();
+            maintenanceGeneralWeightAverage.empty();
+            maintenanceSatisfactionPercent.empty();
+            maintenanceGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                maintenanceGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
                 body.append(`
                     <tr>
@@ -77,7 +85,7 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                maintenanceGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
                 body.append(`
                     <tr>
@@ -86,13 +94,17 @@ function loadAllResponses() {
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                maintenanceMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                maintenanceSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -184,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        maintenanceEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    maintenanceMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        maintenanceEvaluationSection.gwa[item.question] = item.average;
+                        maintenanceGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const maintenanceValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const maintenanceOverallAverage = maintenanceValidAverages.length > 0 
+                    ? maintenanceValidAverages.reduce((sum, avg) => sum + avg, 0) / maintenanceValidAverages.length 
+                    : 0;
+                const maintenanceOverallSatisfactionPercent = (maintenanceOverallAverage / 5.0) * 100;
+
+                const maintenanceDisplayPercent = maintenanceOverallSatisfactionPercent.toFixed(2);
+
+                maintenanceSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    maintenanceOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    maintenanceOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(maintenanceDisplayPercent + '%');
+                maintenanceSatisfactionBar
+                    .css('width', maintenanceDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        maintenanceOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        maintenanceOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingMaintenance = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForMaintenance(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

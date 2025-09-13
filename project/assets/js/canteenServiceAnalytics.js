@@ -1,36 +1,37 @@
-const counter = jQuery('#canteenServiceAnswerCounter');
-const body = jQuery('#canteen-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#canteenServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#canteenServiceGWA');
-const generalWeightAverageContainer = jQuery('#CanteenServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const canteenBody = jQuery('#canteen-service-analytics-table-body');
+const canteenMostCommonAnswerCard = jQuery('#canteenServiceMostCommonAnswerCard');
+const canteenGeneralWeightAverage = jQuery('#canteenServiceGWA');
+const canteenGeneralWeightAverageContainer = jQuery('#CanteenServiceGeneralWeightAverageContainer');
+const canteenSatisfactionPercent = jQuery('#canteen-satisfaction-percent');
+const canteenSatisfactionBar = jQuery('#canteen-satisfaction-bar');
+var isLoadingCanteen = false;
+let canteenEvaluationSection = {
     title: 'Canteen Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    canteenGeneralWeightAverageContainer.hide();
+    loadAllCanteenResponses();
     $('#refreshCanteenServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllCanteenResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForCanteen(canteenEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllCanteenResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbxou7slxRpibWXGcraHhO7-qHXmf9QE-vj_CRWk5-lGev988CJqHKKLl7xDfHtKcfub/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            canteenBody.empty();
+            canteenMostCommonAnswerCard.empty();
+            canteenSatisfactionPercent.empty();
+            canteenGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            canteenBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            canteenMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            canteenSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingCanteen = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            canteenBody.empty();
+            canteenMostCommonAnswerCard.empty();
+            canteenGeneralWeightAverage.empty();
+            canteenSatisfactionPercent.empty();
+            canteenGeneralWeightAverageContainer.show();
             jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                canteenGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                canteenBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                canteenGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                canteenBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                canteenMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                canteenSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -102,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                canteenBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                canteenBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -184,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        canteenEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    canteenMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        canteenEvaluationSection.gwa[item.question] = item.average;
+                        canteenGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const canteenValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const canteenOverallAverage = canteenValidAverages.length > 0 
+                    ? canteenValidAverages.reduce((sum, avg) => sum + avg, 0) / canteenValidAverages.length 
+                    : 0;
+                const canteenOverallSatisfactionPercent = (canteenOverallAverage / 5.0) * 100;
+
+                const canteenDisplayPercent = canteenOverallSatisfactionPercent.toFixed(2);
+
+                canteenSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    canteenOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    canteenOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(canteenDisplayPercent + '%');
+                canteenSatisfactionBar
+                    .css('width', canteenDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        canteenOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        canteenOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingCanteen = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForCanteen(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

@@ -1,36 +1,37 @@
-const counter = jQuery('#financeServiceAnswerCounter');
-const body = jQuery('#finance-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#financeServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#financeServiceGWA');
-const generalWeightAverageContainer = jQuery('#financeServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const financeBody = jQuery('#finance-service-analytics-table-body');
+const financeMostCommonAnswerCard = jQuery('#financeServiceMostCommonAnswerCard');
+const financeGeneralWeightAverage = jQuery('#financeServiceGWA');
+const financeGeneralWeightAverageContainer = jQuery('#financeServiceGeneralWeightAverageContainer');
+const financeSatisfactionPercent = jQuery('#finance-satisfaction-percent');
+const financeSatisfactionBar = jQuery('#finance-satisfaction-bar');
+let isLoadingFinance = false;
+let financeEvaluationSection = {
     title: 'Finance Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    financeGeneralWeightAverageContainer.hide();
+    loadAllFinanceResponses();
     $('#refreshFinanceServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllFinanceResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForFinance(financeEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllFinanceResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbyAwRCn3M_XMDEaifVQX_jipDA0AONwA5UKJiSGDyelTO5bzGPBvszrUHHNOr02XLak/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            financeBody.empty();
+            financeMostCommonAnswerCard.empty();
+            financeSatisfactionPercent.empty();
+            financeGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            financeBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            financeMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            financeSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingFinance = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            financeBody.empty();
+            financeMostCommonAnswerCard.empty();
+            financeGeneralWeightAverage.empty();
+            financeSatisfactionPercent.empty();
+            financeGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                financeGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                financeBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                financeGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                financeBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                financeMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                financeSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -102,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                financeBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                financeBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -184,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        financeEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    financeMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        financeEvaluationSection.gwa[item.question] = item.average;
+                        financeGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const financeValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const financeOverallAverage = financeValidAverages.length > 0 
+                    ? financeValidAverages.reduce((sum, avg) => sum + avg, 0) / financeValidAverages.length 
+                    : 0;
+                const financeOverallSatisfactionPercent = (financeOverallAverage / 5.0) * 100;
+
+                const financeDisplayPercent = financeOverallSatisfactionPercent.toFixed(2);
+
+                financeSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    financeOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    financeOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(financeDisplayPercent + '%');
+                financeSatisfactionBar
+                    .css('width', financeDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        financeOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        financeOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingFinance = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForFinance(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

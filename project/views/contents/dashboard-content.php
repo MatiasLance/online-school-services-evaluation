@@ -1,60 +1,33 @@
 <!-- Navbar -->
 <?php include __DIR__ . '/../navbar.php' ?>
+<?php include __DIR__ . '/../sidebar-content.php' ?>
 
 <div class="flex-grow-1 d-flex">
-    <?php include __DIR__ . '/../sidebar-content.php' ?>
-
     <main class="container-fluid container-content flex-grow-1 p-4">
       <div class="row">
         <div class="col">
-            <div class="card fade-in">
-                <div class="card-header bg-custom-blue text-white p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-bar-chart me-2"></i>
-                            Overall Score
-                        </h5>
-                        <h5 id="evaluated-year"></h5>
-                    </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="2025-tab" data-bs-toggle="tab" data-bs-target="#2025-tab-pane" type="button" role="tab" aria-controls="2025-tab-pane" aria-selected="true">2025</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="2026-tab" data-bs-toggle="tab" data-bs-target="#2026-tab-pane" type="button" role="tab" aria-controls="2026-tab-pane" aria-selected="false">2026</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="2027-tab" data-bs-toggle="tab" data-bs-target="#2027-tab-pane" type="button" role="tab" aria-controls="2027-tab-pane" aria-selected="false">2027</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="2025-tab-pane" role="tabpanel" aria-labelledby="2025-tab" tabindex="0">
+                    <?php include __DIR__ . '/../tabs/2025-tab.php'; ?>
                 </div>
-
-                <div class="card-body">
-                    <!-- Registrar -->
-                    <div class="mb-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0 text-muted">Registrar Service</h6>
-                            <span class="badge bg-custom-blue fs-5 px-3 py-2" id="registrar-satisfaction-percent"></span>
-                        </div>
-
-                        <div class="progress mb-3" style="height: 20px;">
-                            <div id="registrar-satisfaction-bar" class="progress-bar bg-custom-blue" role="progressbar" style="width: 0;" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <!-- POD -->
-                    <div class="mb-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0 text-muted">POD Service</h6>
-                            <span class="badge bg-custom-blue fs-5 px-3 py-2" id="pod-satisfaction-percent"></span>
-                        </div>
-
-                        <div class="progress mb-3" style="height: 20px;">
-                            <div id="pod-satisfaction-bar" class="progress-bar bg-custom-blue" role="progressbar" style="width: 0;" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <!-- Student -->
-                    <div class="mb-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0 text-muted">Student Activity Service</h6>
-                            <span class="badge bg-custom-blue fs-5 px-3 py-2" id="student-satisfaction-percent"></span>
-                        </div>
-
-                        <div class="progress mb-3" style="height: 20px;">
-                            <div id="student-satisfaction-bar" class="progress-bar bg-custom-blue" role="progressbar" style="width: 0;" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
+                <div class="tab-pane fade" id="2026-tab-pane" role="tabpanel" aria-labelledby="2026-tab" tabindex="0">
+                    <?php include __DIR__ . '/../tabs/2026-tab.php'; ?>
+                </div>
+                <div class="tab-pane fade" id="2027-tab-pane" role="tabpanel" aria-labelledby="2027-tab" tabindex="0">
+                         <?php include __DIR__ . '/../tabs/2027-tab.php'; ?>
                 </div>
             </div>
-            
         </div>
       </div>
     </main>

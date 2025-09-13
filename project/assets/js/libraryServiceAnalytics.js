@@ -1,36 +1,37 @@
-const counter = jQuery('#libraryServiceAnswerCounter');
-const body = jQuery('#library-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#libraryServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#libraryServiceGWA');
-const generalWeightAverageContainer = jQuery('#libraryServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const libraryBody = jQuery('#library-service-analytics-table-body');
+const libraryMostCommonAnswerCard = jQuery('#libraryServiceMostCommonAnswerCard');
+const libraryGeneralWeightAverage = jQuery('#libraryServiceGWA');
+const libraryGeneralWeightAverageContainer = jQuery('#libraryServiceGeneralWeightAverageContainer');
+const librarySatisfactionPercent = jQuery('#library-satisfaction-percent');
+const librarySatisfactionBar = jQuery('#library-satisfaction-bar');
+var isLoadingLibrary = false;
+let libraryEvaluationSection = {
     title: 'Library Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    libraryGeneralWeightAverageContainer.hide();
+    loadAllLibraryResponses();
     $('#refreshLibraryServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllLibraryResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForLibrary(libraryEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllLibraryResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbx_t79ElxsvKaHph9AozJbd-WMzJaih_P0FFkHw6KPVpvmeuZowy1pnjmdoHqfIeg1BHQ/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            libraryBody.empty();
+            librarySatisfactionPercent.empty();
+            libraryMostCommonAnswerCard.empty();
+            libraryGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            libraryBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            libraryMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            librarySatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingLibrary = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            libraryBody.empty();
+            libraryMostCommonAnswerCard.empty();
+            libraryGeneralWeightAverage.empty();
+            librarySatisfactionPercent.empty();
+            libraryGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                libraryGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                libraryBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                libraryGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                libraryBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                libraryMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                librarySatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -102,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                libraryBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                libraryBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -184,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        libraryEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    libraryMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        libraryEvaluationSection.gwa[item.question] = item.average;
+                        libraryGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const libraryValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const libraryOverallAverage = libraryValidAverages.length > 0 
+                    ? libraryValidAverages.reduce((sum, avg) => sum + avg, 0) / libraryValidAverages.length 
+                    : 0;
+                const libraryOverallSatisfactionPercent = (libraryOverallAverage / 5.0) * 100;
+
+                const libraryDisplayPercent = libraryOverallSatisfactionPercent.toFixed(2);
+
+                librarySatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    libraryOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    libraryOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(libraryDisplayPercent + '%');
+                librarySatisfactionBar
+                    .css('width', libraryDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        libraryOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        libraryOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingLibrary = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForLibrary(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

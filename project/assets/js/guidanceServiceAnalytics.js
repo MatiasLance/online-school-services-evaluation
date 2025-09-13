@@ -1,36 +1,37 @@
-const counter = jQuery('#guidanceServiceAnswerCounter');
-const body = jQuery('#guidance-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#guidanceServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#guidanceServiceGWA');
-const generalWeightAverageContainer = jQuery('#guidanceServiceGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const guidanceBody = jQuery('#guidance-service-analytics-table-body');
+const guidanceMostCommonAnswerCard = jQuery('#guidanceServiceMostCommonAnswerCard');
+const guidanceGeneralWeightAverage = jQuery('#guidanceServiceGWA');
+const guidanceGeneralWeightAverageContainer = jQuery('#guidanceServiceGeneralWeightAverageContainer');
+const guidanceSatisfactionPercent = jQuery('#guidance-satisfaction-percent');
+const guidanceSatisfactionBar = jQuery('#guidance-satisfaction-bar');
+var isLoadingGuidance = false;
+let guidanceEvaluationSection = {
     title: 'Guidance Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    guidanceGeneralWeightAverageContainer.hide();
+    loadAllGuidanceResponses();
     $('#refreshGuidanceServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllGuidanceResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForGuidance(guidanceEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllGuidanceResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbw4rIIamnifoZtTAJSScK7I9uGEmifAUcEG31-j_dQXgJJCna7Ja0zXDKLom3d9oRfs/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            guidanceBody.empty();
+            guidanceMostCommonAnswerCard.empty();
+            guidanceSatisfactionPercent.empty();
+            guidanceGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            guidanceBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            guidanceMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            guidanceSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingGuidance = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            guidanceBody.empty();
+            guidanceMostCommonAnswerCard.empty();
+            guidanceGeneralWeightAverage.empty();
+            guidanceSatisfactionPercent.empty();
+            guidanceGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                guidanceGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                guidanceBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                guidanceGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                guidanceBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                guidanceMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                guidanceSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -102,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                guidanceBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                guidanceBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -184,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        guidanceEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    guidanceMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        guidanceEvaluationSection.gwa[item.question] = item.average;
+                        guidanceGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const guidanceValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const guidanceOverallAverage = guidanceValidAverages.length > 0 
+                    ? guidanceValidAverages.reduce((sum, avg) => sum + avg, 0) / guidanceValidAverages.length 
+                    : 0;
+                const guidanceOverallSatisfactionPercent = (guidanceOverallAverage / 5.0) * 100;
+
+                const guidanceDisplayPercent = guidanceOverallSatisfactionPercent.toFixed(2);
+
+                guidanceSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    guidanceOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    guidanceOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(guidanceDisplayPercent + '%');
+                guidanceSatisfactionBar
+                    .css('width', guidanceDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        guidanceOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        guidanceOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingGuidance = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForGuidance(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

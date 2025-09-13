@@ -1,9 +1,8 @@
 <!-- Navbar -->
 <?php include __DIR__ . '/../../navbar.php' ?>
+<?php include __DIR__ . '/../../sidebar-content.php' ?>
 
 <div class="flex-grow-1 d-flex">
-    <?php include __DIR__ . '/../../sidebar-content.php' ?>
-
     <main class="container-fluid container-content flex-grow-1 p-4">
       <div class="row">
         <div class="col-12 mb-4">

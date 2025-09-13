@@ -1,8 +1,7 @@
 <?php require __DIR__ . '/../navbar.php' ?>
+ <?php include __DIR__ . '/../sidebar-content.php' ?>
 
 <div class="flex-grow-1 d-flex">
-    <?php include __DIR__ . '/../sidebar-content.php' ?>
-
     <main class="container-fluid container-content flex-grow-1 p-4" style="min-height: 100vh;">
       <div class="row">
         <div class="col-12 mb-4">

@@ -20,6 +20,7 @@ $pageJS = [
     "./assets/js/form.js",
     "./assets/js/student.js",
     "./assets/js/googleCreateForm.js",
+    "./assets/js/toggleSidebar.js",
 ];
 
 $pageContent = __DIR__ . "/contents/form-content.php";

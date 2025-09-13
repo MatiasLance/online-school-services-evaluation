@@ -1,36 +1,37 @@
-const counter = jQuery('#campusMinistryServiceAnswerCounter');
-const body = jQuery('#campus-ministry-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#campusMinistryServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#campusMinistryServiceGWA');
-const generalWeightAverageContainer = jQuery('#campusMinistryGeneralWeightAverageContainer');
-let currentCount = 0;
-var isLoading = false;
-let evaluationSection = {
+const campusBody = jQuery('#campus-ministry-service-analytics-table-body');
+const campusMostCommonAnswerCard = jQuery('#campusMinistryServiceMostCommonAnswerCard');
+const campusGeneralWeightAverage = jQuery('#campusMinistryServiceGWA');
+const campusGeneralWeightAverageContainer = jQuery('#campusMinistryGeneralWeightAverageContainer');
+const campusSatisfactionPercent = jQuery('#campus-satisfaction-percent');
+const campusSatisfactionBar = jQuery('#campus-satisfaction-bar');
+let isLoadingCampus = false;
+let campusEvaluationSection = {
     title: 'Campus Ministry Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    campusGeneralWeightAverageContainer.hide();
+    loadAllCampusResponses();
     $('#refreshCampusMinistryServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllCampusResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForCampus(campusEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllCampusResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbxUjdl8Fpqz464fZ87VBZnvc0RtKOKNkbDt6Hxjm7vFkVnQumZP1Pt-8HJWD9arRgR3/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            campusBody.empty();
+            campusMostCommonAnswerCard.empty();
+            campusSatisfactionPercent.empty();
+            campusGeneralWeightAverageContainer.hide();
             jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            campusBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -41,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            campusMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -52,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            campusSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingCampus = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            campusBody.empty();
+            campusMostCommonAnswerCard.empty();
+            campusGeneralWeightAverage.empty();
+            campusSatisfactionPercent.empty();
+            campusGeneralWeightAverageContainer.show();
             jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                campusGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                campusBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -77,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                campusGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                campusBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                campusMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                campusSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -102,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                campusBody.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No survey questions found.
@@ -171,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                campusBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -183,9 +195,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        campusEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    campusMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -199,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        campusEvaluationSection.gwa[item.question] = item.average;
+                        campusGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -208,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const campusValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const campusOverallAverage = campusValidAverages.length > 0 
+                    ? campusValidAverages.reduce((sum, avg) => sum + avg, 0) / campusValidAverages.length 
+                    : 0;
+                const campusOverallSatisfactionPercent = (campusOverallAverage / 5.0) * 100;
+
+                const campusDisplayPercent = campusOverallSatisfactionPercent.toFixed(2);
+
+                campusSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    campusOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    campusOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(campusDisplayPercent + '%');
+                campusSatisfactionBar
+                    .css('width', campusDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        campusOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        campusOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingCampus = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -225,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForCampus(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',

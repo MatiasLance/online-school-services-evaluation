@@ -29,6 +29,7 @@ function loadAllPODResponses() {
             podBody.empty();
             podMostCommonAnswerCard.empty();
             podGeneralWeightAverageContainer.hide();
+            podSatisfactionPercent.empty();
              jQuery('#summarizeBtn').attr('disabled', true)
             podBody.append(`
                 <tr>
@@ -52,12 +53,19 @@ function loadAllPODResponses() {
                     </td>
                 </tr>
             `);
+            podSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
             isLoadingPOD = true;
         },
         success: function(data) {
             podBody.empty();
             podMostCommonAnswerCard.empty();
             podGeneralWeightAverage.empty();
+            podSatisfactionPercent.empty();
             podGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
@@ -93,6 +101,10 @@ function loadAllPODResponses() {
                         </td>
                     </tr>
                 `);
+                podSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 

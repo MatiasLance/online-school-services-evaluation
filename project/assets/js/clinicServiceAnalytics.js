@@ -1,35 +1,37 @@
-const counter = jQuery('#clinicServiceAnswerCounter');
-const body = jQuery('#clinic-service-analytics-table-body');
-const mostCommonAnswerCard = jQuery('#clinicServiceMostCommonAnswerCard');
-const generalWeightAverage = jQuery('#clinicServiceGWA');
-const generalWeightAverageContainer = jQuery('#clinicServiceGeneralWeightAverageContainer');
-var isLoading = false;
-let evaluationSection = {
+const clinicBody = jQuery('#clinic-service-analytics-table-body');
+const clinicMostCommonAnswerCard = jQuery('#clinicServiceMostCommonAnswerCard');
+const clinicGeneralWeightAverage = jQuery('#clinicServiceGWA');
+const clinicGeneralWeightAverageContainer = jQuery('#clinicServiceGeneralWeightAverageContainer');
+const clinicSatisfactionPercent = jQuery('#clinic-satisfaction-percent');
+const clinicSatisfactionBar = jQuery('#clinic-satisfaction-bar');
+var isLoadingClinic = false;
+let clinicEvaluationSection = {
     title: 'Clinic Service',
     gwa: {}
 };
 
 jQuery(function($) {
-    generalWeightAverageContainer.hide();
-    loadAllResponses();
+    clinicGeneralWeightAverageContainer.hide();
+    loadAllClinicResponses();
     $('#refreshClinicServiceEvaluationResult').on('click', function(){
-        loadAllResponses();
+        loadAllClinicResponses();
     });
     $('#summarizeBtn').on('click', function () {
-        summarizeCommenAndSuggestion(evaluationSection)
+        summarizeCommenAndSuggestionForClinic(clinicEvaluationSection)
     });
 });
 
-function loadAllResponses() {
+function loadAllClinicResponses() {
     jQuery.ajax({
         url: 'https://script.google.com/macros/s/AKfycbzlaIz7-RQT6ac1cqY5RjTePgPY3hPVMr2Qdmj9EKSyF5MmhBVIV5wJN1V74ysE4bAgOg/exec',
         dataType: 'jsonp',
         beforeSend: function() {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverageContainer.hide();
+            clinicBody.empty();
+            clinicMostCommonAnswerCard.empty();
+            clinicSatisfactionPercent.empty();
+            clinicGeneralWeightAverageContainer.hide();
              jQuery('#summarizeBtn').attr('disabled', true)
-            body.append(`
+            clinicBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -40,7 +42,7 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            mostCommonAnswerCard.append(`
+            clinicMostCommonAnswerCard.append(`
                 <tr>
                     <td colspan="3" class="text-danger text-center">
                         <div class="d-flex justify-content-center">
@@ -51,19 +53,26 @@ function loadAllResponses() {
                     </td>
                 </tr>
             `);
-            isLoading = true;
+            clinicSatisfactionPercent.append(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`);
+            isLoadingClinic = true;
         },
         success: function(data) {
-            body.empty();
-            mostCommonAnswerCard.empty();
-            generalWeightAverage.empty();
-            generalWeightAverageContainer.show();
+            clinicBody.empty();
+            clinicMostCommonAnswerCard.empty();
+            clinicGeneralWeightAverage.empty();
+            clinicSatisfactionPercent.empty();
+            clinicGeneralWeightAverageContainer.show();
              jQuery('#summarizeBtn').attr('disabled', false)
 
             if (data.error) {
-                generalWeightAverageContainer.hide();
+                clinicGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                clinicBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
                             ⛔ Error: ${data.error}
@@ -76,22 +85,26 @@ function loadAllResponses() {
             const { responses, mostCommonResponses, weightedAverages, formYearCreated } = data;
 
             if (!responses || responses.length === 0) {
-                generalWeightAverageContainer.hide();
+                clinicGeneralWeightAverageContainer.hide();
                  jQuery('#summarizeBtn').attr('disabled', true)
-                body.append(`
+                clinicBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
-                mostCommonAnswerCard.append(`
+                clinicMostCommonAnswerCard.append(`
                     <tr>
                         <td colspan="3" class="text-muted text-center">
                             No responses yet.
                         </td>
                     </tr>
                 `);
+                clinicSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass('bg-secondary')
+                .text(0);
                 return;
             }
 
@@ -101,7 +114,7 @@ function loadAllResponses() {
             );
 
             if (surveyQuestions.length === 0) {
-                body.append(`
+                clinicBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
                             No survey questions found.
@@ -170,7 +183,7 @@ function loadAllResponses() {
                             `;
                         }).join('');
 
-                body.append(`
+                clinicBody.append(`
                     <tr>
                         <td><strong>${question}</strong></td>
                         <td><small class="response-list">${responseText}</small></td>
@@ -183,9 +196,9 @@ function loadAllResponses() {
             if (mostCommonResponses.length > 0) {
                 mostCommonResponses.forEach(item => {
                     if(item.question.toLowerCase() === 'comments and suggestions'){
-                        evaluationSection.mca = item.mostCommon
+                        clinicEvaluationSection.mca = item.mostCommon
                     }
-                    mostCommonAnswerCard.append(`
+                    clinicMostCommonAnswerCard.append(`
                          <tr>
                             <td><strong>${item.question}</strong></td>
                             <td><small class="response-list">${item.count}</small></td>
@@ -198,8 +211,8 @@ function loadAllResponses() {
             if (weightedAverages.length > 0 ) {
                 weightedAverages.forEach(item => {
                     if (item.average !== null && item.question.toLowerCase().trim() !== 'year level') {
-                        evaluationSection.gwa[item.question] = item.average;
-                        generalWeightAverage.append(`
+                        clinicEvaluationSection.gwa[item.question] = item.average;
+                        clinicGeneralWeightAverage.append(`
                             <li class="list-group-item d-flex justify-content-between align-items-start py-3 px-4 bg-white border-bottom">
                                 <div class="flex-grow-1 text-dark">${item.question}</div>
                                 <span class="badge bg-custom-info rounded-pill">${item.average}</span>
@@ -207,10 +220,39 @@ function loadAllResponses() {
                         `);
                     }
                 });
+
+                const clinicValidAverages = weightedAverages
+                    .filter(item => 
+                        item.average !== null && 
+                        item.question.toLowerCase().trim() !== 'year level'
+                    )
+                    .map(item => item.average);
+
+                const clinicOverallAverage = clinicValidAverages.length > 0 
+                    ? clinicValidAverages.reduce((sum, avg) => sum + avg, 0) / clinicValidAverages.length 
+                    : 0;
+                const clinicOverallSatisfactionPercent = (clinicOverallAverage / 5.0) * 100;
+
+                const clinicDisplayPercent = clinicOverallSatisfactionPercent.toFixed(2);
+
+                clinicSatisfactionPercent
+                .removeClass('bg-danger bg-warning bg-custom-blue')
+                .addClass(
+                    clinicOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                    clinicOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                )
+                .text(clinicDisplayPercent + '%');
+                clinicSatisfactionBar
+                    .css('width', clinicDisplayPercent + '%')
+                    .removeClass('bg-danger bg-warning bg-custom-blue')
+                    .addClass(
+                        clinicOverallSatisfactionPercent >= 80 ? 'bg-custom-blue' :
+                        clinicOverallSatisfactionPercent >= 60 ? 'bg-warning' : 'bg-danger'
+                    );
             }
         },
         complete: function() {
-            isLoading = false;
+            isLoadingClinic = false;
         },
         error: function() {
             jQuery('#analytics-table-body').html(`
@@ -224,7 +266,7 @@ function loadAllResponses() {
     });
 }
 
-function summarizeCommenAndSuggestion(payload) {
+function summarizeCommenAndSuggestionForClinic(payload) {
     jQuery.ajax({
         url: './controller/AutoSummarizeSuggestionAndComment.php',
         type: 'POST',
