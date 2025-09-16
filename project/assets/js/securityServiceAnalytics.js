@@ -20,6 +20,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForSecurity(securityEvaluationSection)
     });
+    $('#securityPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllSecurityResponses() {
@@ -31,7 +34,8 @@ function loadAllSecurityResponses() {
             securityMostCommonAnswerCard.empty();
             securitySatisfactionPercent.empty();
             securityGeneralWeightAverageContainer.hide();
-            jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#securityPrintResult').attr('disabled', true)
             securityBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -68,11 +72,13 @@ function loadAllSecurityResponses() {
             securityGeneralWeightAverage.empty();
             securitySatisfactionPercent.empty();
             securityGeneralWeightAverageContainer.show();
-            jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false);
+            jQuery('#securityPrintResult').attr('disabled', false)
 
             if (data.error) {
                 securityGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#securityPrintResult').attr('disabled', true)
                 securityBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -87,7 +93,8 @@ function loadAllSecurityResponses() {
 
             if (!responses || responses.length === 0) {
                 securityGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#securityPrintResult').attr('disabled', true)
                 securityBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

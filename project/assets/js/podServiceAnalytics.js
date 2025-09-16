@@ -19,6 +19,10 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForPOD(podEvaluationSection)
     });
+
+    $('#podPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllPODResponses() {
@@ -31,6 +35,7 @@ function loadAllPODResponses() {
             podGeneralWeightAverageContainer.hide();
             podSatisfactionPercent.empty();
              jQuery('#summarizeBtn').attr('disabled', true)
+             jQuery('#podPrintResult').attr('disabled', true)
             podBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +72,13 @@ function loadAllPODResponses() {
             podGeneralWeightAverage.empty();
             podSatisfactionPercent.empty();
             podGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#podPrintResult').attr('disabled', true);
 
             if (data.error) {
                 podGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#podPrintResult').attr('disabled', true);
                 podBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +93,8 @@ function loadAllPODResponses() {
 
             if (!responses || responses.length === 0) {
                 podGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#podPrintResult').attr('disabled', true)
                 podBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

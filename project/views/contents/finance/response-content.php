@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card fade-in print-only">
     <div class="card-body">
         <div class="table-responsive">
             <table class="table">

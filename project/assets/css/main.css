@@ -137,4 +137,50 @@ body {
 .color-custom-white {
   color: var(--secondary-color);
 }
+
+  @media print {
+    body * {
+      visibility: hidden;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .progress,
+    .progress-bar {
+      background-color: currentColor !important;
+      color: inherit;
+    }
+
+    .progress-bar {
+      background-color: var(--primary-color) !important;
+      border-radius: 0;
+    }
+
+    .progress {
+      background-color: #e9ecef !important;
+    }
+
+    .print-only,
+    .print-only * {
+      visibility: visible;
+    }
+
+    .print-only {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 15px;
+    }
+
+    .print-only .table {
+      margin-bottom: 0 !important;
+    }
+
+    .print-only .table th,
+    .print-only .table td {
+      word-wrap: break-word;
+    }
+  }
   

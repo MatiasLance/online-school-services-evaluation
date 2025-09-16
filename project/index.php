@@ -47,6 +47,39 @@ switch($path) {
   case '/student-activity-service':
     require  __DIR__ . $viewDir . '/student-activity-service.php';
     break;
+  case '/registrar-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/registrar-service-feedback.php';
+    break;
+  case '/pod-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/pod-service-feedback.php';
+    break;
+  case '/finance-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/finance-service-feedback.php';
+    break;
+  case '/campus-ministry-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/campus-ministry-service-feedback.php';
+    break;
+  case '/maintenance-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/maintenance-service-feedback.php';
+    break;
+  case '/canteen-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/canteen-service-feedback.php';
+    break;
+  case '/library-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/library-service-feedback.php';
+    break;
+  case '/clinic-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/clinic-service-feedback.php';
+    break;
+  case '/guidance-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/guidance-service-feedback.php';
+    break;
+  case '/security-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/guidance-service-feedback.php';
+    break;
+  case '/student-activity-service-feedback':
+    require  __DIR__ . $viewDir . '/feedbacks/student-activity-service-feedback.php';
+    break;
   default:
     http_response_code(404);
     require  __DIR__ . $viewDir . '404.php';

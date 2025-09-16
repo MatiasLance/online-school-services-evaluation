@@ -21,7 +21,7 @@ if (empty($data['title'])) {
     exit;
 }
 
-$appsScriptUrl = 'https://script.google.com/macros/s/AKfycbxiir0akqH19GAgXtXvgnhBIKD_KaCqibacCn4o6LUMTGa1_mSebDDlc7oTRFCEkKx2hQ/exec';
+$appsScriptUrl = 'https://script.google.com/macros/s/AKfycbw3-Hhc__rx1veOjfgATiObFizkOF5mmYGmBRxX0m8xmMWVBiB_uiJ2xnyhzBP4Uqi7eQ/exec';
 
 $jsonData = json_encode($data);
 if ($jsonData === false) {

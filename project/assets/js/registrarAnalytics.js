@@ -20,6 +20,10 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForRegistrar(registrarEvaluationSection)
     });
+
+    $('#registrarPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllRegistrarResponses() {
@@ -33,6 +37,7 @@ function loadAllRegistrarResponses() {
             registrarYearEvaluated.empty();
             registrarGeneralWeightAverageContainer.hide();
             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#registrarPrintResult').attr('disabled', true)
             registrarBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -78,10 +83,12 @@ function loadAllRegistrarResponses() {
             registrarYearEvaluated.empty();
             registrarGeneralWeightAverageContainer.show();
             jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#registrarPrintResult').attr('disabled', false)
 
             if (data.error) {
                 registrarGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#registrarPrintResult').attr('disabled', true)
                 registrarBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -97,6 +104,7 @@ function loadAllRegistrarResponses() {
             if (!responses || responses.length === 0) {
                 registrarGeneralWeightAverageContainer.hide();
                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#registrarPrintResult').attr('disabled', true)
                 registrarBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

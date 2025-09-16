@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForLibrary(libraryEvaluationSection)
     });
+    $('#libraryPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllLibraryResponses() {
@@ -30,7 +33,8 @@ function loadAllLibraryResponses() {
             librarySatisfactionPercent.empty();
             libraryMostCommonAnswerCard.empty();
             libraryGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#libraryPrintResult').attr('disabled', true)
             libraryBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,7 +71,8 @@ function loadAllLibraryResponses() {
             libraryGeneralWeightAverage.empty();
             librarySatisfactionPercent.empty();
             libraryGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false);
+            jQuery('#libraryPrintResult').attr('disabled', false)
 
             if (data.error) {
                 libraryGeneralWeightAverageContainer.hide();
@@ -86,7 +91,8 @@ function loadAllLibraryResponses() {
 
             if (!responses || responses.length === 0) {
                 libraryGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#libraryPrintResult').attr('disabled', true)
                 libraryBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

@@ -20,6 +20,21 @@
     color: var(--font-color-black);
 }
 
+.btn-vibrant-bright-teal-color {
+  background-color:  var(--bright-teal-color);
+  color: #0c0b55;
+  font-weight: 800;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-vibrant-bright-teal-color:hover {
+    border: 2px solid var(--bright-teal-color);
+    transform: scale(1.05);
+}
+
 .btn-vibrant-golden-yellow {
     background-color:  var(--vibrant-golden-yellow);
     color: #0c0b55;

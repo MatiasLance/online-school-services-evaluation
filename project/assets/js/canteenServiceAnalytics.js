@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForCanteen(canteenEvaluationSection)
     });
+    $('#canteenPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllCanteenResponses() {
@@ -30,7 +33,8 @@ function loadAllCanteenResponses() {
             canteenMostCommonAnswerCard.empty();
             canteenSatisfactionPercent.empty();
             canteenGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#canteenPrintResult').attr('disabled', true)
             canteenBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllCanteenResponses() {
             canteenGeneralWeightAverage.empty();
             canteenSatisfactionPercent.empty();
             canteenGeneralWeightAverageContainer.show();
-            jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false);
+            jQuery('#canteenPrintResult').attr('disabled', false)
 
             if (data.error) {
                 canteenGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#canteenPrintResult').attr('disabled', true)
                 canteenBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllCanteenResponses() {
 
             if (!responses || responses.length === 0) {
                 canteenGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#canteenPrintResult').attr('disabled', true)
                 canteenBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

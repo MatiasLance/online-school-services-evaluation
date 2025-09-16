@@ -31,24 +31,37 @@ function sanitizeInput($input)
     return $input;
 }
 
-function summarizeWithGemini($title, $keyword) {
-    $apiKey = $_ENV['GIMINI_KEY'];
+function summarizeWithGemini($title, $feedbackText) {
+    $apiKey = $_ENV['GEMINI_KEY'];
     if (!$apiKey) {
-        error_log('GIMINI_KEY not set in environment');
+        error_log('GEMINI_KEY not set in environment');
         return 'Error: API key not configured.';
     }
 
     $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey;
 
+    // 🚨 CRITICAL: This prompt is now designed for FULL FEEDBACK TEXT input
     $prompt = "
-You are generating a concise, professional summary for a report.
-Based on the most common comment or suggestion from participants regarding \"$title\", write 2–3 sentences about the overall sentiment.
-Do not use markdown. Keep tone neutral and observational.
+You are generating a concise, objective summary for a school evaluation report.
 
-Most common feedback for \"$title\": \"$keyword\"
+Analyze the following student feedback about \"$title\" and extract exactly the following information:
 
-Write a 2–3 sentence summary suitable for presentation to stakeholders:
-    ";
+- MCA (Most Common Answer): Identify the most frequently mentioned sentiment or comment. Paraphrase it clearly and concisely. Do not list multiple points — pick the single most recurring theme.
+- GWA (General Weighted Average): Extract the average rating if provided. If no numeric average is given, respond with 'N/A'.
+- Summary: Write 4–5 neutral, factual sentences summarizing overall sentiment from students/parents/teachers. Focus on strengths, weaknesses, and general tone. Do not include recommendations or opinions.
+
+Do NOT use markdown. Do NOT add headings, bullet points, or embellishments. Use plain text only. Maintain an academic and professional tone suitable for official school records.
+
+Here is the full feedback:
+{$feedbackText}
+
+Provide your response strictly in this exact format:
+MCA (Most Common Answer): [your answer here]
+GWA (General Weighted Average): [number or N/A]
+Summary: [your 4–5 sentence summary here]
+
+Do not include any other text before or after this format.
+";
 
     $data = [
         'contents' => [
@@ -77,9 +90,17 @@ Write a 2–3 sentence summary suitable for presentation to stakeholders:
     $result = json_decode($response, true);
 
     if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
-        return trim($result['candidates'][0]['content']['parts'][0]['text']);
+        $summary = trim($result['candidates'][0]['content']['parts'][0]['text']);
+
+        if (strpos($summary, 'MCA (Most Common Answer):') === 0 &&
+            strpos($summary, 'GWA (General Weighted Average):') !== false &&
+            strpos($summary, 'Summary:') !== false) {
+            return $summary;
+        } else {
+            return "MCA (Most Common Answer): Unable to determine\nGWA (General Weighted Average): N/A\nSummary: The system received feedback but could not generate a properly formatted summary.";
+        }
     } else {
-        error_log('Gemini API error: ' . json_encode($result));
+        error_log('Gemini API error for "' . $title . '": ' . json_encode($result));
         return 'Could not generate summary.';
     }
 }

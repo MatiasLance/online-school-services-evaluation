@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForClinic(clinicEvaluationSection)
     });
+    $('#clinicPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllClinicResponses() {
@@ -30,7 +33,8 @@ function loadAllClinicResponses() {
             clinicMostCommonAnswerCard.empty();
             clinicSatisfactionPercent.empty();
             clinicGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#clinicPrintResult').attr('disabled', true);
             clinicBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllClinicResponses() {
             clinicGeneralWeightAverage.empty();
             clinicSatisfactionPercent.empty();
             clinicGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+             jQuery('#summarizeBtn').attr('disabled', false);
+             jQuery('#clinicPrintResult').attr('disabled', false);
 
             if (data.error) {
                 clinicGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#clinicPrintResult').attr('disabled', true);
                 clinicBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllClinicResponses() {
 
             if (!responses || responses.length === 0) {
                 clinicGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#clinicPrintResult').attr('disabled', true);
                 clinicBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

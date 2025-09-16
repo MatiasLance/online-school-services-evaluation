@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForStudent(studentEvaluationSection)
     });
+    $('#studentActivityPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllStudentResponses() {
@@ -30,7 +33,8 @@ function loadAllStudentResponses() {
             studentMostCommonAnswerCard.empty();
             studentSatisfactionPercent.empty();
             studentGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#studentActivityPrintResult').attr('disabled', true);
             studentBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllStudentResponses() {
             studentGeneralWeightAverage.empty();
             studentSatisfactionPercent.empty();
             studentGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+             jQuery('#summarizeBtn').attr('disabled', false);
+             jQuery('#studentActivityPrintResult').attr('disabled', false);
 
             if (data.error) {
                 studentGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#studentActivityPrintResult').attr('disabled', true);
                 studentBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllStudentResponses() {
 
             if (!responses || responses.length === 0) {
                 studentGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#studentActivityPrintResult').attr('disabled', true);
                 studentBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

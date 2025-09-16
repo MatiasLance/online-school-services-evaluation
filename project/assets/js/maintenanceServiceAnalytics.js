@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForMaintenance(maintenanceEvaluationSection)
     });
+    $('#maintenancePrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllMaintenanceResponses() {
@@ -30,7 +33,8 @@ function loadAllMaintenanceResponses() {
             maintenanceMostCommonAnswerCard.empty();
             maintenanceSatisfactionPercent.empty();
             maintenanceGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#maintenancePrintResult').attr('disabled', true);
             body.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllMaintenanceResponses() {
             maintenanceGeneralWeightAverage.empty();
             maintenanceSatisfactionPercent.empty();
             maintenanceGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+             jQuery('#summarizeBtn').attr('disabled', false);
+             jQuery('#maintenancePrintResult').attr('disabled', false);
 
             if (data.error) {
                 maintenanceGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#maintenancePrintResult').attr('disabled', true);
                 body.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllMaintenanceResponses() {
 
             if (!responses || responses.length === 0) {
                 maintenanceGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#maintenancePrintResult').attr('disabled', true);
                 body.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

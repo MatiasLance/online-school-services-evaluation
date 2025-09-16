@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForGuidance(guidanceEvaluationSection)
     });
+    $('#guidancePrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllGuidanceResponses() {
@@ -30,7 +33,8 @@ function loadAllGuidanceResponses() {
             guidanceMostCommonAnswerCard.empty();
             guidanceSatisfactionPercent.empty();
             guidanceGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#guidancePrintResult').attr('disabled', true);
             guidanceBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllGuidanceResponses() {
             guidanceGeneralWeightAverage.empty();
             guidanceSatisfactionPercent.empty();
             guidanceGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+             jQuery('#summarizeBtn').attr('disabled', false);
+             jQuery('#guidancePrintResult').attr('disabled', false);
 
             if (data.error) {
                 guidanceGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#guidancePrintResult').attr('disabled', true);
                 guidanceBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllGuidanceResponses() {
 
             if (!responses || responses.length === 0) {
                 guidanceGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                 jQuery('#summarizeBtn').attr('disabled', true);
+                 jQuery('#guidancePrintResult').attr('disabled', true);
                 guidanceBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

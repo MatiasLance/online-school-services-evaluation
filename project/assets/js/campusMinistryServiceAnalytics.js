@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForCampus(campusEvaluationSection)
     });
+    $('#campusMinistryPrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllCampusResponses() {
@@ -30,7 +33,8 @@ function loadAllCampusResponses() {
             campusMostCommonAnswerCard.empty();
             campusSatisfactionPercent.empty();
             campusGeneralWeightAverageContainer.hide();
-            jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#campusMinistryPrintResult').attr('disabled', true);
             campusBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllCampusResponses() {
             campusGeneralWeightAverage.empty();
             campusSatisfactionPercent.empty();
             campusGeneralWeightAverageContainer.show();
-            jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false);
+            jQuery('#campusMinistryPrintResult').attr('disabled', false);
 
             if (data.error) {
                 campusGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#campusMinistryPrintResult').attr('disabled', true);
                 campusBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllCampusResponses() {
 
             if (!responses || responses.length === 0) {
                 campusGeneralWeightAverageContainer.hide();
-                jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#campusMinistryPrintResult').attr('disabled', true);
                 campusBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">

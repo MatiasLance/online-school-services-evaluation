@@ -19,6 +19,9 @@ jQuery(function($) {
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForFinance(financeEvaluationSection)
     });
+    $('#financePrintResult').on('click', function(){
+        window.print();
+    });
 });
 
 function loadAllFinanceResponses() {
@@ -30,7 +33,8 @@ function loadAllFinanceResponses() {
             financeMostCommonAnswerCard.empty();
             financeSatisfactionPercent.empty();
             financeGeneralWeightAverageContainer.hide();
-             jQuery('#summarizeBtn').attr('disabled', true)
+            jQuery('#summarizeBtn').attr('disabled', true);
+            jQuery('#financePrintResult').attr('disabled', true);
             financeBody.append(`
                 <tr>
                     <td colspan="4" class="text-danger text-center">
@@ -67,11 +71,13 @@ function loadAllFinanceResponses() {
             financeGeneralWeightAverage.empty();
             financeSatisfactionPercent.empty();
             financeGeneralWeightAverageContainer.show();
-             jQuery('#summarizeBtn').attr('disabled', false)
+            jQuery('#summarizeBtn').attr('disabled', false);
+            jQuery('#financePrintResult').attr('disabled', false);
 
             if (data.error) {
                 financeGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#financePrintResult').attr('disabled', true);
                 financeBody.append(`
                     <tr>
                         <td colspan="4" class="text-secondary text-center">
@@ -86,7 +92,8 @@ function loadAllFinanceResponses() {
 
             if (!responses || responses.length === 0) {
                 financeGeneralWeightAverageContainer.hide();
-                 jQuery('#summarizeBtn').attr('disabled', true)
+                jQuery('#summarizeBtn').attr('disabled', true);
+                jQuery('#financePrintResult').attr('disabled', true);
                 financeBody.append(`
                     <tr>
                         <td colspan="4" class="text-muted text-center">
