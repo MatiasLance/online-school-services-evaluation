@@ -6,7 +6,7 @@
     </div>
     <div class="sidebar-nav-wrapper">
     <nav class="nav flex-column">
-        <a class="nav-link-1 d-flex align-items-center gap-2" href="/">
+        <a class="nav-link-1 d-flex align-items-center gap-2" href="/dashboard">
             <i class="fas fa-grip"></i>
             <span style="transform: translateY(2px);">Dashboard</span>
         </a>

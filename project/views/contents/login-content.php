@@ -41,10 +41,11 @@
               </div>
 
               <!-- Login Button -->
-              <div class="col-12">
-                  <button class="btn btn-custom-primary btn-sm montserrat-medium text-uppercase w-100" id="login" type="button">
+              <div class="col-12 text-center">
+                  <button class="btn btn-custom-primary btn-sm montserrat-medium text-uppercase w-100 mb-3" id="login" type="button">
                     Login <i class="fas fa-arrow-right"></i>
                   </button>
+                  <a href="/" class="link-underline-dark" style="text-decoration: none;">Go to Feed back form.</a>
               </div>
 
             </div>
