@@ -13,8 +13,10 @@ let podEvaluationSection = {
 jQuery(function($) {
     podGeneralWeightAverageContainer.hide();
     loadAllPODResponses();
+    listOfPODFeedbacks();
     $('#refreshPODServiceEvaluationResult').on('click', function(){
         loadAllPODResponses();
+        listOfPODFeedbacks();
     });
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForPOD(podEvaluationSection)
@@ -291,6 +293,41 @@ function summarizeCommenAndSuggestionForPOD(payload) {
         error: function(xhr, status, error) {
             console.error('AJAX Error:', status, error);
             jQuery('#summaryOutput').text('Error generating summary.');
+        }
+    });
+}
+
+function listOfPODFeedbacks(){
+    jQuery.ajax({
+        url: './controller/feedback/FeedbackListController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#podServiceFeedbackMostCommonAnswer').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'pod'){
+                        jQuery('#podServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[1].feedback_count}</td>
+                                <td class="text-center">${response.data[1].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#pod-feedback-bar')
+                            .css('width', response.data[0].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[1].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[1].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[1].percentage + '%');
+                            }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
         }
     });
 }

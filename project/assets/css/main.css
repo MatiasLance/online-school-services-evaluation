@@ -129,9 +129,19 @@ body {
   color: var(--secondary-color);
 }
 
+.bg-custom-yellow {
+  background-color: var(--vibrant-golden-yellow);
+  color: var(--font-color-black);
+}
+
 .bg-custom-blue:hover {
   background-color: var(--primary-color);
   color: var(--secondary-color);
+}
+
+.bg-custom-yellow:hover {
+  background-color: var(--darken-golden-shade);
+  color: var(--font-color-black);
 }
 
 .color-custom-white {
@@ -163,6 +173,14 @@ body {
     .print-only,
     .print-only * {
       visibility: visible;
+    }
+    .not-print,
+    .not-print * {
+        display: none !important;
+    }
+
+    .print-header {
+      display: block !important;
     }
 
     .print-only {

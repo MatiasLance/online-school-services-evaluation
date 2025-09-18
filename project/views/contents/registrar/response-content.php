@@ -1,4 +1,10 @@
-<div class="card print-only">
+<div class="card fade-in">
+    <div class="card-header bg-transparent text-center print-header" hidden>
+        <img src="https://i.imgur.com/HLqsP73.png" class="img-fluid my-3" alt="SMCBI Logo" width="150" height="100">
+        <h5 class="fw-bold lh-sm">ST. MARY'S COLLEGE OF BANSALAN, INC.</h5>
+        <p class="fst-italic lh-sm">(Formerly: Holy Cross of Bansalan College, Inc)</p>
+        <p class="lh-sm">Dahlia Street, Bansalan, Davao del Sur 8005 Philippines</p>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table">
@@ -13,7 +19,6 @@
                 <tbody id="registrar-service-analytics-table-body">
                 </tbody>
             </table>
-            </div>
         </div>
     </div>
 </div>

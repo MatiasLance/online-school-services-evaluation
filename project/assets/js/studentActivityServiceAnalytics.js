@@ -13,8 +13,10 @@ let studentEvaluationSection = {
 jQuery(function($) {
     studentGeneralWeightAverageContainer.hide();
     loadAllStudentResponses();
+    listOfStudentActivityFeedbacks();
     $('#refreshStudentActivityServiceEvaluationResult').on('click', function(){
         loadAllStudentResponses();
+        listOfStudentActivityFeedbacks();
     });
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForStudent(studentEvaluationSection)
@@ -288,6 +290,41 @@ function summarizeCommenAndSuggestionForStudent(payload) {
         error: function(xhr, status, error) {
             console.error('AJAX Error:', status, error);
             jQuery('#summaryOutput').text('Error generating summary.');
+        }
+    });
+}
+
+function listOfStudentActivityFeedbacks(){
+    jQuery.ajax({
+        url: './controller/feedback/FeedbackListController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#studentActivityServiceFeedbackMostCommonAnswer').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'student activity'){
+                        jQuery('#studentActivityServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#student-activity-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
         }
     });
 }

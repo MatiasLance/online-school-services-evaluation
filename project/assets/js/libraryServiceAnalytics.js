@@ -13,8 +13,10 @@ let libraryEvaluationSection = {
 jQuery(function($) {
     libraryGeneralWeightAverageContainer.hide();
     loadAllLibraryResponses();
+    listOfLibraryFeedbacks();
     $('#refreshLibraryServiceEvaluationResult').on('click', function(){
         loadAllLibraryResponses();
+        listOfLibraryFeedbacks();
     });
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForLibrary(libraryEvaluationSection)
@@ -289,6 +291,41 @@ function summarizeCommenAndSuggestionForLibrary(payload) {
         error: function(xhr, status, error) {
             console.error('AJAX Error:', status, error);
             jQuery('#summaryOutput').text('Error generating summary.');
+        }
+    });
+}
+
+function listOfLibraryFeedbacks(){
+    jQuery.ajax({
+        url: './controller/feedback/FeedbackListController.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#libraryServiceFeedbackMostCommonAnswer').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'library'){
+                        jQuery('#libraryServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#library-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
         }
     });
 }

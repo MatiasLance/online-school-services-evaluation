@@ -5,7 +5,10 @@ $path = $parsedUrl['path'];
 $viewDir = '/views/';
 
 switch($path) {
-  case '/':
+case '/':
+    require  __DIR__ . $viewDir . 'feedback.php';
+    break;
+  case '/admin':
     require  __DIR__ . $viewDir . 'login.php';
     break;
   case '/create-form':
@@ -75,10 +78,13 @@ switch($path) {
     require  __DIR__ . $viewDir . '/feedbacks/guidance-service-feedback.php';
     break;
   case '/security-service-feedback':
-    require  __DIR__ . $viewDir . '/feedbacks/guidance-service-feedback.php';
+    require  __DIR__ . $viewDir . '/feedbacks/security-service-feedback.php';
     break;
   case '/student-activity-service-feedback':
     require  __DIR__ . $viewDir . '/feedbacks/student-activity-service-feedback.php';
+    break;
+   case '/thank-you':
+    require  __DIR__ . $viewDir . '/thank-you.php';
     break;
   default:
     http_response_code(404);

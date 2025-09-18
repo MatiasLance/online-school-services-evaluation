@@ -6,7 +6,7 @@
         <div class="card-body">
             <button 
                 type="button" 
-                class="btn btn-vibrant-golden-yellow btn-sm d-flex align-items-center gap-2 mb-4" 
+                class="btn btn-vibrant-golden-yellow btn-sm d-flex align-items-center gap-2 mb-4 not-print" 
                 id="summarizeBtn"
             >
                 <i class="bi bi-arrow-up me-1" style="font-size: 1.2rem;"></i>

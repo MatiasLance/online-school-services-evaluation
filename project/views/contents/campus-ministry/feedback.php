@@ -25,9 +25,7 @@
           </div>
         </div>
         <?php
-                include __DIR__ . '/most-common-response-content.php';
-                include __DIR__ . '/general-weight-average.php';
-                include __DIR__ . '/summary-note.php';
+                include __DIR__ . '/feedback-mca-content.php';
             ?>
       </div>
     </main>
