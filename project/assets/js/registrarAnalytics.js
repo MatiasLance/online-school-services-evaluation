@@ -26,6 +26,10 @@ jQuery(function($) {
     $('#registrarPrintResult').on('click', function(){
         window.print();
     });
+
+    $('#listAllRegistratFeedbacks').on('click', function(){
+        listOfFeedbacks();
+    });
 });
 
 function loadAllRegistrarResponses() {
@@ -311,7 +315,7 @@ function listOfFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#registrarServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#registrarServiceFeedbackMostCommonAnswer, #registrar-feedback-container').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'registrar'){
@@ -330,6 +334,14 @@ function listOfFeedbacks(){
                                 response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#registrar-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
                     }
                 }
             }

@@ -12,7 +12,15 @@
                 </div>
             </div>
 
-            <div class="d-flex flex-row-reverse mt-4">
+            <div class="d-flex flex-row-reverse mt-4 gap-4">
+                <button 
+                    type="button" 
+                    class="btn bg-custom-blue btn-sm d-flex align-items-center gap-2" id="listAllRegistratFeedbacks"
+                    data-bs-toggle="modal" data-bs-target="#viewFeedbacksModal"
+                >
+                    <i class="fas fa-eye" style="font-size: 1.2rem;"></i>
+                    <span>View Feedbacks</span>
+                </button>
                 <button 
                     type="button" 
                     class="btn btn-vibrant-golden-yellow btn-sm d-flex align-items-center gap-2" 
@@ -32,6 +40,7 @@
 
 <!-- Modal -->
 <?php include __DIR__ . '/../../modal/profile/edit-profile-modal.php'; ?>
+<?php include __DIR__ . '/../../modal/feedback/ViewFeedbacksModal.php'; ?>
 
 <!-- Footer -->
 <?php include __DIR__ . '/../../footer.php' ?>

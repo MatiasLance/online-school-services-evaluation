@@ -13,7 +13,6 @@ try {
     $totalActiveFeedback = (int)$totalRow['total'];
     $totalStmt->close();
 
-
     $sql = "
         SELECT 
             office,
@@ -40,6 +39,7 @@ try {
     $data = [];
     $sumPercentages = 0;
 
+    $offices = [];
     while ($row = $result->fetch_assoc()) {
         $count = (int)$row['feedback_count'];
         $percentage = $totalActiveFeedback > 0 ? round(($count / $totalActiveFeedback) * 100) : 0;
@@ -48,28 +48,52 @@ try {
             $percentage = 1;
         }
 
-        $data[] = [
+        $offices[] = [
             'office' => $row['office'],
             'feedback_count' => $count,
             'percentage' => $percentage,
             'most_common_feedback' => $row['most_common_feedback'] ?? 'No feedback available'
         ];
-
-        $sumPercentages += $percentage;
     }
 
-    if ($totalActiveFeedback > 0 && !empty($data)) {
+    foreach ($offices as &$office) {
+        $officeName = $office['office'];
+
+        $feedbacksStmt = $conn->prepare("
+            SELECT id, feedback 
+            FROM form_feedbacks 
+            WHERE office = ? AND deleted_at IS NULL 
+            ORDER BY created_at DESC
+        ");
+        $feedbacksStmt->bind_param("s", $officeName);
+        $feedbacksStmt->execute();
+        $feedbacksResult = $feedbacksStmt->get_result();
+
+        $feedbacksList = [];
+        while ($fRow = $feedbacksResult->fetch_assoc()) {
+            $feedbacksList[] = [
+                'id' => (int)$fRow['id'],
+                'feedback' => $fRow['feedback']
+            ];
+        }
+        $feedbacksStmt->close();
+
+        $office['feedbacks'] = $feedbacksList;
+        $sumPercentages += $office['percentage'];
+    }
+
+    if ($totalActiveFeedback > 0 && !empty($offices)) {
         $diff = 100 - $sumPercentages;
         if ($diff !== 0) {
-            $data[count($data) - 1]['percentage'] += $diff;
+            $offices[count($offices) - 1]['percentage'] += $diff;
         }
     }
 
-    $total_offices = count($data);
+    $total_offices = count($offices);
 
     echo json_encode([
         'success' => true,
-        'data' => $data,
+        'data' => $offices,
         'total_offices' => $total_offices,
         'total_active_feedback' => $totalActiveFeedback,
         'total_percentage' => 100
