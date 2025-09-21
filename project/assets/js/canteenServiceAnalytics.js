@@ -14,16 +14,45 @@ jQuery(function($) {
     canteenGeneralWeightAverageContainer.hide();
     loadAllCanteenResponses();
     listOfCanteenFeedbacks();
+
     $('#refreshCanteenServiceEvaluationResult').on('click', function(){
         loadAllCanteenResponses();
         listOfCanteenFeedbacks();
     });
+
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForCanteen(canteenEvaluationSection)
     });
+
     $('#canteenPrintResult').on('click', function(){
         window.print();
     });
+
+    $(document).on('click', '#loadMoreCanteenFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreCanteenFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMoreCanteenFeedback', function(){
+        jQuery('#canteen-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMoreCanteenFeedbacks(payload);
+    })
 });
 
 function loadAllCanteenResponses() {
@@ -302,7 +331,7 @@ function listOfCanteenFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#canteenServiceFeedbackMostCommonAnswer, #canteen-feedback-container').empty();
+            jQuery('#canteenServiceFeedbackMostCommonAnswer, #canteen-feedback-container, #appendCanteenLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'canteen'){
@@ -327,6 +356,85 @@ function listOfCanteenFeedbacks(){
                                 <tr>
                                     <td>${response.data[i].feedbacks[x].feedback}</td>
                                 </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendCanteenLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreCanteenFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMoreCanteenFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#canteenServiceFeedbackMostCommonAnswer, #appendCanteenLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'canteen'){
+                        jQuery('#canteenServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#canteen-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#canteen-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendCanteenLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreCanteenFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendCanteenLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreCanteenFeedback">
+                                    Hide More Feedbacks
+                                </button>
                             `)
                         }
                     }

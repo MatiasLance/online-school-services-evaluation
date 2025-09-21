@@ -14,16 +14,45 @@ jQuery(function($) {
     studentGeneralWeightAverageContainer.hide();
     loadAllStudentResponses();
     listOfStudentActivityFeedbacks();
+
     $('#refreshStudentActivityServiceEvaluationResult').on('click', function(){
         loadAllStudentResponses();
         listOfStudentActivityFeedbacks();
     });
+
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForStudent(studentEvaluationSection)
     });
+    
     $('#studentActivityPrintResult').on('click', function(){
         window.print();
     });
+
+    $(document).on('click', '#loadMoreStudentActivityFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreStudentActivityFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMoreStudentActivityFeedback', function(){
+        jQuery('#student-activity-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMoreStudentActivityFeedbacks(payload);
+    })
 });
 
 function loadAllStudentResponses() {
@@ -300,7 +329,7 @@ function listOfStudentActivityFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#studentActivityServiceFeedbackMostCommonAnswer, #student-activity-feedback-container').empty();
+            jQuery('#studentActivityServiceFeedbackMostCommonAnswer, #student-activity-feedback-container, #appendStudentActivityLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'student activity'){
@@ -325,6 +354,85 @@ function listOfStudentActivityFeedbacks(){
                                 <tr>
                                     <td>${response.data[i].feedbacks[x].feedback}</td>
                                 </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendStudentActivityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreStudentActivityFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMoreStudentActivityFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#studentActivityServiceFeedbackMostCommonAnswer, #appendStudentActivityLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'student activity'){
+                        jQuery('#studentActivityServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#student-activity-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+                        
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#student-activity-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendStudentActivityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreStudentActivityFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendStudentActivityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreStudentActivityFeedback">
+                                    Hide More Feedbacks
+                                </button>
                             `)
                         }
                     }

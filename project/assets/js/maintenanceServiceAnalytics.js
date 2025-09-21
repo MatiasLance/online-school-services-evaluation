@@ -14,16 +14,45 @@ jQuery(function($) {
     maintenanceGeneralWeightAverageContainer.hide();
     loadAllMaintenanceResponses();
     listOfMaintenanceFeedbacks();
+
     $('#refreshMaintenanceServiceEvaluationResult').on('click', function(){
         loadAllMaintenanceResponses();
         listOfMaintenanceFeedbacks();
     });
+
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForMaintenance(maintenanceEvaluationSection)
     });
+
     $('#maintenancePrintResult').on('click', function(){
         window.print();
     });
+
+    $(document).on('click', '#loadMoreMaintenanceFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreMaintenanceFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMoreMaintenanceFeedback', function(){
+        jQuery('#maintenance-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMoreMaintenanceFeedbacks(payload);
+    })
 });
 
 function loadAllMaintenanceResponses() {
@@ -302,7 +331,7 @@ function listOfMaintenanceFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#maintenanceServiceFeedbackMostCommonAnswer, #maintenance-feedback-container').empty();
+            jQuery('#maintenanceServiceFeedbackMostCommonAnswer, #maintenance-feedback-container, #appendMaintenanceLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'maintenance'){
@@ -327,6 +356,85 @@ function listOfMaintenanceFeedbacks(){
                                 <tr>
                                     <td>${response.data[i].feedbacks[x].feedback}</td>
                                 </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendMaintenanceLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreMaintenanceFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMoreMaintenanceFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#maintenanceServiceFeedbackMostCommonAnswer, #appendMaintenanceLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'maintenance'){
+                        jQuery('#maintenanceServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#maintenance-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#maintenance-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendMaintenanceLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreMaintenanceFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendMaintenanceLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreMaintenanceFeedback">
+                                    Hide More Feedbacks
+                                </button>
                             `)
                         }
                     }

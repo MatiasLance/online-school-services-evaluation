@@ -18,6 +18,7 @@
                 </table>
             </div>
         </div>
+        <div class="modal-footer" id="appendStudentActivityLoadMoreButton"></div>
     </div>
   </div>
 </div>

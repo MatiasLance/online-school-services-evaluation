@@ -29,6 +29,32 @@ jQuery(function($) {
     $('#listAllPODFeedbacks').on('click', function(){
         listOfPODFeedbacks();
     });
+
+    $(document).on('click', '#loadMorePODFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMorePODFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMorePODFeedback', function(){
+        jQuery('#pod-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMorePODFeedbacks(payload);
+    })
 });
 
 function loadAllPODResponses() {
@@ -307,25 +333,25 @@ function listOfPODFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#podServiceFeedbackMostCommonAnswer, #pod-feedback-container').empty();
+            jQuery('#podServiceFeedbackMostCommonAnswer, #pod-feedback-container, #appendPODLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'pod'){
                         jQuery('#podServiceFeedbackMostCommonAnswer').append(`
                             <tr>
-                                <td class="text-center">${response.data[1].feedback_count}</td>
-                                <td class="text-center">${response.data[1].most_common_feedback}</td>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
                             </tr>
                         `);
 
                         jQuery('#pod-feedback-bar')
-                            .css('width', response.data[0].percentage + '%')
+                            .css('width', response.data[i].percentage + '%')
                             .removeClass('bg-danger bg-warning bg-custom-blue')
                             .addClass(
-                                response.data[1].percentage >= 80 ? 'bg-custom-blue' :
-                                response.data[1].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
-                            .text(response.data[1].percentage + '%');
+                            .text(response.data[i].percentage + '%');
 
                         for(let x = 0; x < response.data[i].feedbacks.length; x++){
                             jQuery('#pod-feedback-container').append(`
@@ -334,8 +360,92 @@ function listOfPODFeedbacks(){
                                 </tr>
                             `)
                         }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendPODLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMorePODFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
                     }
                 }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMorePODFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(){
+            jQuery('#loadMorePODFeedback').prop('disabled', true).text('Loading...');
+        },
+        success: function(response) {
+            jQuery('#podServiceFeedbackMostCommonAnswer, #appendPODLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'pod'){
+                        jQuery('#podServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#pod-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#pod-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendPODLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMorePODFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendPODLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMorePODFeedback">
+                                    Hide More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+
+                jQuery('#loadMorePODFeedback').prop('disabled', false).text('Load More Feedbacks')
             }
         },
         error: function(xhr, status, error) {

@@ -171,12 +171,10 @@ try {
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {
-    error_log("Feedback analytics error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Failed to retrieve feedback analytics.',
-        'error' => $_ENV['APP_ENV'] === 'development' ? $e->getMessage() : null
+        'message' => 'Failed to retrieve feedback analytics.'
     ]);
 }
 

@@ -14,16 +14,45 @@ jQuery(function($) {
     libraryGeneralWeightAverageContainer.hide();
     loadAllLibraryResponses();
     listOfLibraryFeedbacks();
+
     $('#refreshLibraryServiceEvaluationResult').on('click', function(){
         loadAllLibraryResponses();
         listOfLibraryFeedbacks();
     });
+
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForLibrary(libraryEvaluationSection)
     });
+
     $('#libraryPrintResult').on('click', function(){
         window.print();
     });
+
+    $(document).on('click', '#loadMoreLibraryFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreLibraryFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMoreLibraryFeedback', function(){
+        jQuery('#library-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMoreLibraryFeedbacks(payload);
+    })
 });
 
 function loadAllLibraryResponses() {
@@ -301,11 +330,11 @@ function listOfLibraryFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#libraryServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#libraryServiceFeedbackMostCommonAnswer, #library-feedback-container, #appendLibraryLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'library'){
-                        jQuery('#libraryServiceFeedbackMostCommonAnswer #library-feedback-container').append(`
+                        jQuery('#libraryServiceFeedbackMostCommonAnswer').append(`
                             <tr>
                                 <td class="text-center">${response.data[i].feedback_count}</td>
                                 <td class="text-center">${response.data[i].most_common_feedback}</td>
@@ -326,6 +355,85 @@ function listOfLibraryFeedbacks(){
                                 <tr>
                                     <td>${response.data[i].feedbacks[x].feedback}</td>
                                 </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendLibraryLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreLibraryFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMoreLibraryFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#libraryServiceFeedbackMostCommonAnswer, #appendLibraryLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'library'){
+                        jQuery('#libraryServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#library-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#library-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendLibraryLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreLibraryFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendLibraryLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreLibraryFeedback">
+                                    Hide More Feedbacks
+                                </button>
                             `)
                         }
                     }

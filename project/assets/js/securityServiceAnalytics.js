@@ -15,16 +15,45 @@ jQuery(function($) {
     securityGeneralWeightAverageContainer.hide();
     loadAllSecurityResponses();
     listOfSecurityFeedbacks();
+
     $('#refreshSecurityServiceEvaluationResult').on('click', function(){
         loadAllSecurityResponses();
         listOfSecurityFeedbacks();
     });
+
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForSecurity(securityEvaluationSection)
     });
+
     $('#securityPrintResult').on('click', function(){
         window.print();
     });
+
+    $(document).on('click', '#loadMoreSecurityFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreSecurityFeedbacks(payload);
+    })
+
+    $(document).on('click', '#hideMoreSecurityFeedback', function(){
+        jQuery('#security-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+        loadMoreSecurityFeedbacks(payload);
+    })
 });
 
 function loadAllSecurityResponses() {
@@ -303,7 +332,7 @@ function listOfSecurityFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#securityServiceFeedbackMostCommonAnswer, #security-feedback-container').empty();
+            jQuery('#securityServiceFeedbackMostCommonAnswer, #security-feedback-container, #appendSecurityLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'security'){
@@ -328,6 +357,85 @@ function listOfSecurityFeedbacks(){
                                 <tr>
                                     <td>${response.data[i].feedbacks[x].feedback}</td>
                                 </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendSecurityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreSecurityFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function loadMoreSecurityFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            jQuery('#securityServiceFeedbackMostCommonAnswer, #appendSecurityLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'security'){
+                        jQuery('#securityServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
+
+                        jQuery('#security-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#security-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendSecurityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreSecurityFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendSecurityLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreSecurityFeedback">
+                                    Hide More Feedbacks
+                                </button>
                             `)
                         }
                     }

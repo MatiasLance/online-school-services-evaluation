@@ -43,6 +43,21 @@ jQuery(function($) {
 
         loadMoreRegistrarFeedbacks(payload);
     })
+
+    $(document).on('click', '#hideMoreRegistrarFeedback', function(){
+        jQuery('#registrar-feedback-container').empty();
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreRegistrarFeedbacks(payload);
+    })
+
 });
 
 function loadAllRegistrarResponses() {
@@ -328,7 +343,7 @@ function listOfRegistrarFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#registrarServiceFeedbackMostCommonAnswer, #registrar-feedback-container').empty();
+            jQuery('#registrarServiceFeedbackMostCommonAnswer, #registrar-feedback-container, #appendLoadMoreButton').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'registrar'){
@@ -367,6 +382,7 @@ function listOfRegistrarFeedbacks(){
                                 </button>
                             `)
                         }
+
                     }
                 }
             }
@@ -386,7 +402,64 @@ function loadMoreRegistrarFeedbacks(data){
             jQuery('#loadMoreRegistrarFeedback').prop('disabled', true).text('Loading...');
         },
         success: function(response){
+            jQuery('#registrarServiceFeedbackMostCommonAnswer, #appendLoadMoreButton').empty();
+            if(response.success) {
+                for(let i = 0; i < response.data.length; i++){
+                    if(response.data[i].office.toLowerCase() === 'registrar'){
+                        jQuery('#registrarServiceFeedbackMostCommonAnswer').append(`
+                            <tr>
+                                <td class="text-center">${response.data[i].feedback_count}</td>
+                                <td class="text-center">${response.data[i].most_common_feedback}</td>
+                            </tr>
+                        `);
 
+                        jQuery('#registrar-feedback-bar')
+                            .css('width', response.data[i].percentage + '%')
+                            .removeClass('bg-danger bg-warning bg-custom-blue')
+                            .addClass(
+                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
+                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
+                            )
+                            .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#registrar-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+
+                        if(response.data[i].has_more || response.data[i].pagination.current_page === 1){
+                            jQuery('#appendLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreRegistrarFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
+
+                        if(!response.data[i].has_more && response.data[i].pagination.current_page !==1){
+                            jQuery('#appendLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="${response.data[i].pagination.current_page - 1}"
+                                data-limit="5"
+                                id="hideMoreRegistrarFeedback">
+                                    Hide More Feedbacks
+                                </button>
+                            `)
+                        }
+                    }
+                }
+                jQuery('#loadMoreRegistrarFeedback').prop('disabled', false).text('Load More Feedbacks');
+            }
+        },
+        error: function(xhr, status, error){
+            console.error(error);
         }
     })
 }
