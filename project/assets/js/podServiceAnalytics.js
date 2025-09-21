@@ -25,6 +25,10 @@ jQuery(function($) {
     $('#podPrintResult').on('click', function(){
         window.print();
     });
+
+    $('#listAllPODFeedbacks').on('click', function(){
+        listOfPODFeedbacks();
+    });
 });
 
 function loadAllPODResponses() {
@@ -303,7 +307,7 @@ function listOfPODFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#podServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#podServiceFeedbackMostCommonAnswer, #pod-feedback-container').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'pod'){
@@ -322,7 +326,15 @@ function listOfPODFeedbacks(){
                                 response.data[1].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[1].percentage + '%');
-                            }
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#pod-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
+                    }
                 }
             }
         },

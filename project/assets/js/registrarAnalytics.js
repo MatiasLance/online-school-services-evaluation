@@ -14,10 +14,10 @@ let registrarEvaluationSection = {
 jQuery(function($) {
     registrarGeneralWeightAverageContainer.hide();
     loadAllRegistrarResponses();
-    listOfFeedbacks();
+    listOfRegistrarFeedbacks();
     $('#refreshRegistrarServiceEvaluationResult').on('click', function(){
         loadAllRegistrarResponses();
-        listOfFeedbacks();
+        listOfRegistrarFeedbacks();
     });
     $('#summarizeBtn').on('click', function () {
         summarizeCommenAndSuggestionForRegistrar(registrarEvaluationSection)
@@ -27,9 +27,22 @@ jQuery(function($) {
         window.print();
     });
 
-    $('#listAllRegistratFeedbacks').on('click', function(){
-        listOfFeedbacks();
+    $('#listAllRegistrarFeedbacks').on('click', function(){
+        listOfRegistrarFeedbacks();
     });
+
+    $(document).on('click', '#loadMoreRegistrarFeedback', function(){
+        const office = $(this).data('office');
+        const nextPage = $(this).data('page');
+        const limit = $(this).data('limit');
+        const payload = {
+            office,
+            nextPage,
+            limit
+        }
+
+        loadMoreRegistrarFeedbacks(payload);
+    })
 });
 
 function loadAllRegistrarResponses() {
@@ -309,7 +322,7 @@ function summarizeCommenAndSuggestionForRegistrar(payload) {
     });
 }
 
-function listOfFeedbacks(){
+function listOfRegistrarFeedbacks(){
     jQuery.ajax({
         url: './controller/feedback/FeedbackListController.php',
         type: 'GET',
@@ -342,6 +355,18 @@ function listOfFeedbacks(){
                                 </tr>
                             `)
                         }
+
+                        if(response.data[i].has_more){
+                            jQuery('#appendLoadMoreButton').append(`
+                                <button class="btn btn-sm btn-primary"
+                                data-office="${response.data[i].office}"
+                                data-page="2"
+                                data-limit="5"
+                                id="loadMoreRegistrarFeedback">
+                                    Load More Feedbacks
+                                </button>
+                            `)
+                        }
                     }
                 }
             }
@@ -350,4 +375,18 @@ function listOfFeedbacks(){
             console.error(error);
         }
     });
+}
+
+function loadMoreRegistrarFeedbacks(data){
+    jQuery.ajax({
+        url: `./controller/feedback/FeedbackListController.php?office=${encodeURIComponent(data.office)}&page=${data.nextPage}&limit=${data. limit}`,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function(){
+            jQuery('#loadMoreRegistrarFeedback').prop('disabled', true).text('Loading...');
+        },
+        success: function(response){
+
+        }
+    })
 }

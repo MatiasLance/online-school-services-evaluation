@@ -300,7 +300,7 @@ function listOfStudentActivityFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#studentActivityServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#studentActivityServiceFeedbackMostCommonAnswer, #student-activity-feedback-container').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'student activity'){
@@ -319,6 +319,14 @@ function listOfStudentActivityFeedbacks(){
                                 response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[i].percentage + '%');
+                        
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#student-activity-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
                     }
                 }
             }

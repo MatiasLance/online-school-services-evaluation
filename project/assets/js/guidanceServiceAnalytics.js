@@ -24,6 +24,9 @@ jQuery(function($) {
     $('#guidancePrintResult').on('click', function(){
         window.print();
     });
+    $('#listAllGuidanceFeedbacks').on('click', function(){
+        listOfGuidanceFeedbacks();
+    });
 });
 
 function loadAllGuidanceResponses() {
@@ -302,7 +305,7 @@ function listOfGuidanceFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#guidanceServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#guidanceServiceFeedbackMostCommonAnswer, #guidance-feedback-container').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'guidance'){
@@ -321,6 +324,14 @@ function listOfGuidanceFeedbacks(){
                                 response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#guidance-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
                     }
                 }
             }

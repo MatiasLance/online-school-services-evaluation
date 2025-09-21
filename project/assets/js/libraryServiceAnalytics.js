@@ -305,7 +305,7 @@ function listOfLibraryFeedbacks(){
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'library'){
-                        jQuery('#libraryServiceFeedbackMostCommonAnswer').append(`
+                        jQuery('#libraryServiceFeedbackMostCommonAnswer #library-feedback-container').append(`
                             <tr>
                                 <td class="text-center">${response.data[i].feedback_count}</td>
                                 <td class="text-center">${response.data[i].most_common_feedback}</td>
@@ -320,6 +320,14 @@ function listOfLibraryFeedbacks(){
                                 response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[i].percentage + '%');
+
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#library-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
                     }
                 }
             }

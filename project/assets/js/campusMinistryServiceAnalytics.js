@@ -302,7 +302,7 @@ function listOfCampusMinistryFeedbacks(){
         type: 'GET',
         dataType: 'json',
         success: function(response) {
-            jQuery('#campusMinistryServiceFeedbackMostCommonAnswer').empty();
+            jQuery('#campusMinistryServiceFeedbackMostCommonAnswer, #campus-ministry-feedback-container').empty();
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'campus ministry'){
@@ -321,6 +321,14 @@ function listOfCampusMinistryFeedbacks(){
                                 response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
                             )
                             .text(response.data[i].percentage + '%');
+                        
+                        for(let x = 0; x < response.data[i].feedbacks.length; x++){
+                            jQuery('#campus-ministry-feedback-container').append(`
+                                <tr>
+                                    <td>${response.data[i].feedbacks[x].feedback}</td>
+                                </tr>
+                            `)
+                        }
                     }
                 }
             }
