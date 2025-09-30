@@ -124,7 +124,7 @@ body {
   font-style: italic;
 }
 
-.bg-custom-blue {
+.bg-custom-blue, .btn-custom-blue {
   background-color: var(--primary-color);
   color: var(--secondary-color);
 }
@@ -134,9 +134,16 @@ body {
   color: var(--font-color-black);
 }
 
-.bg-custom-blue:hover {
+.bg-custom-blue:hover, .btn-custom-blue:hover {
   background-color: var(--primary-color);
   color: var(--secondary-color);
+}
+
+.dropdown-toggle:focus,
+.dropdown-toggle:active,
+.dropdown-toggle.show {
+  background-color: var(--primary-color) !important;
+  color: var(--secondary-color) !important;
 }
 
 .bg-custom-yellow:hover {

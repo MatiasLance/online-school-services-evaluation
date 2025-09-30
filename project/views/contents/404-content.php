@@ -23,7 +23,7 @@
 
         <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
           <a
-            href="/registrar"
+            href="/"
             class="btn btn-lg btn-outline-light rounded-pill px-5 shadow-sm"
             role="button"
           >

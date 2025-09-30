@@ -323,6 +323,17 @@ function summarizeCommenAndSuggestionForRegistrar(payload) {
         contentType: 'application/json',
         dataType: 'json',
         data: JSON.stringify(payload),
+        beforeSend: function() {
+            isLoadingRegistrar = true;
+            jQuery('#summaryOutput').html(`
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            `);
+            jQuery('#summarizeBtn').attr('disabled', true).text('Summarizing...');
+        },
         success: function(response) {
             if (response && response.summary) {
                 jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
@@ -333,6 +344,10 @@ function summarizeCommenAndSuggestionForRegistrar(payload) {
         error: function(xhr, status, error) {
             console.error('AJAX Error:', status, error);
             jQuery('#summaryOutput').text('Error generating summary.');
+        },
+        complete: function() {
+            isLoadingPOD = false;
+            jQuery('#summarizeBtn').attr('disabled', false).text('Generate Summary');
         }
     });
 }

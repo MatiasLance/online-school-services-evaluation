@@ -1,6 +1,6 @@
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar">
-    <i class="bi bi-arrow-left-circle text-white" style="font-size: 30px; transform: translate(30px, 14px); cursor: pointer;" id="closeSideNavigationBar"></i>
+    <i class="bi bi-x text-white" style="font-size: 30px; transform: translate(30px, 14px); cursor: pointer;" id="closeSideNavigationBar"></i>
     <div class="sidebar-header">
         <img id="sideBarMenuLogo" src="<?php echo isset($_SESSION['sidebar_menu_logo']) ? $_SESSION['sidebar_menu_logo']: 'https://i.imgur.com/HLqsP73.png'?>" alt="Goat Farm">
     </div>
@@ -10,11 +10,15 @@
             <i class="fas fa-grip"></i>
             <span style="transform: translateY(2px);">Dashboard</span>
         </a>
-        <!-- Offices -->
+        <a class="nav-link-1 d-flex align-items-center gap-2" href="/satisfaction-rate">
+            <i class="bi bi-bar-chart"></i>
+            <span style="transform: translateY(2px);">Satisfaction Rate</span>
+        </a>
+        <!-- Evaluation Results -->
          <div class="dropdown">
             <button class="btn dropdown-toggle nav-link-1 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-building"></i>
-                Offices
+                <i class="bi bi-clipboard-data"></i>
+                Evaluation Results
             </button>
             <ul class="dropdown-menu">
                 <a class="nav-link-2 d-flex align-items-center gap-2" href="/registrar">

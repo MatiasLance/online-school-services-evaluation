@@ -38,7 +38,20 @@ class DatabaseMigrator
                 INDEX idx_office (office),
                 INDEX idx_created_at (created_at DESC),
                 INDEX idx_deleted_at (deleted_at)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Stores user feedback with soft delete support; auto-purged after 90 days'"
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Stores user feedback with soft delete support; auto-purged after 90 days'",
+
+            "student" => "CREATE TABLE IF NOT EXISTS students (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                first_name VARCHAR(100) NOT NULL,
+                last_name VARCHAR(100) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                gender ENUM('Male', 'Female', 'Others') NOT NULL,
+                year_level ENUM('first', 'second', 'third', 'fourth') NOT NULL,
+                department ENUM('bsit', 'bsba', 'bshm', 'bsed', 'beed') NOT NULL,
+                section VARCHAR(50) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
         ];
 
         foreach ($tables as $tableName => $sql) {

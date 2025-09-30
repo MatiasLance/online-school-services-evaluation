@@ -2,6 +2,17 @@
     <div class="overlay"></div>
     <div class="container feedback-card" style="opacity: 0.9;">
         <div class="row">
+            <div class="col-12 mb-5 d-flex flex-row-reverse">
+                <div class="dropdown">
+                    <button class="btn btn-custom-blue dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Login as:
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/admin"><i class="bi bi-person-gear"></i> Admin</a></li>
+                        <li><a class="dropdown-item" href="/student"><i class="bi bi-person-badge"></i> Student</a></li>
+                    </ul>
+                </div>
+            </div>
             <div class="col-12" data-aos="fade-up">
                 <h2>Share Your Voice</h2>
                 <p>We’re listening. Tell us how we can improve your experience with any of our campus offices.</p>
@@ -29,7 +40,7 @@
                     Maintenance
                     </div>
                     <div class="office-option" data-office="Canteen">
-                    <i class="bi bi-restaurant"></i>
+                    <i class="fas fa-utensils"></i>
                     Canteen
                     </div>
                     <div class="office-option" data-office="Library">

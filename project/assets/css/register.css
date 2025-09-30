@@ -5,6 +5,8 @@
     font-family: var(--font-family);
     font-optical-sizing: auto;
     font-style: normal;
+    height: 100vh;
+    min-height: calc(100vh - 60px);
   }
 
   .bg-custom-white {

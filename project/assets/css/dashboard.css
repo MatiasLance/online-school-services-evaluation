@@ -113,10 +113,15 @@
   margin-top: 26px;
   padding: 1rem;
   text-align: center;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ccc;
+  /* background-color: #ffffff; */
+  /* border-bottom: 1px solid #ccc; */
+  color: white;
   flex-shrink: 0;
-  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
+  /* box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5); */
+}
+
+.sidebar-header img {
+  filter: brightness(0) invert(1);
 }
 
 .sidebar-nav-wrapper {

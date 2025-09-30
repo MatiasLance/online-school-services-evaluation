@@ -71,7 +71,7 @@ jQuery(function($) {
                             clearInterval(timerInterval);
                             $('#registerStudentForm')[0].reset();     
                             setTimeout(function(){
-                                window.location.href = '/';
+                                window.location.href = '/student';
                             }, 500)
                         }
                     });
@@ -95,15 +95,15 @@ jQuery(function($) {
     });
 
     let visibilityMapForYearLevel = {
-        '1st Year': ['one', 'two', 'seven'],
-        '2nd Year': ['three', 'eight'],
-        '3rd Year': ['four', 'five', 'nine'],
-        '4th Year': ['six']
+        'first': ['one', 'two', 'seven'],
+        'second': ['three', 'eight'],
+        'third': ['four', 'five', 'nine'],
+        'fourth': ['six']
     };
 
     let visibilityMapForDepartment = {
-        'BSIT': ['one', 'two', 'three', 'four', 'five', 'six'],
-        'BSBA': ['seven', 'eight', 'nine']
+        'bsit': ['one', 'two', 'three', 'four', 'five', 'six'],
+        'bsba': ['seven', 'eight', 'nine']
     };
 
     function updateVisibility() {

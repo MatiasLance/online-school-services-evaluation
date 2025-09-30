@@ -11,11 +11,23 @@ case '/':
   case '/admin':
     require  __DIR__ . $viewDir . 'login.php';
     break;
+  case '/student':
+    require  __DIR__ . $viewDir . 'student-login.php';
+    break;
+  case '/student-register':
+    require  __DIR__ . $viewDir . 'student-register.php';
+    break;
+  case '/student-evaluation-form':
+    require  __DIR__ . $viewDir . 'student-evaluation-form.php';
+    break;
   case '/create-form':
     require  __DIR__ . $viewDir . 'form.php';
     break;
   case '/dashboard':
     require  __DIR__ . $viewDir . 'dashboard.php';
+    break;
+  case '/satisfaction-rate':
+    require  __DIR__ . $viewDir . 'satisfaction-rate.php';
     break;
   case '/registrar':
     require  __DIR__ . $viewDir . '/registrar.php';

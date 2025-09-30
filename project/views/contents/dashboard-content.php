@@ -5,55 +5,203 @@
 <div class="flex-grow-1 d-flex">
     <main class="container-fluid container-content flex-grow-1 p-4">
       <div class="row">
-        <div class="col">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="2025-tab" data-bs-toggle="tab" data-bs-target="#2025-tab-pane" type="button" role="tab" aria-controls="2025-tab-pane" aria-selected="true">2025</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="2026-tab" data-bs-toggle="tab" data-bs-target="#2026-tab-pane" type="button" role="tab" aria-controls="2026-tab-pane" aria-selected="false">2026</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="2027-tab" data-bs-toggle="tab" data-bs-target="#2027-tab-pane" type="button" role="tab" aria-controls="2027-tab-pane" aria-selected="false">2027</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="2025-tab-pane" role="tabpanel" aria-labelledby="2025-tab" tabindex="0">
-                    <?php include __DIR__ . '/../tabs/2025-tab.php'; ?>
-                </div>
-                <div class="tab-pane fade" id="2026-tab-pane" role="tabpanel" aria-labelledby="2026-tab" tabindex="0">
-                    <?php include __DIR__ . '/../tabs/2026-tab.php'; ?>
-                </div>
-                <div class="tab-pane fade" id="2027-tab-pane" role="tabpanel" aria-labelledby="2027-tab" tabindex="0">
-                         <?php include __DIR__ . '/../tabs/2027-tab.php'; ?>
+
+        <div class="col-md-12 mb-5">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white">
+                <div class="card-body text-center py-4">
+                    <h2 class="card-title display-6 fw-bold">
+                        Good day, Admin! 👋
+                    </h2>
+                    <p class="card-text mt-2 lead">
+                        Welcome to your admin dashboard. Here’s what’s happening today.
+                    </p>
                 </div>
             </div>
         </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Satisfaction Rate</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/satisfaction-rate" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View All
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-registered" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Registrar Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/registrar" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-box" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">POD Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/pod-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-coins" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Finance Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/finance-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-school" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Campus Ministry Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/campus-ministry-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-screwdriver-wrench" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Maintenance Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/maintenance-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-utensils" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Canteen Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/canteen-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-book" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Library Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/library-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-house-chimney-medical" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Clinic Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/clinic-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-hand-holding-heart" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Guidance Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/guidance-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Security Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/security-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 bg-custom-blue text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users" style="font-size: 30px;"></i>
+                    <h3 class="text-capitalize mt-3 fw-bold text-charcoal-dark">Student Activity Evaluation Result</h3>
+                </div>
+                <div class="card-footer bg-custom-yellow text-center border-0">
+                    <a href="/student-activity-service" class="btn btn-dark-brown btn-sm px-4" aria-label="View all satisfaction results">
+                        View
+                        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
       </div>
     </main>
 </div>
-
-<!-- Modal -->
-<?php
-    include __DIR__ . '/../modal/manage-system-logo-modal.php';
-    include __DIR__ . '/../modal/category/add-category-modal.php';
-    include __DIR__ . '/../modal/category/edit-category-modal.php';
-    include __DIR__ . '/../modal/category/delete-category-modal.php';
-    include __DIR__ . '/../modal/category/ask-password-modal.php';
-    include __DIR__ . '/../modal/department/add-department-modal.php';
-    include __DIR__ . '/../modal/department/edit-department-modal.php';
-    include __DIR__ . '/../modal/department/delete-department-modal.php';
-    include __DIR__ . '/../modal/department/ask-password-modal.php';
-    include __DIR__ . '/../modal/user-account/add-user-account-modal.php';
-    include __DIR__ . '/../modal/user-account/edit-user-account-modal.php';
-    include __DIR__ . '/../modal/user-account/delete-user-account-modal.php';
-    include __DIR__ . '/../modal/user-account/ask-password-modal.php';
-    include __DIR__ . '/../modal/profile/edit-profile-modal.php';
-    include __DIR__ . '/../modal/student/add-student-account-modal.php';
-    include __DIR__ . '/../modal/student/retrieve-student-account-modal.php';
-    include __DIR__ . '/../modal/student/preview-student-account-modal.php';
-    include __DIR__ . '/../modal/student/delete-student-account-modal.php';
-?>
 
 <!-- Footer -->
 <?php include __DIR__ . '/../footer.php' ?>

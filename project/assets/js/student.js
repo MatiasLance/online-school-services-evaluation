@@ -13,6 +13,11 @@ let visibilityMapForDepartment = {
 };
 
 jQuery(function($){
+    AOS.init({
+        duration: 800,
+        easing: 'ease-out-cubic',
+        once: true
+    });
 
     const passwordField = $('#password, #studentPassword, #newStudentPassword');
     const confirmPasswordField = $('#confirmPassword, #studentConfirmPassword, #confirmNewStudentPassoword');
