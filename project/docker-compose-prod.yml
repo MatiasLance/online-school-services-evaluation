@@ -6,7 +6,7 @@ services:
         dockerfile: Dockerfile.prod
       restart: unless-stopped
       volumes:
-        - .:/var/www/html
+        - .:/var/www/osse/html
         - ./sessions:/var/lib/php/sessions
       networks:
         - osse-network
