@@ -28,8 +28,9 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col" class="text-center">Total Responses</th>
                             <th scope="col" class="text-center">Most Common Answer</th>
+                            <th scope="col" class="text-center">Equivalent</th>
+                            <th scope="col" class="text-center">Submission Date</th>
                         </tr>
                     </thead>
                     <tbody id="clinicServiceFeedbackMostCommonAnswer">

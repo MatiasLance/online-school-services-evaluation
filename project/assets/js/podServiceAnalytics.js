@@ -325,8 +325,33 @@ function summarizeCommenAndSuggestionForPOD(payload) {
             jQuery('#summarizeBtn').attr('disabled', true).text('Summarizing...');
         },
         success: function(response) {
+            const mcaMatch = response.summary.match(/MCA \(Most Common Answer\): (.+)/);
+            const gwaMatch = response.summary.match(/GWA \(General Weighted Average\): (.+)/);
+            const summaryMatch = response.summary.match(/Summary: (.+)/s);
             if (response && response.summary) {
-                jQuery('#summaryOutput').html('<strong>Summary:</strong> ' + response.summary);
+                let structuredHTML = '';
+
+                if (mcaMatch) {
+                    structuredHTML += `<div class="mca-section">
+                        <h3>MCA (Most Common Answer)</h3>
+                        <p>${mcaMatch[1]}</p>
+                    </div>`;
+                }
+
+                if (gwaMatch) {
+                    structuredHTML += `<div class="gwa-section">
+                        <h3>GWA (General Weighted Average)</h3>
+                        <p>${gwaMatch[1]}</p>
+                    </div>`;
+                }
+
+                if (summaryMatch) {
+                    structuredHTML += `<div class="summary-section">
+                        <h3>Summary</h3>
+                        <p>${summaryMatch[1]}</p>
+                    </div>`;
+                }
+                jQuery('#summaryOutput').html(structuredHTML);
             } else {
                 jQuery('#summaryOutput').text('Invalid response from server.');
             }
@@ -343,6 +368,8 @@ function summarizeCommenAndSuggestionForPOD(payload) {
 }
 
 function listOfPODFeedbacks(){
+    let feedbackPODList = [];
+    let feedbackPODListSubmissionDate = [];
     jQuery.ajax({
         url: './controller/feedback/FeedbackListController.php',
         type: 'GET',
@@ -352,21 +379,40 @@ function listOfPODFeedbacks(){
             if(response.success) {
                 for(let i = 0; i < response.data.length; i++){
                     if(response.data[i].office.toLowerCase() === 'pod'){
-                        jQuery('#podServiceFeedbackMostCommonAnswer').append(`
-                            <tr>
-                                <td class="text-center">${response.data[i].feedback_count}</td>
-                                <td class="text-center">${response.data[i].most_common_feedback}</td>
-                            </tr>
-                        `);
+                        response.data[i].feedbacks.forEach(feedback => {
+                            feedbackPODList.push(feedback.feedback);
+                            feedbackPODListSubmissionDate.push(feedback.created_at)
+                        });
 
-                        jQuery('#pod-feedback-bar')
-                            .css('width', response.data[i].percentage + '%')
-                            .removeClass('bg-danger bg-warning bg-custom-blue')
-                            .addClass(
-                                response.data[i].percentage >= 80 ? 'bg-custom-blue' :
-                                response.data[i].percentage >= 60 ? 'bg-warning' : 'bg-danger'
-                            )
-                            .text(response.data[i].percentage + '%');
+                        analyzePODFeedbackWithAI(feedbackPODList, function(err, results, gwa) {
+                            if (err) {
+                                jQuery('#podServiceFeedbackMostCommonAnswer').html(`
+                                    <tr><td colspan="3" class="text-center text-danger">Failed to analyze feedback.</td></tr>
+                                `);
+                                return;
+                            }
+                            jQuery('#podServiceFeedbackMostCommonAnswer').empty();
+                            results.forEach((result, index) => {
+                                const dateStr = feedbackPODListSubmissionDate[index];
+                                const formattedDate = dateStr ? new Date(dateStr).toDateString() : 'N/A';
+                                jQuery('#podServiceFeedbackMostCommonAnswer').append(`
+                                    <tr>
+                                        <td class="text-center">${result.feedback}</td>
+                                        <td class="text-center">${result.rating}</td>
+                                        <td class="text-center">${formattedDate}</td>
+                                    </tr>
+                                `);
+
+                                jQuery('#pod-feedback-bar')
+                                .css('width', gwa + '%')
+                                .removeClass('bg-danger bg-warning bg-custom-blue')
+                                .addClass(
+                                    gwa >= 80 ? 'bg-custom-blue' :
+                                    gwa >= 60 ? 'bg-warning' : 'bg-danger'
+                                )
+                                .text(gwa + '%');
+                            });
+                        });
 
                         for(let x = 0; x < response.data[i].feedbacks.length; x++){
                             jQuery('#pod-feedback-container').append(`
@@ -465,6 +511,49 @@ function loadMorePODFeedbacks(data){
         },
         error: function(xhr, status, error) {
             console.error(error);
+        }
+    });
+}
+
+function analyzePODFeedbackWithAI(feedbacks, callback) {
+    jQuery.ajax({
+        url: './controller/feedback/AnalyzeFeedbackController.php',
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({ feedbacks: feedbacks }),
+        beforeSend: function() {
+            isLoadingPOD = true;
+            jQuery('#podServiceFeedbackMostCommonAnswer').html(`
+                <td colspan="3" class="text-danger text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <p class="text-center">Analyzing feedback...</p>
+                </td>
+            `);
+        },
+        success: function(response) {
+            if (response && response.success) {
+                const weightedAvg = response.data.weighted_average_top5;
+                const percentage = (weightedAvg / 5) * 100;
+                const displayPercentage = Math.round(percentage)
+                callback(null, response.data.individual_results, displayPercentage);
+            } else {
+                jQuery('#podServiceFeedbackMostCommonAnswer').html(`
+                    <tr><td colspan="3" class="text-center text-danger">Analysis failed. Please try again.</td></tr>
+                `);
+            }
+        },
+        error: function(xhr, status, error) {
+            jQuery('#podServiceFeedbackMostCommonAnswer').html(`
+                <tr><td colspan="3" class="text-center text-danger">Error loading feedback analysis.</td></tr>
+            `);
+        },
+        complete: function() {
+            isLoadingPOD = false;
         }
     });
 }

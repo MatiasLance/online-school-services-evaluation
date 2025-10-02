@@ -12,6 +12,7 @@ try {
 
     $offset = max(0, ($page - 1) * $limit);
 
+    // Get total active feedback count
     $totalStmt = $conn->prepare("SELECT COUNT(*) AS total FROM form_feedbacks WHERE deleted_at IS NULL");
     $totalStmt->execute();
     $totalResult = $totalStmt->get_result();
@@ -19,6 +20,7 @@ try {
     $totalActiveFeedback = (int)$totalRow['total'];
     $totalStmt->close();
 
+    // Fetch office-wise summary
     $sql = "
         SELECT 
             office,
@@ -44,8 +46,8 @@ try {
 
     $data = [];
     $sumPercentages = 0;
-
     $offices = [];
+
     while ($row = $result->fetch_assoc()) {
         $count = (int)$row['feedback_count'];
         $percentage = $totalActiveFeedback > 0 ? round(($count / $totalActiveFeedback) * 100) : 0;
@@ -63,6 +65,7 @@ try {
     }
     $stmt->close();
 
+    // Handle per-office detailed view
     if ($targetOffice) {
         $filteredOffice = null;
         foreach ($offices as &$office) {
@@ -123,6 +126,7 @@ try {
         exit;
     }
 
+    // Global view: attach recent feedbacks (top 5 per office)
     foreach ($offices as &$office) {
         $officeName = $office['office'];
 
@@ -152,6 +156,7 @@ try {
         $sumPercentages += $office['percentage'];
     }
 
+    // Adjust last office percentage to ensure total = 100%
     if ($totalActiveFeedback > 0 && !empty($offices)) {
         $diff = 100 - $sumPercentages;
         if ($diff !== 0) {
@@ -159,16 +164,68 @@ try {
         }
     }
 
+    // ====== UPDATED: Top 5 Most Common Feedbacks + GWA + latest_created_at ======
+   $topFeedbacksWeighted = [];
+    $generalWeightedAverage = null;
+    $generalWeightedPercentage = null;
+
+    $topFeedbacksStmt = $conn->prepare("
+        SELECT 
+            feedback,
+            COUNT(*) as frequency,
+            MAX(created_at) as latest_created_at
+        FROM form_feedbacks
+        WHERE deleted_at IS NULL
+        GROUP BY feedback
+        ORDER BY frequency DESC, feedback ASC
+        LIMIT 5
+    ");
+    $topFeedbacksStmt->execute();
+    $topFeedbacksResult = $topFeedbacksStmt->get_result();
+
+    $weightedSum = 0;
+    $totalFreq = 0;
+    $rank = 1;
+
+    while ($fbRow = $topFeedbacksResult->fetch_assoc()) {
+        $weight = 6 - $rank;
+        $freq = (int)$fbRow['frequency'];
+
+        $weightedSum += $freq * $weight;
+        $totalFreq += $freq;
+
+        $topFeedbacksWeighted[] = [
+            'feedback' => $fbRow['feedback'],
+            'frequency' => $freq,
+            'rank' => $rank,
+            'weight' => $weight,
+            'latest_created_at' => $fbRow['latest_created_at']
+        ];
+
+        $rank++;
+    }
+    $topFeedbacksStmt->close();
+
+    if ($totalFreq > 0) {
+        $generalWeightedAverage = round($weightedSum / $totalFreq, 2);
+        $generalWeightedPercentage = round(($generalWeightedAverage / 5) * 100, 1);
+    }
+
     $total_offices = count($offices);
 
-    echo json_encode([
+    $response = [
         'success' => true,
         'data' => $offices,
         'total_offices' => $total_offices,
         'total_active_feedback' => $totalActiveFeedback,
         'total_percentage' => 100,
         'is_paginated' => false,
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        'top_feedbacks_weighted' => $topFeedbacksWeighted,
+        'general_weighted_average' => $generalWeightedAverage,
+        'general_weighted_percentage' => $generalWeightedPercentage
+    ];
+
+    echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {
     http_response_code(500);
@@ -179,3 +236,4 @@ try {
 }
 
 $conn->close();
+?>
